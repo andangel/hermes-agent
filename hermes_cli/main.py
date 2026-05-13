@@ -78,10 +78,7 @@ def _add_accept_hooks_flag(parser) -> None:
         "--accept-hooks",
         action="store_true",
         default=argparse.SUPPRESS,
-        help=(
-            "Auto-approve unseen shell hooks without a TTY prompt "
-            "(equivalent to HERMES_ACCEPT_HOOKS=1 / hooks_auto_accept: true)."
-        ),
+        help=_cli_tr("gateway_option_accept_hooks"),
     )
 
 
@@ -262,8 +259,19 @@ from datetime import datetime
 
 from hermes_cli import __version__, __release_date__
 from hermes_constants import AI_GATEWAY_BASE_URL, OPENROUTER_BASE_URL
+from agent.i18n import t as _t
 
 logger = logging.getLogger(__name__)
+
+
+def _tr(key: str, **kwargs) -> str:
+    """Translate a model configuration string."""
+    return _t(f"setup.model.{key}", **kwargs)
+
+
+def _cli_tr(key: str, **kwargs) -> str:
+    """Translate a CLI command help string."""
+    return _t(f"cli.{key}", **kwargs)
 
 
 def _relative_time(ts) -> str:
@@ -1513,60 +1521,63 @@ def cmd_whatsapp(args):
     """Set up WhatsApp: choose mode, configure, install bridge, pair via QR."""
     _require_tty("whatsapp")
     from hermes_cli.config import get_env_value, save_env_value
+    from agent.i18n import t as _t
+
+    def _tr(key: str, **kwargs) -> str:
+        """Translate a whatsapp setup string."""
+        return _t(f"setup.{key}", **kwargs)
 
     print()
-    print("⚕ WhatsApp Setup")
+    print(_tr("whatsapp_setup_title"))
     print("=" * 50)
 
     # ── Step 1: Choose mode ──────────────────────────────────────────────
     current_mode = get_env_value("WHATSAPP_MODE") or ""
     if not current_mode:
         print()
-        print("How will you use WhatsApp with Hermes?")
+        print(_tr("whatsapp_mode_question"))
         print()
-        print("  1. Separate bot number (recommended)")
-        print("     People message the bot's number directly — cleanest experience.")
-        print(
-            "     Requires a second phone number with WhatsApp installed on a device."
-        )
+        print(f"  {_tr('whatsapp_mode_bot')}")
+        print(f"     {_tr('whatsapp_mode_bot_desc_1')}")
+        print(f"     {_tr('whatsapp_mode_bot_desc_2')}")
         print()
-        print("  2. Personal number (self-chat)")
-        print("     You message yourself to talk to the agent.")
-        print("     Quick to set up, but the UX is less intuitive.")
+        print(f"  {_tr('whatsapp_mode_self')}")
+        print(f"     {_tr('whatsapp_mode_self_desc_1')}")
+        print(f"     {_tr('whatsapp_mode_self_desc_2')}")
         print()
         try:
-            choice = input("  Choose [1/2]: ").strip()
+            choice = input(f"  {_tr('whatsapp_choose_mode_prompt')} ").strip()
         except (EOFError, KeyboardInterrupt):
-            print("\nSetup cancelled.")
+            print(f"\n{_tr('whatsapp_setup_cancelled')}")
             return
 
         if choice == "1":
             save_env_value("WHATSAPP_MODE", "bot")
             wa_mode = "bot"
-            print("  ✓ Mode: separate bot number")
+            print(f"  {_tr('whatsapp_mode_bot_selected')}")
             print()
             print("  ┌─────────────────────────────────────────────────┐")
-            print("  │  Getting a second number for the bot:           │")
+            print(f"  │  {_tr('whatsapp_second_number_title'):<41}│")
             print("  │                                                 │")
-            print("  │  Easiest: Install WhatsApp Business (free app)  │")
-            print("  │  on your phone with a second number:            │")
-            print("  │    • Dual-SIM: use your 2nd SIM slot            │")
-            print("  │    • Google Voice: free US number (voice.google) │")
-            print("  │    • Prepaid SIM: $3-10, verify once            │")
+            print(f"  │  {_tr('whatsapp_second_number_tip_1'):<41}│")
+            print(f"  │  {_tr('whatsapp_second_number_tip_2'):<41}│")
+            print(f"  │    {_tr('whatsapp_second_number_option_1'):<39}│")
+            print(f"  │    {_tr('whatsapp_second_number_option_2'):<39}│")
+            print(f"  │    {_tr('whatsapp_second_number_option_3'):<39}│")
             print("  │                                                 │")
-            print("  │  WhatsApp Business runs alongside your personal │")
-            print("  │  WhatsApp — no second phone needed.             │")
+            print(f"  │  {_tr('whatsapp_second_number_note_1'):<41}│")
+            print(f"  │  {_tr('whatsapp_second_number_note_2'):<41}│")
             print("  └─────────────────────────────────────────────────┘")
         else:
             save_env_value("WHATSAPP_MODE", "self-chat")
             wa_mode = "self-chat"
-            print("  ✓ Mode: personal number (self-chat)")
+            print(f"  {_tr('whatsapp_mode_self_selected')}")
     else:
         wa_mode = current_mode
         mode_label = (
-            "separate bot number" if wa_mode == "bot" else "personal number (self-chat)"
+            _tr("whatsapp_mode_bot_selected").replace("✓ 模式：", "").strip() if wa_mode == "bot" else _tr("whatsapp_mode_self_selected").replace("✓ 模式：", "").strip()
         )
-        print(f"\n✓ Mode: {mode_label}")
+        print(f"\n{_tr('whatsapp_mode_display', mode_label=mode_label)}")
 
     # ── Step 2: Enable WhatsApp ──────────────────────────────────────────
     print()
@@ -1816,8 +1827,8 @@ def select_provider_and_model(args=None):
     active_label = provider_labels.get(active, active) if active else "none"
 
     print()
-    print(f"  Current model:    {current_model}")
-    print(f"  Active provider:  {active_label}")
+    print(_tr("current_model_label", model=current_model))
+    print(_tr("active_provider_label", provider=active_label))
     print()
 
     # Step 1: Provider selection — flat list from CANONICAL_PROVIDERS
@@ -3033,34 +3044,34 @@ def _model_flow_custom(config):
     current_url = get_env_value("OPENAI_BASE_URL") or ""
     current_key = get_env_value("OPENAI_API_KEY") or ""
 
-    print("Custom OpenAI-compatible endpoint configuration:")
+    print(_tr("custom_endpoint_title"))
     if current_url:
-        print(f"  Current URL: {current_url}")
+        print(_tr("current_url_label", url=current_url))
     if current_key:
-        print(f"  Current key: {current_key[:8]}...")
+        print(_tr("current_key_label", key=current_key[:8]))
     print()
 
     try:
         base_url = input(
-            f"API base URL [{current_url or 'e.g. https://api.example.com/v1'}]: "
+            _tr("base_url_prompt", example=_tr("base_url_example") if not current_url else current_url)
         ).strip()
         import getpass
 
         api_key = getpass.getpass(
-            f"API key [{current_key[:8] + '...' if current_key else 'optional'}]: "
+            _tr("api_key_prompt_custom", placeholder=_tr("api_key_optional") if not current_key else current_key[:8] + "...")
         ).strip()
     except (KeyboardInterrupt, EOFError):
-        print("\nCancelled.")
+        print("\n" + _tr("cancelled"))
         return
 
     if not base_url and not current_url:
-        print("No URL provided. Cancelled.")
+        print(_tr("no_url_provided"))
         return
 
     # Validate URL format
     effective_url = base_url or current_url
     if not effective_url.startswith(("http://", "https://")):
-        print(f"Invalid URL: {effective_url} (must start with http:// or https://)")
+        print(_tr("invalid_url", url=effective_url))
         return
 
     effective_key = api_key or current_key
@@ -3075,18 +3086,18 @@ def _model_flow_custom(config):
     )
     if _looks_local and not _url_lower.endswith("/v1"):
         print()
-        print(f"  Hint: Did you mean to add /v1 at the end?")
-        print(f"  Most local model servers (Ollama, vLLM, llama.cpp) require it.")
-        print(f"  e.g. {effective_url.rstrip('/')}/v1")
+        print(_tr("add_v1_hint"))
+        print(_tr("local_servers_require_v1"))
+        print(f"  {_tr('example_url', url=effective_url.rstrip('/') + '/v1')}")
         try:
-            _add_v1 = input("  Add /v1? [Y/n]: ").strip().lower()
+            _add_v1 = input(_tr("add_v1_prompt")).strip().lower()
         except (KeyboardInterrupt, EOFError):
             _add_v1 = "n"
         if _add_v1 in ("", "y", "yes"):
             effective_url = effective_url.rstrip("/") + "/v1"
             if base_url:
                 base_url = effective_url
-            print(f"  Updated URL: {effective_url}")
+            print(_tr("updated_url", url=effective_url))
         print()
 
     from hermes_cli.models import probe_api_models
@@ -3094,65 +3105,64 @@ def _model_flow_custom(config):
     probe = probe_api_models(effective_key, effective_url)
     if probe.get("used_fallback") and probe.get("resolved_base_url"):
         print(
-            f"Warning: endpoint verification worked at {probe['resolved_base_url']}/models, "
-            f"not the exact URL you entered. Saving the working base URL instead."
+            _tr("endpoint_verification_fallback", 
+                resolved_url=probe['resolved_base_url'])
         )
         effective_url = probe["resolved_base_url"]
         if base_url:
             base_url = effective_url
     elif probe.get("models") is not None:
         print(
-            f"Verified endpoint via {probe.get('probed_url')} "
-            f"({len(probe.get('models') or [])} model(s) visible)"
+            _tr("endpoint_verified", 
+                probed_url=probe.get('probed_url'),
+                model_count=len(probe.get('models') or []))
         )
     else:
         print(
-            f"Warning: could not verify this endpoint via {probe.get('probed_url')}. "
-            f"Hermes will still save it."
+            _tr("endpoint_verification_failed",
+                probed_url=probe.get('probed_url'))
         )
         if probe.get("suggested_base_url"):
             suggested = probe["suggested_base_url"]
             if suggested.endswith("/v1"):
-                print(
-                    f"  If this server expects /v1 in the path, try base URL: {suggested}"
-                )
+                print(_tr("try_with_v1", url=suggested))
             else:
-                print(f"  If /v1 should not be in the base URL, try: {suggested}")
+                print(_tr("try_without_v1", url=suggested))
 
     # Select model — use probe results when available, fall back to manual input
     model_name = ""
     detected_models = probe.get("models") or []
     try:
         if len(detected_models) == 1:
-            print(f"  Detected model: {detected_models[0]}")
-            confirm = input("  Use this model? [Y/n]: ").strip().lower()
+            print(_tr("detected_model", model=detected_models[0]))
+            confirm = input(_tr("use_this_model_prompt")).strip().lower()
             if confirm in ("", "y", "yes"):
                 model_name = detected_models[0]
             else:
-                model_name = input("Model name (e.g. gpt-4, llama-3-70b): ").strip()
+                model_name = input(_tr("model_name_prompt")).strip()
         elif len(detected_models) > 1:
-            print("  Available models:")
+            print(_tr("available_models"))
             for i, m in enumerate(detected_models, 1):
                 print(f"    {i}. {m}")
             pick = input(
-                f"  Select model [1-{len(detected_models)}] or type name: "
+                _tr("select_model_prompt", count=len(detected_models))
             ).strip()
             if pick.isdigit() and 1 <= int(pick) <= len(detected_models):
                 model_name = detected_models[int(pick) - 1]
             elif pick:
                 model_name = pick
         else:
-            model_name = input("Model name (e.g. gpt-4, llama-3-70b): ").strip()
+            model_name = input(_tr("model_name_prompt")).strip()
 
         context_length_str = input(
-            "Context length in tokens [leave blank for auto-detect]: "
+            _tr("context_length_prompt")
         ).strip()
 
         # Prompt for a display name — shown in the provider menu on future runs
         default_name = _auto_provider_name(effective_url)
-        display_name = input(f"Display name [{default_name}]: ").strip() or default_name
+        display_name = input(_tr("display_name_prompt", name=default_name)).strip() or default_name
     except (KeyboardInterrupt, EOFError):
-        print("\nCancelled.")
+        print("\n" + _tr("cancelled"))
         return
 
     context_length = None
@@ -3166,7 +3176,7 @@ def _model_flow_custom(config):
             if context_length <= 0:
                 context_length = None
         except ValueError:
-            print(f"Invalid context length: {context_length_str} — will auto-detect.")
+            print(_tr("invalid_context_length", length=context_length_str))
             context_length = None
 
     if model_name:
@@ -3192,7 +3202,7 @@ def _model_flow_custom(config):
         # the stale values from its own config dict (#4172).
         config["model"] = dict(model)
 
-        print(f"Default model set to: {model_name} (via {effective_url})")
+        print(_tr("default_model_set", model=model_name, url=effective_url))
     else:
         if base_url or api_key:
             deactivate_provider()
@@ -3207,7 +3217,7 @@ def _model_flow_custom(config):
             _caller_model["api_key"] = effective_key
         _caller_model.pop("api_mode", None)
         config["model"] = _caller_model
-        print("Endpoint saved. Use `/model` in chat or `hermes model` to set a model.")
+        print(_tr("endpoint_saved"))
 
     # Auto-save to custom_providers so it appears in the menu next time
     _save_custom_provider(
@@ -9266,7 +9276,7 @@ def main():
     except Exception:
         pass
 
-    from hermes_cli._parser import build_top_level_parser
+    from hermes_cli._parser import build_top_level_parser, add_translated_subparser
 
     parser, subparsers, chat_parser = build_top_level_parser()
     chat_parser.set_defaults(func=cmd_chat)
@@ -9274,45 +9284,46 @@ def main():
     # =========================================================================
     # model command
     # =========================================================================
-    model_parser = subparsers.add_parser(
+    model_parser = add_translated_subparser(
+        subparsers,
         "model",
-        help="Select default model and provider",
-        description="Interactively select your inference provider and default model",
+        help=_cli_tr("model_help"),
+        description=_cli_tr("model_description"),
     )
     model_parser.add_argument(
         "--portal-url",
-        help="Portal base URL for Nous login (default: production portal)",
+        help=_cli_tr("model_option_portal_url"),
     )
     model_parser.add_argument(
         "--inference-url",
-        help="Inference API base URL for Nous login (default: production inference API)",
+        help=_cli_tr("model_option_inference_url"),
     )
     model_parser.add_argument(
         "--client-id",
         default=None,
-        help="OAuth client id to use for Nous login (default: hermes-cli)",
+        help=_cli_tr("model_option_client_id"),
     )
     model_parser.add_argument(
-        "--scope", default=None, help="OAuth scope to request for Nous login"
+        "--scope", default=None, help=_cli_tr("model_option_scope")
     )
     model_parser.add_argument(
         "--no-browser",
         action="store_true",
-        help="Do not attempt to open the browser automatically during Nous login",
+        help=_cli_tr("model_option_no_browser"),
     )
     model_parser.add_argument(
         "--timeout",
         type=float,
         default=15.0,
-        help="HTTP request timeout in seconds for Nous login (default: 15)",
+        help=_cli_tr("model_option_timeout"),
     )
     model_parser.add_argument(
-        "--ca-bundle", help="Path to CA bundle PEM file for Nous TLS verification"
+        "--ca-bundle", help=_cli_tr("model_option_ca_bundle")
     )
     model_parser.add_argument(
         "--insecure",
         action="store_true",
-        help="Disable TLS verification for Nous login (testing only)",
+        help=_cli_tr("model_option_insecure"),
     )
     model_parser.set_defaults(func=cmd_model)
 
@@ -9321,50 +9332,48 @@ def main():
     # =========================================================================
     from hermes_cli.fallback_cmd import cmd_fallback
 
-    fallback_parser = subparsers.add_parser(
+    fallback_parser = add_translated_subparser(
+        subparsers,
         "fallback",
-        help="Manage fallback providers (tried when the primary model fails)",
-        description=(
-            "Manage the fallback provider chain.  Fallback providers are tried "
-            "in order when the primary model fails with rate-limit, overload, or "
-            "connection errors.  See: "
-            "https://hermes-agent.nousresearch.com/docs/user-guide/features/fallback-providers"
-        ),
+        help=_cli_tr("fallback_help"),
+        description=_cli_tr("fallback_description"),
     )
     fallback_subparsers = fallback_parser.add_subparsers(dest="fallback_command")
     fallback_subparsers.add_parser(
         "list",
         aliases=["ls"],
-        help="Show the current fallback chain (default when no subcommand)",
+        help=_cli_tr("fallback_sub_list_help"),
     )
     fallback_subparsers.add_parser(
         "add",
-        help="Pick a provider + model (same picker as `hermes model`) and append to the chain",
+        help=_cli_tr("fallback_sub_add_help"),
     )
     fallback_subparsers.add_parser(
         "remove",
         aliases=["rm"],
-        help="Pick an entry to delete from the chain",
+        help=_cli_tr("fallback_sub_remove_help"),
     )
     fallback_subparsers.add_parser(
         "clear",
-        help="Remove all fallback entries",
+        help=_cli_tr("fallback_sub_clear_help"),
     )
     fallback_parser.set_defaults(func=cmd_fallback)
 
     # =========================================================================
     # gateway command
     # =========================================================================
-    gateway_parser = subparsers.add_parser(
+    gateway_parser = add_translated_subparser(
+        subparsers,
         "gateway",
-        help="Messaging gateway management",
-        description="Manage the messaging gateway (Telegram, Discord, WhatsApp)",
+        help=_cli_tr("gateway_help"),
+        description=_cli_tr("gateway_description"),
     )
     gateway_subparsers = gateway_parser.add_subparsers(dest="gateway_command")
 
     # gateway run (default)
-    gateway_run = gateway_subparsers.add_parser(
-        "run", help="Run gateway in foreground (recommended for WSL, Docker, Termux)"
+    gateway_run = add_translated_subparser(
+        gateway_subparsers,
+        "run", help=_cli_tr("gateway_sub_run_help")
     )
     gateway_run.add_argument(
         "-v",
@@ -9385,8 +9394,9 @@ def main():
     _add_accept_hooks_flag(gateway_parser)
 
     # gateway start
-    gateway_start = gateway_subparsers.add_parser(
-        "start", help="Start the installed systemd/launchd background service"
+    gateway_start = add_translated_subparser(
+        gateway_subparsers,
+        "start", help=_cli_tr("gateway_sub_start_help")
     )
     gateway_start.add_argument(
         "--system",
@@ -9400,7 +9410,8 @@ def main():
     )
 
     # gateway stop
-    gateway_stop = gateway_subparsers.add_parser("stop", help="Stop gateway service")
+    gateway_stop = add_translated_subparser(
+        gateway_subparsers,"stop", help=_cli_tr("gateway_sub_stop_help"))
     gateway_stop.add_argument(
         "--system",
         action="store_true",
@@ -9413,8 +9424,9 @@ def main():
     )
 
     # gateway restart
-    gateway_restart = gateway_subparsers.add_parser(
-        "restart", help="Restart gateway service"
+    gateway_restart = add_translated_subparser(
+        gateway_subparsers,
+        "restart", help=_cli_tr("gateway_sub_restart_help")
     )
     gateway_restart.add_argument(
         "--system",
@@ -9428,7 +9440,8 @@ def main():
     )
 
     # gateway status
-    gateway_status = gateway_subparsers.add_parser("status", help="Show gateway status")
+    gateway_status = add_translated_subparser(
+        gateway_subparsers,"status", help=_cli_tr("gateway_sub_status_help"))
     gateway_status.add_argument("--deep", action="store_true", help="Deep status check")
     gateway_status.add_argument(
         "-l",
@@ -9443,8 +9456,9 @@ def main():
     )
 
     # gateway install
-    gateway_install = gateway_subparsers.add_parser(
-        "install", help="Install gateway as a systemd/launchd background service"
+    gateway_install = add_translated_subparser(
+        gateway_subparsers,
+        "install", help=_cli_tr("gateway_sub_install_help")
     )
     gateway_install.add_argument("--force", action="store_true", help="Force reinstall")
     gateway_install.add_argument(
@@ -9459,8 +9473,9 @@ def main():
     )
 
     # gateway uninstall
-    gateway_uninstall = gateway_subparsers.add_parser(
-        "uninstall", help="Uninstall gateway service"
+    gateway_uninstall = add_translated_subparser(
+        gateway_subparsers,
+        "uninstall", help=_cli_tr("gateway_sub_uninstall_help")
     )
     gateway_uninstall.add_argument(
         "--system",
@@ -9469,15 +9484,16 @@ def main():
     )
 
     # gateway list
-    gateway_subparsers.add_parser("list", help="List all profiles and their gateway status")
+    gateway_subparsers.add_parser("list", help=_cli_tr("gateway_sub_list_help"))
 
     # gateway setup
-    gateway_subparsers.add_parser("setup", help="Configure messaging platforms")
+    gateway_subparsers.add_parser("setup", help=_cli_tr("gateway_sub_setup_help"))
 
     # gateway migrate-legacy
-    gateway_migrate_legacy = gateway_subparsers.add_parser(
+    gateway_migrate_legacy = add_translated_subparser(
+        gateway_subparsers,
         "migrate-legacy",
-        help="Remove legacy hermes.service units from pre-rename installs",
+        help=_cli_tr("gateway_sub_migrate_legacy_help"),
         description=(
             "Stop, disable, and remove legacy Hermes gateway unit files "
             "(e.g. hermes.service) left over from older installs. Profile "
@@ -9504,59 +9520,58 @@ def main():
     # =========================================================================
     # setup command
     # =========================================================================
-    setup_parser = subparsers.add_parser(
+    setup_parser = add_translated_subparser(
+        subparsers,
         "setup",
-        help="Interactive setup wizard",
-        description="Configure Hermes Agent with an interactive wizard. "
-        "Run a specific section: hermes setup model|tts|terminal|gateway|tools|agent",
+        help=_cli_tr("setup_help"),
+        description=_cli_tr("setup_description"),
     )
     setup_parser.add_argument(
         "section",
         nargs="?",
         choices=["model", "tts", "terminal", "gateway", "tools", "agent"],
         default=None,
-        help="Run a specific setup section instead of the full wizard",
+        help=_cli_tr("setup_option_section"),
     )
     setup_parser.add_argument(
         "--non-interactive",
         action="store_true",
-        help="Non-interactive mode (use defaults/env vars)",
+        help=_cli_tr("setup_option_non_interactive"),
     )
     setup_parser.add_argument(
-        "--reset", action="store_true", help="Reset configuration to defaults"
+        "--reset", action="store_true", help=_cli_tr("setup_option_reset")
     )
     setup_parser.add_argument(
         "--reconfigure",
         action="store_true",
-        help="(Default on existing installs.) Re-run the full wizard, "
-        "showing current values as defaults. Kept for backwards "
-        "compatibility — a bare 'hermes setup' now does this.",
+        help=_cli_tr("setup_option_reconfigure"),
     )
     setup_parser.add_argument(
         "--quick",
         action="store_true",
-        help="On existing installs: only prompt for items that are missing "
-        "or unset, instead of running the full reconfigure wizard.",
+        help=_cli_tr("setup_option_quick"),
     )
     setup_parser.set_defaults(func=cmd_setup)
 
     # =========================================================================
     # whatsapp command
     # =========================================================================
-    whatsapp_parser = subparsers.add_parser(
+    whatsapp_parser = add_translated_subparser(
+        subparsers,
         "whatsapp",
-        help="Set up WhatsApp integration",
-        description="Configure WhatsApp and pair via QR code",
+        help=_cli_tr("whatsapp_help"),
+        description=_cli_tr("whatsapp_description"),
     )
     whatsapp_parser.set_defaults(func=cmd_whatsapp)
 
     # =========================================================================
     # slack command
     # =========================================================================
-    slack_parser = subparsers.add_parser(
+    slack_parser = add_translated_subparser(
+        subparsers,
         "slack",
-        help="Slack integration helpers (manifest generation, etc.)",
-        description="Slack integration helpers for Hermes.",
+        help=_cli_tr("slack_help"),
+        description=_cli_tr("slack_description"),
     )
     slack_sub = slack_parser.add_subparsers(dest="slack_command")
     slack_manifest = slack_sub.add_parser(
@@ -9601,71 +9616,76 @@ def main():
     # =========================================================================
     # login command
     # =========================================================================
-    login_parser = subparsers.add_parser(
+    login_parser = add_translated_subparser(
+        subparsers,
         "login",
-        help="Authenticate with an inference provider",
-        description="Run OAuth device authorization flow for Hermes CLI",
+        help=_cli_tr("login_help"),
+        description=_cli_tr("login_description"),
     )
     login_parser.add_argument(
         "--provider",
         choices=["nous", "openai-codex"],
         default=None,
-        help="Provider to authenticate with (default: nous)",
+        help=_cli_tr("login_option_provider"),
     )
     login_parser.add_argument(
-        "--portal-url", help="Portal base URL (default: production portal)"
+        "--portal-url", help=_cli_tr("login_option_portal_url")
     )
     login_parser.add_argument(
         "--inference-url",
-        help="Inference API base URL (default: production inference API)",
+        help=_cli_tr("login_option_inference_url"),
     )
     login_parser.add_argument(
-        "--client-id", default=None, help="OAuth client id to use (default: hermes-cli)"
+        "--client-id", default=None, help=_cli_tr("login_option_client_id")
     )
-    login_parser.add_argument("--scope", default=None, help="OAuth scope to request")
+    login_parser.add_argument("--scope", default=None, help=_cli_tr("login_option_scope"))
     login_parser.add_argument(
         "--no-browser",
         action="store_true",
-        help="Do not attempt to open the browser automatically",
+        help=_cli_tr("login_option_no_browser"),
     )
     login_parser.add_argument(
         "--timeout",
         type=float,
         default=15.0,
-        help="HTTP request timeout in seconds (default: 15)",
+        help=_cli_tr("login_option_timeout"),
     )
     login_parser.add_argument(
-        "--ca-bundle", help="Path to CA bundle PEM file for TLS verification"
+        "--ca-bundle", help=_cli_tr("login_option_ca_bundle")
     )
     login_parser.add_argument(
         "--insecure",
         action="store_true",
-        help="Disable TLS verification (testing only)",
+        help=_cli_tr("login_option_insecure"),
     )
     login_parser.set_defaults(func=cmd_login)
 
     # =========================================================================
     # logout command
     # =========================================================================
-    logout_parser = subparsers.add_parser(
+    logout_parser = add_translated_subparser(
+        subparsers,
         "logout",
-        help="Clear authentication for an inference provider",
-        description="Remove stored credentials and reset provider config",
+        help=_cli_tr("logout_help"),
+        description=_cli_tr("logout_description"),
     )
     logout_parser.add_argument(
         "--provider",
         choices=["nous", "openai-codex", "spotify"],
         default=None,
-        help="Provider to log out from (default: active provider)",
+        help=_cli_tr("logout_option_provider"),
     )
     logout_parser.set_defaults(func=cmd_logout)
 
-    auth_parser = subparsers.add_parser(
+    auth_parser = add_translated_subparser(
+        subparsers,
         "auth",
-        help="Manage pooled provider credentials",
+        help=_cli_tr("auth_help"),
+        description=_cli_tr("auth_description"),
     )
     auth_subparsers = auth_parser.add_subparsers(dest="auth_action")
-    auth_add = auth_subparsers.add_parser("add", help="Add a pooled credential")
+    auth_add = add_translated_subparser(
+        auth_subparsers,"add", help=_cli_tr("auth_sub_add_help"))
     auth_add.add_argument(
         "provider",
         help="Provider id (for example: anthropic, openai-codex, openrouter)",
@@ -9698,29 +9718,35 @@ def main():
         help="Disable TLS verification for OAuth login",
     )
     auth_add.add_argument("--ca-bundle", help="Custom CA bundle for OAuth login")
-    auth_list = auth_subparsers.add_parser("list", help="List pooled credentials")
+    auth_list = add_translated_subparser(
+        auth_subparsers,"list", help=_cli_tr("auth_sub_list_help"))
     auth_list.add_argument("provider", nargs="?", help="Optional provider filter")
-    auth_remove = auth_subparsers.add_parser(
-        "remove", help="Remove a pooled credential by index, id, or label"
+    auth_remove = add_translated_subparser(
+        auth_subparsers,
+        "remove", help=_cli_tr("auth_sub_remove_help")
     )
     auth_remove.add_argument("provider", help="Provider id")
     auth_remove.add_argument(
         "target", help="Credential index, entry id, or exact label"
     )
-    auth_reset = auth_subparsers.add_parser(
-        "reset", help="Clear exhaustion status for all credentials for a provider"
+    auth_reset = add_translated_subparser(
+        auth_subparsers,
+        "reset", help=_cli_tr("auth_sub_reset_help")
     )
     auth_reset.add_argument("provider", help="Provider id")
-    auth_status = auth_subparsers.add_parser(
-        "status", help="Show auth status for a provider"
+    auth_status = add_translated_subparser(
+        auth_subparsers,
+        "status", help=_cli_tr("auth_sub_status_help")
     )
     auth_status.add_argument("provider", help="Provider id")
-    auth_logout = auth_subparsers.add_parser(
-        "logout", help="Log out a provider and clear stored auth state"
+    auth_logout = add_translated_subparser(
+        auth_subparsers,
+        "logout", help=_cli_tr("auth_sub_logout_help")
     )
     auth_logout.add_argument("provider", help="Provider id")
-    auth_spotify = auth_subparsers.add_parser(
-        "spotify", help="Authenticate Hermes with Spotify via PKCE"
+    auth_spotify = add_translated_subparser(
+        auth_subparsers,
+        "spotify", help=_cli_tr("auth_sub_spotify_help")
     )
     auth_spotify.add_argument(
         "spotify_action",
@@ -9749,10 +9775,11 @@ def main():
     # =========================================================================
     # status command
     # =========================================================================
-    status_parser = subparsers.add_parser(
+    status_parser = add_translated_subparser(
+        subparsers,
         "status",
-        help="Show status of all components",
-        description="Display status of Hermes Agent components",
+        help=_cli_tr("status_help"),
+        description=_cli_tr("status_description"),
     )
     status_parser.add_argument(
         "--all", action="store_true", help="Show all details (redacted for sharing)"
@@ -9765,18 +9792,21 @@ def main():
     # =========================================================================
     # cron command
     # =========================================================================
-    cron_parser = subparsers.add_parser(
-        "cron", help="Cron job management", description="Manage scheduled tasks"
+    cron_parser = add_translated_subparser(
+        subparsers,
+        "cron", help=_cli_tr("cron_help"), description=_cli_tr("cron_description")
     )
     cron_subparsers = cron_parser.add_subparsers(dest="cron_command")
 
     # cron list
-    cron_list = cron_subparsers.add_parser("list", help="List scheduled jobs")
+    cron_list = add_translated_subparser(
+        cron_subparsers,"list", help=_cli_tr("cron_sub_list_help"))
     cron_list.add_argument("--all", action="store_true", help="Include disabled jobs")
 
     # cron create/add
-    cron_create = cron_subparsers.add_parser(
-        "create", aliases=["add"], help="Create a scheduled job"
+    cron_create = add_translated_subparser(
+        cron_subparsers,
+        "create", aliases=["add"], help=_cli_tr("cron_sub_create_help")
     )
     cron_create.add_argument(
         "schedule", help="Schedule like '30m', 'every 2h', or '0 9 * * *'"
@@ -9823,8 +9853,9 @@ def main():
     )
 
     # cron edit
-    cron_edit = cron_subparsers.add_parser(
-        "edit", help="Edit an existing scheduled job"
+    cron_edit = add_translated_subparser(
+        cron_subparsers,
+        "edit", help=_cli_tr("cron_sub_edit_help")
     )
     cron_edit.add_argument("job_id", help="Job ID to edit")
     cron_edit.add_argument("--schedule", help="New schedule")
@@ -9887,28 +9918,33 @@ def main():
     )
 
     # lifecycle actions
-    cron_pause = cron_subparsers.add_parser("pause", help="Pause a scheduled job")
+    cron_pause = add_translated_subparser(
+        cron_subparsers,"pause", help=_cli_tr("cron_sub_pause_help"))
     cron_pause.add_argument("job_id", help="Job ID to pause")
 
-    cron_resume = cron_subparsers.add_parser("resume", help="Resume a paused job")
+    cron_resume = add_translated_subparser(
+        cron_subparsers,"resume", help=_cli_tr("cron_sub_resume_help"))
     cron_resume.add_argument("job_id", help="Job ID to resume")
 
-    cron_run = cron_subparsers.add_parser(
-        "run", help="Run a job on the next scheduler tick"
+    cron_run = add_translated_subparser(
+        cron_subparsers,
+        "run", help=_cli_tr("cron_sub_run_help")
     )
     cron_run.add_argument("job_id", help="Job ID to trigger")
     _add_accept_hooks_flag(cron_run)
 
-    cron_remove = cron_subparsers.add_parser(
-        "remove", aliases=["rm", "delete"], help="Remove a scheduled job"
+    cron_remove = add_translated_subparser(
+        cron_subparsers,
+        "remove", aliases=["rm", "delete"], help=_cli_tr("cron_sub_remove_help")
     )
     cron_remove.add_argument("job_id", help="Job ID to remove")
 
     # cron status
-    cron_subparsers.add_parser("status", help="Check if cron scheduler is running")
+    cron_subparsers.add_parser("status", help=_cli_tr("cron_sub_status_help"))
 
     # cron tick (mostly for debugging)
-    cron_tick = cron_subparsers.add_parser("tick", help="Run due jobs once and exit")
+    cron_tick = add_translated_subparser(
+        cron_subparsers,"tick", help=_cli_tr("cron_sub_tick_help"))
     _add_accept_hooks_flag(cron_tick)
     _add_accept_hooks_flag(cron_parser)
     cron_parser.set_defaults(func=cmd_cron)
@@ -9916,14 +9952,16 @@ def main():
     # =========================================================================
     # webhook command
     # =========================================================================
-    webhook_parser = subparsers.add_parser(
+    webhook_parser = add_translated_subparser(
+        subparsers,
         "webhook",
-        help="Manage dynamic webhook subscriptions",
-        description="Create, list, and remove webhook subscriptions for event-driven agent activation",
+        help=_cli_tr("webhook_help"),
+        description=_cli_tr("webhook_description"),
     )
     webhook_subparsers = webhook_parser.add_subparsers(dest="webhook_action")
 
-    wh_sub = webhook_subparsers.add_parser(
+    wh_sub = add_translated_subparser(
+        webhook_subparsers,
         "subscribe", aliases=["add"], help="Create a webhook subscription"
     )
     wh_sub.add_argument("name", help="Route name (used in URL: /webhooks/<name>)")
@@ -9962,12 +10000,14 @@ def main():
         "list", aliases=["ls"], help="List all dynamic subscriptions"
     )
 
-    wh_rm = webhook_subparsers.add_parser(
+    wh_rm = add_translated_subparser(
+        webhook_subparsers,
         "remove", aliases=["rm"], help="Remove a subscription"
     )
     wh_rm.add_argument("name", help="Subscription name to remove")
 
-    wh_test = webhook_subparsers.add_parser(
+    wh_test = add_translated_subparser(
+        webhook_subparsers,
         "test", help="Send a test POST to a webhook route"
     )
     wh_test.add_argument("name", help="Subscription name to test")
@@ -9988,9 +10028,10 @@ def main():
     # =========================================================================
     # hooks command — shell-hook inspection and management
     # =========================================================================
-    hooks_parser = subparsers.add_parser(
+    hooks_parser = add_translated_subparser(
+        subparsers,
         "hooks",
-        help="Inspect and manage shell-script hooks",
+        help=_cli_tr("hooks_help"),
         description=(
             "Inspect shell-script hooks declared in ~/.hermes/config.yaml, "
             "test them against synthetic payloads, and manage the first-use "
@@ -10005,7 +10046,8 @@ def main():
         help="List configured hooks with matcher, timeout, and consent status",
     )
 
-    _hk_test = hooks_subparsers.add_parser(
+    _hk_test = add_translated_subparser(
+        hooks_subparsers,
         "test",
         help="Fire every hook matching <event> against a synthetic payload",
     )
@@ -10032,7 +10074,8 @@ def main():
         ),
     )
 
-    _hk_revoke = hooks_subparsers.add_parser(
+    _hk_revoke = add_translated_subparser(
+        hooks_subparsers,
         "revoke",
         aliases=["remove", "rm"],
         help="Remove a command's allowlist entries (takes effect on next restart)",
@@ -10055,10 +10098,11 @@ def main():
     # =========================================================================
     # doctor command
     # =========================================================================
-    doctor_parser = subparsers.add_parser(
+    doctor_parser = add_translated_subparser(
+        subparsers,
         "doctor",
-        help="Check configuration and dependencies",
-        description="Diagnose issues with Hermes Agent setup",
+        help=_cli_tr("doctor_help"),
+        description=_cli_tr("doctor_description"),
     )
     doctor_parser.add_argument(
         "--fix", action="store_true", help="Attempt to fix issues automatically"
@@ -10068,11 +10112,11 @@ def main():
     # =========================================================================
     # dump command
     # =========================================================================
-    dump_parser = subparsers.add_parser(
+    dump_parser = add_translated_subparser(
+        subparsers,
         "dump",
-        help="Dump setup summary for support/debugging",
-        description="Output a compact, plain-text summary of your Hermes setup "
-        "that can be copy-pasted into Discord/GitHub for support context",
+        help=_cli_tr("dump_help"),
+        description=_cli_tr("dump_description"),
     )
     dump_parser.add_argument(
         "--show-keys",
@@ -10084,12 +10128,11 @@ def main():
     # =========================================================================
     # debug command
     # =========================================================================
-    debug_parser = subparsers.add_parser(
+    debug_parser = add_translated_subparser(
+        subparsers,
         "debug",
-        help="Debug tools — upload logs and system info for support",
-        description="Debug utilities for Hermes Agent. Use 'hermes debug share' to "
-        "upload a debug report (system info + recent logs) to a paste "
-        "service and get a shareable URL.",
+        help=_cli_tr("debug_help"),
+        description=_cli_tr("debug_description"),
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""\
 Examples:
@@ -10148,12 +10191,11 @@ Examples:
     # =========================================================================
     # backup command
     # =========================================================================
-    backup_parser = subparsers.add_parser(
+    backup_parser = add_translated_subparser(
+        subparsers,
         "backup",
-        help="Back up Hermes home directory to a zip file",
-        description="Create a zip archive of your entire Hermes configuration, "
-        "skills, sessions, and data (excludes the hermes-agent codebase). "
-        "Use --quick for a fast snapshot of just critical state files.",
+        help=_cli_tr("backup_help"),
+        description=_cli_tr("backup_description"),
     )
     backup_parser.add_argument(
         "-o",
@@ -10174,13 +10216,11 @@ Examples:
     # =========================================================================
     # checkpoints command
     # =========================================================================
-    checkpoints_parser = subparsers.add_parser(
+    checkpoints_parser = add_translated_subparser(
+        subparsers,
         "checkpoints",
-        help="Inspect / prune / clear ~/.hermes/checkpoints/",
-        description="Manage the filesystem checkpoint store — the shadow git "
-        "repo hermes uses to snapshot working directories before "
-        "write_file/patch/terminal calls. Lets you see how much "
-        "space checkpoints occupy, force a prune, or wipe the base.",
+        help=_cli_tr("checkpoints_help"),
+        description=_cli_tr("checkpoints_description"),
     )
     from hermes_cli.checkpoints import register_cli as _register_checkpoints_cli
     _register_checkpoints_cli(checkpoints_parser)
@@ -10188,12 +10228,11 @@ Examples:
     # =========================================================================
     # import command
     # =========================================================================
-    import_parser = subparsers.add_parser(
+    import_parser = add_translated_subparser(
+        subparsers,
         "import",
-        help="Restore a Hermes backup from a zip file",
-        description="Extract a previously created Hermes backup into your "
-        "Hermes home directory, restoring configuration, skills, "
-        "sessions, and data",
+        help=_cli_tr("import_help"),
+        description=_cli_tr("import_description"),
     )
     import_parser.add_argument("zipfile", help="Path to the backup zip file")
     import_parser.add_argument(
@@ -10207,47 +10246,50 @@ Examples:
     # =========================================================================
     # config command
     # =========================================================================
-    config_parser = subparsers.add_parser(
+    config_parser = add_translated_subparser(
+        subparsers,
         "config",
-        help="View and edit configuration",
-        description="Manage Hermes Agent configuration",
+        help=_cli_tr("config_help"),
+        description=_cli_tr("config_description"),
     )
     config_subparsers = config_parser.add_subparsers(dest="config_command")
 
     # config show (default)
-    config_subparsers.add_parser("show", help="Show current configuration")
+    config_subparsers.add_parser("show", help=_cli_tr("config_sub_show_help"))
 
     # config edit
-    config_subparsers.add_parser("edit", help="Open config file in editor")
+    config_subparsers.add_parser("edit", help=_cli_tr("config_sub_edit_help"))
 
     # config set
-    config_set = config_subparsers.add_parser("set", help="Set a configuration value")
+    config_set = add_translated_subparser(
+        config_subparsers,"set", help=_cli_tr("config_sub_set_help"))
     config_set.add_argument(
         "key", nargs="?", help="Configuration key (e.g., model, terminal.backend)"
     )
     config_set.add_argument("value", nargs="?", help="Value to set")
 
     # config path
-    config_subparsers.add_parser("path", help="Print config file path")
+    config_subparsers.add_parser("path", help=_cli_tr("config_sub_path_help"))
 
     # config env-path
-    config_subparsers.add_parser("env-path", help="Print .env file path")
+    config_subparsers.add_parser("env-path", help=_cli_tr("config_sub_env_path_help"))
 
     # config check
-    config_subparsers.add_parser("check", help="Check for missing/outdated config")
+    config_subparsers.add_parser("check", help=_cli_tr("config_sub_check_help"))
 
     # config migrate
-    config_subparsers.add_parser("migrate", help="Update config with new options")
+    config_subparsers.add_parser("migrate", help=_cli_tr("config_sub_migrate_help"))
 
     config_parser.set_defaults(func=cmd_config)
 
     # =========================================================================
     # pairing command
     # =========================================================================
-    pairing_parser = subparsers.add_parser(
+    pairing_parser = add_translated_subparser(
+        subparsers,
         "pairing",
-        help="Manage DM pairing codes for user authorization",
-        description="Approve or revoke user access via pairing codes",
+        help=_cli_tr("pairing_help"),
+        description=_cli_tr("pairing_description"),
     )
     pairing_sub = pairing_parser.add_subparsers(dest="pairing_action")
 
@@ -10277,15 +10319,17 @@ Examples:
     # =========================================================================
     # skills command
     # =========================================================================
-    skills_parser = subparsers.add_parser(
+    skills_parser = add_translated_subparser(
+        subparsers,
         "skills",
-        help="Search, install, configure, and manage skills",
-        description="Search, install, inspect, audit, configure, and manage skills from skills.sh, well-known agent skill endpoints, GitHub, ClawHub, and other registries.",
+        help=_cli_tr("skills_help"),
+        description=_cli_tr("skills_description"),
     )
     skills_subparsers = skills_parser.add_subparsers(dest="skills_action")
 
-    skills_browse = skills_subparsers.add_parser(
-        "browse", help="Browse all available skills (paginated)"
+    skills_browse = add_translated_subparser(
+        skills_subparsers,
+        "browse", help=_cli_tr("skills_sub_browse_help")
     )
     skills_browse.add_argument(
         "--page", type=int, default=1, help="Page number (default: 1)"
@@ -10308,8 +10352,9 @@ Examples:
         help="Filter by source (default: all)",
     )
 
-    skills_search = skills_subparsers.add_parser(
-        "search", help="Search skill registries"
+    skills_search = add_translated_subparser(
+        skills_subparsers,
+        "search", help=_cli_tr("skills_sub_search_help")
     )
     skills_search.add_argument("query", help="Search query")
     skills_search.add_argument(
@@ -10327,7 +10372,8 @@ Examples:
     )
     skills_search.add_argument("--limit", type=int, default=10, help="Max results")
 
-    skills_install = skills_subparsers.add_parser("install", help="Install a skill")
+    skills_install = add_translated_subparser(
+        skills_subparsers,"install", help=_cli_tr("skills_sub_install_help"))
     skills_install.add_argument(
         "identifier",
         help="Skill identifier (e.g. openai/skills/skill-creator) or a direct HTTP(S) URL to a SKILL.md file",
@@ -10350,12 +10396,14 @@ Examples:
         help="Skip confirmation prompt (needed in TUI mode)",
     )
 
-    skills_inspect = skills_subparsers.add_parser(
-        "inspect", help="Preview a skill without installing"
+    skills_inspect = add_translated_subparser(
+        skills_subparsers,
+        "inspect", help=_cli_tr("skills_sub_inspect_help")
     )
     skills_inspect.add_argument("identifier", help="Skill identifier")
 
-    skills_list = skills_subparsers.add_parser("list", help="List installed skills")
+    skills_list = add_translated_subparser(
+        skills_subparsers,"list", help=_cli_tr("skills_sub_list_help"))
     skills_list.add_argument(
         "--source", default="all", choices=["all", "hub", "builtin", "local"]
     )
@@ -10366,15 +10414,17 @@ Examples:
         "which skills will load for that profile.",
     )
 
-    skills_check = skills_subparsers.add_parser(
-        "check", help="Check installed hub skills for updates"
+    skills_check = add_translated_subparser(
+        skills_subparsers,
+        "check", help=_cli_tr("skills_sub_check_help")
     )
     skills_check.add_argument(
         "name", nargs="?", help="Specific skill to check (default: all)"
     )
 
-    skills_update = skills_subparsers.add_parser(
-        "update", help="Update installed hub skills"
+    skills_update = add_translated_subparser(
+        skills_subparsers,
+        "update", help=_cli_tr("skills_sub_update_help")
     )
     skills_update.add_argument(
         "name",
@@ -10382,21 +10432,24 @@ Examples:
         help="Specific skill to update (default: all outdated skills)",
     )
 
-    skills_audit = skills_subparsers.add_parser(
-        "audit", help="Re-scan installed hub skills"
+    skills_audit = add_translated_subparser(
+        skills_subparsers,
+        "audit", help=_cli_tr("skills_sub_audit_help")
     )
     skills_audit.add_argument(
         "name", nargs="?", help="Specific skill to audit (default: all)"
     )
 
-    skills_uninstall = skills_subparsers.add_parser(
-        "uninstall", help="Remove a hub-installed skill"
+    skills_uninstall = add_translated_subparser(
+        skills_subparsers,
+        "uninstall", help=_cli_tr("skills_sub_uninstall_help")
     )
     skills_uninstall.add_argument("name", help="Skill name to remove")
 
-    skills_reset = skills_subparsers.add_parser(
+    skills_reset = add_translated_subparser(
+        skills_subparsers,
         "reset",
-        help="Reset a bundled skill — clears 'user-modified' tracking so updates work again",
+        help=_cli_tr("skills_sub_reset_help"),
         description=(
             "Clear a bundled skill's entry from the sync manifest (~/.hermes/skills/.bundled_manifest) "
             "so future 'hermes update' runs stop marking it as user-modified. Pass --restore to also "
@@ -10418,8 +10471,9 @@ Examples:
         help="Skip confirmation prompt when using --restore",
     )
 
-    skills_publish = skills_subparsers.add_parser(
-        "publish", help="Publish a skill to a registry"
+    skills_publish = add_translated_subparser(
+        skills_subparsers,
+        "publish", help=_cli_tr("skills_sub_publish_help")
     )
     skills_publish.add_argument("skill_path", help="Path to skill directory")
     skills_publish.add_argument(
@@ -10429,15 +10483,18 @@ Examples:
         "--repo", default="", help="Target GitHub repo (e.g. openai/skills)"
     )
 
-    skills_snapshot = skills_subparsers.add_parser(
-        "snapshot", help="Export/import skill configurations"
+    skills_snapshot = add_translated_subparser(
+        skills_subparsers,
+        "snapshot", help=_cli_tr("skills_sub_snapshot_help")
     )
     snapshot_subparsers = skills_snapshot.add_subparsers(dest="snapshot_action")
-    snap_export = snapshot_subparsers.add_parser(
+    snap_export = add_translated_subparser(
+        snapshot_subparsers,
         "export", help="Export installed skills to a file"
     )
     snap_export.add_argument("output", help="Output JSON file path (use - for stdout)")
-    snap_import = snapshot_subparsers.add_parser(
+    snap_import = add_translated_subparser(
+        snapshot_subparsers,
         "import", help="Import and install skills from a file"
     )
     snap_import.add_argument("input", help="Input JSON file path")
@@ -10445,18 +10502,21 @@ Examples:
         "--force", action="store_true", help="Force install despite caution verdict"
     )
 
-    skills_tap = skills_subparsers.add_parser("tap", help="Manage skill sources")
+    skills_tap = add_translated_subparser(
+        skills_subparsers,"tap", help=_cli_tr("skills_sub_tap_help"))
     tap_subparsers = skills_tap.add_subparsers(dest="tap_action")
     tap_subparsers.add_parser("list", help="List configured taps")
-    tap_add = tap_subparsers.add_parser("add", help="Add a GitHub repo as skill source")
+    tap_add = add_translated_subparser(
+        tap_subparsers,"add", help="Add a GitHub repo as skill source")
     tap_add.add_argument("repo", help="GitHub repo (e.g. owner/repo)")
-    tap_rm = tap_subparsers.add_parser("remove", help="Remove a tap")
+    tap_rm = add_translated_subparser(
+        tap_subparsers,"remove", help="Remove a tap")
     tap_rm.add_argument("name", help="Tap name to remove")
 
     # config sub-action: interactive enable/disable
     skills_subparsers.add_parser(
         "config",
-        help="Interactive skill configuration — enable/disable individual skills",
+        help=_cli_tr("skills_sub_config_help"),
     )
 
     def cmd_skills(args):
@@ -10476,15 +10536,17 @@ Examples:
     # =========================================================================
     # plugins command
     # =========================================================================
-    plugins_parser = subparsers.add_parser(
+    plugins_parser = add_translated_subparser(
+        subparsers,
         "plugins",
-        help="Manage plugins — install, update, remove, list",
-        description="Install plugins from Git repositories, update, remove, or list them.",
+        help=_cli_tr("plugins_help"),
+        description=_cli_tr("plugins_description"),
     )
     plugins_subparsers = plugins_parser.add_subparsers(dest="plugins_action")
 
-    plugins_install = plugins_subparsers.add_parser(
-        "install", help="Install a plugin from a Git URL or owner/repo"
+    plugins_install = add_translated_subparser(
+        plugins_subparsers,
+        "install", help=_cli_tr("plugins_sub_install_help")
     )
     plugins_install.add_argument(
         "identifier",
@@ -10508,25 +10570,29 @@ Examples:
         help="Install disabled (skip confirmation prompt); enable later with `hermes plugins enable <name>`",
     )
 
-    plugins_update = plugins_subparsers.add_parser(
-        "update", help="Pull latest changes for an installed plugin"
+    plugins_update = add_translated_subparser(
+        plugins_subparsers,
+        "update", help=_cli_tr("plugins_sub_update_help")
     )
     plugins_update.add_argument("name", help="Plugin name to update")
 
-    plugins_remove = plugins_subparsers.add_parser(
-        "remove", aliases=["rm", "uninstall"], help="Remove an installed plugin"
+    plugins_remove = add_translated_subparser(
+        plugins_subparsers,
+        "remove", aliases=["rm", "uninstall"], help=_cli_tr("plugins_sub_remove_help")
     )
     plugins_remove.add_argument("name", help="Plugin directory name to remove")
 
-    plugins_subparsers.add_parser("list", aliases=["ls"], help="List installed plugins")
+    plugins_subparsers.add_parser("list", aliases=["ls"], help=_cli_tr("plugins_sub_list_help"))
 
-    plugins_enable = plugins_subparsers.add_parser(
-        "enable", help="Enable a disabled plugin"
+    plugins_enable = add_translated_subparser(
+        plugins_subparsers,
+        "enable", help=_cli_tr("plugins_sub_enable_help")
     )
     plugins_enable.add_argument("name", help="Plugin name to enable")
 
-    plugins_disable = plugins_subparsers.add_parser(
-        "disable", help="Disable a plugin without removing it"
+    plugins_disable = add_translated_subparser(
+        plugins_subparsers,
+        "disable", help=_cli_tr("plugins_sub_disable_help")
     )
     plugins_disable.add_argument("name", help="Plugin name to disable")
 
@@ -10555,7 +10621,8 @@ Examples:
 
             seen_plugin_commands = set()
             for cmd_info in discover_plugin_cli_commands():
-                plugin_parser = subparsers.add_parser(
+                plugin_parser = add_translated_subparser(
+        subparsers,
                     cmd_info["name"],
                     help=cmd_info["help"],
                     description=cmd_info.get("description", ""),
@@ -10570,7 +10637,8 @@ Examples:
             for cmd_info in get_plugin_manager()._cli_commands.values():
                 if cmd_info["name"] in seen_plugin_commands:
                     continue
-                plugin_parser = subparsers.add_parser(
+                plugin_parser = add_translated_subparser(
+        subparsers,
                     cmd_info["name"],
                     help=cmd_info["help"],
                     description=cmd_info.get("description", ""),
@@ -10585,9 +10653,10 @@ Examples:
     # =========================================================================
     # curator command — background skill maintenance
     # =========================================================================
-    curator_parser = subparsers.add_parser(
+    curator_parser = add_translated_subparser(
+        subparsers,
         "curator",
-        help="Background skill maintenance (curator) — status, run, pause, pin",
+        help=_cli_tr("curator_help"),
         description=(
             "The curator is an auxiliary-model background task that "
             "periodically reviews agent-created skills, prunes stale ones, "
@@ -10606,9 +10675,10 @@ Examples:
     # =========================================================================
     # memory command
     # =========================================================================
-    memory_parser = subparsers.add_parser(
+    memory_parser = add_translated_subparser(
+        subparsers,
         "memory",
-        help="Configure external memory provider",
+        help=_cli_tr("memory_help"),
         description=(
             "Set up and manage external memory provider plugins.\n\n"
             "Available providers: honcho, openviking, mem0, hindsight,\n"
@@ -10707,66 +10777,61 @@ Examples:
     # =========================================================================
     # tools command
     # =========================================================================
-    tools_parser = subparsers.add_parser(
+    tools_parser = add_translated_subparser(
+        subparsers,
         "tools",
-        help="Configure which tools are enabled per platform",
-        description=(
-            "Enable, disable, or list tools for CLI, Telegram, Discord, etc.\n\n"
-            "Built-in toolsets use plain names (e.g. web, memory).\n"
-            "MCP tools use server:tool notation (e.g. github:create_issue).\n\n"
-            "Run 'hermes tools' with no subcommand for the interactive configuration UI."
-        ),
+        help=_cli_tr("tools_help"),
     )
     tools_parser.add_argument(
         "--summary",
         action="store_true",
-        help="Print a summary of enabled tools per platform and exit",
+        help=_cli_tr("tools_option_summary"),
     )
     tools_sub = tools_parser.add_subparsers(dest="tools_action")
 
     # hermes tools list [--platform cli]
     tools_list_p = tools_sub.add_parser(
         "list",
-        help="Show all tools and their enabled/disabled status",
+        help=_cli_tr("tools_sub_list_help"),
     )
     tools_list_p.add_argument(
         "--platform",
         default="cli",
-        help="Platform to show (default: cli)",
+        help=_cli_tr("tools_sub_list_platform_help"),
     )
 
     # hermes tools disable <name...> [--platform cli]
     tools_disable_p = tools_sub.add_parser(
         "disable",
-        help="Disable toolsets or MCP tools",
+        help=_cli_tr("tools_sub_disable_help"),
     )
     tools_disable_p.add_argument(
         "names",
         nargs="+",
         metavar="NAME",
-        help="Toolset name (e.g. web) or MCP tool in server:tool form",
+        help=_cli_tr("tools_sub_disable_names_help"),
     )
     tools_disable_p.add_argument(
         "--platform",
         default="cli",
-        help="Platform to apply to (default: cli)",
+        help=_cli_tr("tools_sub_disable_platform_help"),
     )
 
     # hermes tools enable <name...> [--platform cli]
     tools_enable_p = tools_sub.add_parser(
         "enable",
-        help="Enable toolsets or MCP tools",
+        help=_cli_tr("tools_sub_enable_help"),
     )
     tools_enable_p.add_argument(
         "names",
         nargs="+",
         metavar="NAME",
-        help="Toolset name or MCP tool in server:tool form",
+        help=_cli_tr("tools_sub_enable_names_help"),
     )
     tools_enable_p.add_argument(
         "--platform",
         default="cli",
-        help="Platform to apply to (default: cli)",
+        help=_cli_tr("tools_sub_enable_platform_help"),
     )
 
     def cmd_tools(args):
@@ -10786,9 +10851,10 @@ Examples:
     # =========================================================================
     # computer-use command — manage Computer Use (cua-driver) on macOS
     # =========================================================================
-    computer_use_parser = subparsers.add_parser(
+    computer_use_parser = add_translated_subparser(
+        subparsers,
         "computer-use",
-        help="Manage the Computer Use (cua-driver) backend (macOS)",
+        help=_cli_tr("computer_use_help"),
         description=(
             "Install or check the cua-driver binary used by the\n"
             "`computer_use` toolset. macOS-only.\n\n"
@@ -10833,9 +10899,10 @@ Examples:
     # =========================================================================
     # mcp command — manage MCP server connections
     # =========================================================================
-    mcp_parser = subparsers.add_parser(
+    mcp_parser = add_translated_subparser(
+        subparsers,
         "mcp",
-        help="Manage MCP servers and run Hermes as an MCP server",
+        help=_cli_tr("mcp_help"),
         description=(
             "Manage MCP server connections and run Hermes as an MCP server.\n\n"
             "MCP servers provide additional tools via the Model Context Protocol.\n"
@@ -10914,14 +10981,16 @@ Examples:
     # =========================================================================
     # sessions command
     # =========================================================================
-    sessions_parser = subparsers.add_parser(
+    sessions_parser = add_translated_subparser(
+        subparsers,
         "sessions",
-        help="Manage session history (list, rename, export, prune, delete)",
-        description="View and manage the SQLite session store",
+        help=_cli_tr("sessions_help"),
+        description=_cli_tr("sessions_description"),
     )
     sessions_subparsers = sessions_parser.add_subparsers(dest="sessions_action")
 
-    sessions_list = sessions_subparsers.add_parser("list", help="List recent sessions")
+    sessions_list = add_translated_subparser(
+        sessions_subparsers,"list", help=_cli_tr("sessions_sub_list_help"))
     sessions_list.add_argument(
         "--source", help="Filter by source (cli, telegram, discord, etc.)"
     )
@@ -10929,8 +10998,9 @@ Examples:
         "--limit", type=int, default=20, help="Max sessions to show"
     )
 
-    sessions_export = sessions_subparsers.add_parser(
-        "export", help="Export sessions to a JSONL file"
+    sessions_export = add_translated_subparser(
+        sessions_subparsers,
+        "export", help=_cli_tr("sessions_sub_export_help")
     )
     sessions_export.add_argument(
         "output", help="Output JSONL file path (use - for stdout)"
@@ -10938,15 +11008,17 @@ Examples:
     sessions_export.add_argument("--source", help="Filter by source")
     sessions_export.add_argument("--session-id", help="Export a specific session")
 
-    sessions_delete = sessions_subparsers.add_parser(
-        "delete", help="Delete a specific session"
+    sessions_delete = add_translated_subparser(
+        sessions_subparsers,
+        "delete", help=_cli_tr("sessions_sub_delete_help")
     )
     sessions_delete.add_argument("session_id", help="Session ID to delete")
     sessions_delete.add_argument(
         "--yes", "-y", action="store_true", help="Skip confirmation"
     )
 
-    sessions_prune = sessions_subparsers.add_parser("prune", help="Delete old sessions")
+    sessions_prune = add_translated_subparser(
+        sessions_subparsers,"prune", help=_cli_tr("sessions_sub_prune_help"))
     sessions_prune.add_argument(
         "--older-than",
         type=int,
@@ -10958,17 +11030,19 @@ Examples:
         "--yes", "-y", action="store_true", help="Skip confirmation"
     )
 
-    sessions_subparsers.add_parser("stats", help="Show session store statistics")
+    sessions_subparsers.add_parser("stats", help=_cli_tr("sessions_sub_stats_help"))
 
-    sessions_rename = sessions_subparsers.add_parser(
-        "rename", help="Set or change a session's title"
+    sessions_rename = add_translated_subparser(
+        sessions_subparsers,
+        "rename", help=_cli_tr("sessions_sub_rename_help")
     )
     sessions_rename.add_argument("session_id", help="Session ID to rename")
     sessions_rename.add_argument("title", nargs="+", help="New title for the session")
 
-    sessions_browse = sessions_subparsers.add_parser(
+    sessions_browse = add_translated_subparser(
+        sessions_subparsers,
         "browse",
-        help="Interactive session picker — browse, search, and resume sessions",
+        help=_cli_tr("sessions_sub_browse_help"),
     )
     sessions_browse.add_argument(
         "--source", help="Filter by source (cli, telegram, discord, etc.)"
@@ -11154,10 +11228,11 @@ Examples:
     # =========================================================================
     # insights command
     # =========================================================================
-    insights_parser = subparsers.add_parser(
+    insights_parser = add_translated_subparser(
+        subparsers,
         "insights",
-        help="Show usage insights and analytics",
-        description="Analyze session history to show token usage, costs, tool patterns, and activity trends",
+        help=_cli_tr("insights_help"),
+        description=_cli_tr("insights_description"),
     )
     insights_parser.add_argument(
         "--days", type=int, default=30, help="Number of days to analyze (default: 30)"
@@ -11184,19 +11259,20 @@ Examples:
     # =========================================================================
     # claw command (OpenClaw migration)
     # =========================================================================
-    claw_parser = subparsers.add_parser(
+    claw_parser = add_translated_subparser(
+        subparsers,
         "claw",
-        help="OpenClaw migration tools",
-        description="Migrate settings, memories, skills, and API keys from OpenClaw to Hermes",
+        help=_cli_tr("claw_help"),
+        description=_cli_tr("claw_description"),
     )
     claw_subparsers = claw_parser.add_subparsers(dest="claw_action")
 
     # claw migrate
-    claw_migrate = claw_subparsers.add_parser(
+    claw_migrate = add_translated_subparser(
+        claw_subparsers,
         "migrate",
         help="Migrate from OpenClaw to Hermes",
-        description="Import settings, memories, skills, and API keys from an OpenClaw installation. "
-        "Always shows a preview before making changes.",
+        description=_cli_tr("claw_migrate_description"),
     )
     claw_migrate.add_argument(
         "--source", help="Path to OpenClaw directory (default: ~/.openclaw)"
@@ -11245,11 +11321,12 @@ Examples:
     )
 
     # claw cleanup
-    claw_cleanup = claw_subparsers.add_parser(
+    claw_cleanup = add_translated_subparser(
+        claw_subparsers,
         "cleanup",
         aliases=["clean"],
         help="Archive leftover OpenClaw directories after migration",
-        description="Scan for and archive leftover OpenClaw directories to prevent state fragmentation",
+        description=_cli_tr("claw_cleanup_description"),
     )
     claw_cleanup.add_argument(
         "--source", help="Path to a specific OpenClaw directory to clean up"
@@ -11273,16 +11350,18 @@ Examples:
     # =========================================================================
     # version command
     # =========================================================================
-    version_parser = subparsers.add_parser("version", help="Show version information")
+    version_parser = add_translated_subparser(
+        subparsers,"version", help=_cli_tr("version_help"))
     version_parser.set_defaults(func=cmd_version)
 
     # =========================================================================
     # update command
     # =========================================================================
-    update_parser = subparsers.add_parser(
+    update_parser = add_translated_subparser(
+        subparsers,
         "update",
-        help="Update Hermes Agent to the latest version",
-        description="Pull the latest changes from git and reinstall dependencies",
+        help=_cli_tr("update_help"),
+        description=_cli_tr("update_description"),
     )
     update_parser.add_argument(
         "--gateway",
@@ -11320,10 +11399,11 @@ Examples:
     # =========================================================================
     # uninstall command
     # =========================================================================
-    uninstall_parser = subparsers.add_parser(
+    uninstall_parser = add_translated_subparser(
+        subparsers,
         "uninstall",
-        help="Uninstall Hermes Agent",
-        description="Remove Hermes Agent from your system. Can keep configs/data for reinstall.",
+        help=_cli_tr("uninstall_help"),
+        description=_cli_tr("uninstall_description"),
     )
     uninstall_parser.add_argument(
         "--full",
@@ -11338,10 +11418,11 @@ Examples:
     # =========================================================================
     # acp command
     # =========================================================================
-    acp_parser = subparsers.add_parser(
+    acp_parser = add_translated_subparser(
+        subparsers,
         "acp",
-        help="Run Hermes Agent as an ACP (Agent Client Protocol) server",
-        description="Start Hermes Agent in ACP mode for editor integration (VS Code, Zed, JetBrains)",
+        help=_cli_tr("acp_help"),
+        description=_cli_tr("acp_description"),
     )
     _add_accept_hooks_flag(acp_parser)
 
@@ -11361,20 +11442,24 @@ Examples:
     # =========================================================================
     # profile command
     # =========================================================================
-    profile_parser = subparsers.add_parser(
+    profile_parser = add_translated_subparser(
+        subparsers,
         "profile",
-        help="Manage profiles — multiple isolated Hermes instances",
+        help=_cli_tr("profile_help"),
+        description=_cli_tr("profile_description"),
     )
     profile_subparsers = profile_parser.add_subparsers(dest="profile_action")
 
-    profile_subparsers.add_parser("list", help="List all profiles")
-    profile_use = profile_subparsers.add_parser(
-        "use", help="Set sticky default profile"
+    profile_subparsers.add_parser("list", help=_cli_tr("profile_sub_list_help"))
+    profile_use = add_translated_subparser(
+        profile_subparsers,
+        "use", help=_cli_tr("profile_sub_use_help")
     )
     profile_use.add_argument("profile_name", help="Profile name (or 'default')")
 
-    profile_create = profile_subparsers.add_parser(
-        "create", help="Create a new profile"
+    profile_create = add_translated_subparser(
+        profile_subparsers,
+        "create", help=_cli_tr("profile_sub_create_help")
     )
     profile_create.add_argument(
         "profile_name", help="Profile name (lowercase, alphanumeric)"
@@ -11403,17 +11488,20 @@ Examples:
         help="Create an empty profile with no bundled skills (opts out of `hermes update` skill sync)",
     )
 
-    profile_delete = profile_subparsers.add_parser("delete", help="Delete a profile")
+    profile_delete = add_translated_subparser(
+        profile_subparsers,"delete", help=_cli_tr("profile_sub_delete_help"))
     profile_delete.add_argument("profile_name", help="Profile to delete")
     profile_delete.add_argument(
         "-y", "--yes", action="store_true", help="Skip confirmation prompt"
     )
 
-    profile_show = profile_subparsers.add_parser("show", help="Show profile details")
+    profile_show = add_translated_subparser(
+        profile_subparsers,"show", help=_cli_tr("profile_sub_show_help"))
     profile_show.add_argument("profile_name", help="Profile to show")
 
-    profile_alias = profile_subparsers.add_parser(
-        "alias", help="Manage wrapper scripts"
+    profile_alias = add_translated_subparser(
+        profile_subparsers,
+        "alias", help=_cli_tr("profile_sub_alias_help")
     )
     profile_alias.add_argument("profile_name", help="Profile name")
     profile_alias.add_argument(
@@ -11426,20 +11514,23 @@ Examples:
         help="Custom alias name (default: profile name)",
     )
 
-    profile_rename = profile_subparsers.add_parser("rename", help="Rename a profile")
+    profile_rename = add_translated_subparser(
+        profile_subparsers,"rename", help=_cli_tr("profile_sub_rename_help"))
     profile_rename.add_argument("old_name", help="Current profile name")
     profile_rename.add_argument("new_name", help="New profile name")
 
-    profile_export = profile_subparsers.add_parser(
-        "export", help="Export a profile to archive"
+    profile_export = add_translated_subparser(
+        profile_subparsers,
+        "export", help=_cli_tr("profile_sub_export_help")
     )
     profile_export.add_argument("profile_name", help="Profile to export")
     profile_export.add_argument(
         "-o", "--output", default=None, help="Output file (default: <name>.tar.gz)"
     )
 
-    profile_import = profile_subparsers.add_parser(
-        "import", help="Import a profile from archive"
+    profile_import = add_translated_subparser(
+        profile_subparsers,
+        "import", help=_cli_tr("profile_sub_import_help")
     )
     profile_import.add_argument("archive", help="Path to .tar.gz archive")
     profile_import.add_argument(
@@ -11450,9 +11541,10 @@ Examples:
     )
 
     # ---------- Distribution subcommands (issue #20456) ----------
-    profile_install = profile_subparsers.add_parser(
+    profile_install = add_translated_subparser(
+        profile_subparsers,
         "install",
-        help="Install a profile distribution from a git URL or local directory",
+        help=_cli_tr("profile_sub_install_help"),
         description=(
             "Install a Hermes profile distribution. SOURCE can be a git URL "
             "(github.com/user/repo, https://..., git@...) or a local "
@@ -11480,9 +11572,10 @@ Examples:
         help="Skip manifest preview confirmation",
     )
 
-    profile_update = profile_subparsers.add_parser(
+    profile_update = add_translated_subparser(
+        profile_subparsers,
         "update",
-        help="Re-pull a distribution and apply updates (user data preserved)",
+        help=_cli_tr("profile_sub_update_help"),
         description=(
             "Fetch the distribution from its recorded source and overwrite "
             "distribution-owned files (SOUL.md, skills/, cron/, mcp.json). "
@@ -11500,9 +11593,10 @@ Examples:
         help="Skip confirmation",
     )
 
-    profile_info = profile_subparsers.add_parser(
+    profile_info = add_translated_subparser(
+        profile_subparsers,
         "info",
-        help="Show a profile's distribution manifest (version, requirements, source)",
+        help=_cli_tr("profile_sub_info_help"),
     )
     profile_info.add_argument("profile_name", help="Profile to inspect")
 
@@ -11511,9 +11605,10 @@ Examples:
     # =========================================================================
     # completion command
     # =========================================================================
-    completion_parser = subparsers.add_parser(
+    completion_parser = add_translated_subparser(
+        subparsers,
         "completion",
-        help="Print shell completion script (bash, zsh, or fish)",
+        help=_cli_tr("completion_help"),
     )
     completion_parser.add_argument(
         "shell",
@@ -11527,10 +11622,11 @@ Examples:
     # =========================================================================
     # dashboard command
     # =========================================================================
-    dashboard_parser = subparsers.add_parser(
+    dashboard_parser = add_translated_subparser(
+        subparsers,
         "dashboard",
-        help="Start the web UI dashboard",
-        description="Launch the Hermes Agent web dashboard for managing config, API keys, and sessions",
+        help=_cli_tr("dashboard_help"),
+        description=_cli_tr("dashboard_description"),
     )
     dashboard_parser.add_argument(
         "--port", type=int, default=9119, help="Port (default 9119)"
@@ -11575,10 +11671,11 @@ Examples:
     # =========================================================================
     # logs command
     # =========================================================================
-    logs_parser = subparsers.add_parser(
+    logs_parser = add_translated_subparser(
+        subparsers,
         "logs",
-        help="View and filter Hermes log files",
-        description="View, tail, and filter agent.log / errors.log / gateway.log",
+        help=_cli_tr("logs_help"),
+        description=_cli_tr("logs_description"),
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""\
 Examples:

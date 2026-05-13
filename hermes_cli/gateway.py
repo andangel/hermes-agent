@@ -37,6 +37,12 @@ from hermes_cli.setup import (
     prompt, prompt_choice, prompt_yes_no,
 )
 from hermes_cli.colors import Colors, color
+from agent.i18n import t as _t
+
+
+def _tr(key: str, **kwargs) -> str:
+    """Translate a gateway setup string."""
+    return _t(f"setup.{key}", **kwargs)
 
 
 # =============================================================================
@@ -3808,20 +3814,30 @@ def _setup_standard_platform(platform: dict):
     token_var = platform["token_var"]
 
     print()
-    print(color(f"  ─── {emoji} {label} Setup ───", Colors.CYAN))
+    print(color(f"  ─── {_tr('standard_setup_title', emoji=emoji, label=label)} ───", Colors.CYAN))
 
     # Show step-by-step setup instructions if this platform has them
     instructions = platform.get("setup_instructions")
     if instructions:
         print()
-        for line in instructions:
-            print_info(f"  {line}")
+        # Check if we have translated instructions for this platform
+        platform_key = platform.get("key", "")
+        if platform_key == "email":
+            # Use translated instructions for Email
+            for i in range(1, 6):
+                instruction = _tr(f"email_setup_instruction_{i}")
+                if instruction:
+                    print_info(f"  {instruction}")
+        else:
+            # Fall back to hardcoded instructions for other platforms
+            for line in instructions:
+                print_info(f"  {line}")
 
     existing_token = get_env_value(token_var)
     if existing_token:
         print()
-        print_success(f"{label} is already configured.")
-        if not prompt_yes_no(f"  Reconfigure {label}?", False):
+        print_success(_tr("standard_already_configured", label=label))
+        if not prompt_yes_no(f"  {_tr('standard_reconfigure_prompt', label=label)}", False):
             return
 
     allowed_val_set = None  # Track if user set an allowlist (for home channel offer)
@@ -3835,9 +3851,9 @@ def _setup_standard_platform(platform: dict):
 
         # Allowlist fields get special handling for the deny-by-default security model
         if var.get("is_allowlist"):
-            print_info("  The gateway DENIES all users by default for security.")
-            print_info("  Enter user IDs to create an allowlist, or leave empty")
-            print_info("  and you'll be asked about open access next.")
+            print_info(f"  {_tr('standard_allowlist_info_1')}")
+            print_info(f"  {_tr('standard_allowlist_info_2')}")
+            print_info(f"  {_tr('standard_allowlist_info_3')}")
             value = prompt(f"  {var['prompt']}", password=False)
             if value:
                 cleaned = value.replace(" ", "")
@@ -3860,30 +3876,30 @@ def _setup_standard_platform(platform: dict):
                 # No allowlist — ask about open access vs DM pairing
                 print()
                 access_choices = [
-                    "Enable open access (anyone can message the bot)",
-                    "Use DM pairing (unknown users request access, you approve with 'hermes pairing approve')",
-                    "Skip for now (bot will deny all users until configured)",
+                    _tr("standard_access_open"),
+                    _tr("standard_access_pairing"),
+                    _tr("standard_access_skip"),
                 ]
-                access_idx = prompt_choice("  How should unauthorized users be handled?", access_choices, 1)
+                access_idx = prompt_choice(f"  {_tr('standard_access_title')}", access_choices, 1)
                 if access_idx == 0:
                     save_env_value("GATEWAY_ALLOW_ALL_USERS", "true")
-                    print_warning("  Open access enabled — anyone can use your bot!")
+                    print_warning(f"  {_tr('standard_open_access_warning')}")
                 elif access_idx == 1:
-                    print_success("  DM pairing mode — users will receive a code to request access.")
-                    print_info("  Approve with: hermes pairing approve <platform> <code>")
+                    print_success(f"  {_tr('standard_pairing_success')}")
+                    print_info(f"  {_tr('standard_pairing_info')}")
                 else:
-                    print_info("  Skipped — configure later with 'hermes gateway setup'")
+                    print_info(f"  {_tr('standard_skip_configure_later')}")
             continue
 
         value = prompt(f"  {var['prompt']}", password=var.get("password", False))
         if value:
             save_env_value(var["name"], value)
-            print_success(f"  Saved {var['name']}")
+            print_success(_tr("standard_saved", var_name=var['name']))
         elif var["name"] == token_var:
-            print_warning(f"  Skipped — {label} won't work without this.")
+            print_warning(_tr("standard_skipped_no_token", label=label))
             return
         else:
-            print_info("  Skipped (can configure later)")
+            print_info(f"  {_tr('standard_skipped_later')}")
 
     # If an allowlist was set and home channel wasn't, offer to reuse
     # the first user ID (common for Telegram DMs).
@@ -3891,12 +3907,12 @@ def _setup_standard_platform(platform: dict):
     home_val = get_env_value(home_var)
     if allowed_val_set and not home_val and label == "Telegram":
         first_id = allowed_val_set.split(",")[0].strip()
-        if first_id and prompt_yes_no(f"  Use your user ID ({first_id}) as the home channel?", True):
+        if first_id and prompt_yes_no(f"  {_tr('standard_home_channel_prompt', user_id=first_id)}", True):
             save_env_value(home_var, first_id)
-            print_success(f"  Home channel set to {first_id}")
+            print_success(_tr("standard_home_channel_set", user_id=first_id))
 
     print()
-    print_success(f"{emoji} {label} configured!")
+    print_success(_tr("standard_configured", emoji=emoji, label=label))
 
 
 def _setup_whatsapp():
@@ -4163,36 +4179,36 @@ def _is_service_running() -> bool:
 def _setup_weixin():
     """Interactive setup for Weixin / WeChat personal accounts."""
     print()
-    print(color("  ─── 💬 Weixin / WeChat Setup ───", Colors.CYAN))
+    print(color(f"  ─── {_tr('weixin_setup_title')} ───", Colors.CYAN))
     print()
-    print_info("  1. Hermes will open Tencent iLink QR login in this terminal.")
-    print_info("  2. Use WeChat to scan and confirm the QR code.")
-    print_info("  3. Hermes will store the returned account_id/token in ~/.hermes/.env.")
-    print_info("  4. This adapter supports native text, image, video, and document delivery.")
+    print_info(f"  {_tr('weixin_step_1')}")
+    print_info(f"  {_tr('weixin_step_2')}")
+    print_info(f"  {_tr('weixin_step_3')}")
+    print_info(f"  {_tr('weixin_step_4')}")
 
     existing_account = get_env_value("WEIXIN_ACCOUNT_ID")
     existing_token = get_env_value("WEIXIN_TOKEN")
     if existing_account and existing_token:
         print()
-        print_success("Weixin is already configured.")
-        if not prompt_yes_no("  Reconfigure Weixin?", False):
+        print_success(_tr("weixin_already_configured"))
+        if not prompt_yes_no(f"  {_tr('weixin_reconfigure_prompt')}", False):
             return
 
     try:
         from gateway.platforms.weixin import check_weixin_requirements, qr_login
     except Exception as exc:
-        print_error(f"  Weixin adapter import failed: {exc}")
-        print_info("  Install gateway dependencies first, then retry.")
+        print_error(f"  {_tr('weixin_import_failed', error=exc)}")
+        print_info(f"  {_tr('weixin_install_deps_hint')}")
         return
 
     if not check_weixin_requirements():
-        print_error("  Missing dependencies: Weixin needs aiohttp and cryptography.")
-        print_info("  Install them, then rerun `hermes gateway setup`.")
+        print_error(f"  {_tr('weixin_missing_deps')}")
+        print_info(f"  {_tr('weixin_install_retry_hint')}")
         return
 
     print()
-    if not prompt_yes_no("  Start QR login now?", True):
-        print_info("  Cancelled.")
+    if not prompt_yes_no(f"  {_tr('weixin_start_qr_prompt')}", True):
+        print_info(f"  {_tr('weixin_cancelled')}")
         return
 
     import asyncio
@@ -4200,14 +4216,14 @@ def _setup_weixin():
         credentials = asyncio.run(qr_login(str(get_hermes_home())))
     except KeyboardInterrupt:
         print()
-        print_warning("  Weixin setup cancelled.")
+        print_warning(f"  {_tr('weixin_setup_cancelled')}")
         return
     except Exception as exc:
-        print_error(f"  QR login failed: {exc}")
+        print_error(f"  {_tr('weixin_qr_login_failed', error=exc)}")
         return
 
     if not credentials:
-        print_warning("  QR login did not complete.")
+        print_warning(f"  {_tr('weixin_qr_incomplete')}")
         return
 
     account_id = credentials.get("account_id", "")
@@ -4223,71 +4239,71 @@ def _setup_weixin():
 
     print()
     access_choices = [
-        "Use DM pairing approval (recommended)",
-        "Allow all direct messages",
-        "Only allow listed user IDs",
-        "Disable direct messages",
+        _tr("weixin_dm_pairing_option"),
+        _tr("weixin_dm_open_option"),
+        _tr("weixin_dm_allowlist_option"),
+        _tr("weixin_dm_disabled_option"),
     ]
-    access_idx = prompt_choice("  How should direct messages be authorized?", access_choices, 0)
+    access_idx = prompt_choice(f"  {_tr('weixin_dm_auth_prompt')}", access_choices, 0)
     if access_idx == 0:
         save_env_value("WEIXIN_DM_POLICY", "pairing")
         save_env_value("WEIXIN_ALLOW_ALL_USERS", "false")
         save_env_value("WEIXIN_ALLOWED_USERS", "")
-        print_success("  DM pairing enabled.")
-        print_info("  Unknown DM users can request access and you approve them with `hermes pairing approve`.")
+        print_success(f"  {_tr('weixin_dm_pairing_enabled')}")
+        print_info(f"  {_tr('weixin_dm_pairing_info')}")
     elif access_idx == 1:
         save_env_value("WEIXIN_DM_POLICY", "open")
         save_env_value("WEIXIN_ALLOW_ALL_USERS", "true")
         save_env_value("WEIXIN_ALLOWED_USERS", "")
-        print_warning("  Open DM access enabled for Weixin.")
+        print_warning(f"  {_tr('weixin_dm_open_warning')}")
     elif access_idx == 2:
         default_allow = user_id or ""
-        allowlist = prompt("  Allowed Weixin user IDs (comma-separated)", default_allow, password=False).replace(" ", "")
+        allowlist = prompt(f"  {_tr('weixin_allowlist_prompt')}", default_allow, password=False).replace(" ", "")
         save_env_value("WEIXIN_DM_POLICY", "allowlist")
         save_env_value("WEIXIN_ALLOW_ALL_USERS", "false")
         save_env_value("WEIXIN_ALLOWED_USERS", allowlist)
-        print_success("  Weixin allowlist saved.")
+        print_success(f"  {_tr('weixin_allowlist_saved')}")
     else:
         save_env_value("WEIXIN_DM_POLICY", "disabled")
         save_env_value("WEIXIN_ALLOW_ALL_USERS", "false")
         save_env_value("WEIXIN_ALLOWED_USERS", "")
-        print_warning("  Direct messages disabled.")
+        print_warning(f"  {_tr('weixin_dm_disabled')}")
 
     print()
-    print_info("  Note: QR login connects an iLink bot identity (e.g. ...@im.bot), not a")
-    print_info("  scriptable personal WeChat account. Ordinary WeChat groups typically cannot")
-    print_info("  invite an @im.bot identity, and iLink does not deliver ordinary-group events")
-    print_info("  to most bot accounts. The settings below only apply when iLink actually")
-    print_info("  delivers group events for your account type — otherwise DM remains the only")
-    print_info("  working channel regardless of this choice.")
+    print_info(f"  {_tr('weixin_note_title')} {_tr('weixin_note_content_1')}")
+    print_info(f"  {_tr('weixin_note_content_2')}")
+    print_info(f"  {_tr('weixin_note_content_3')}")
+    print_info(f"  {_tr('weixin_note_content_4')}")
+    print_info(f"  {_tr('weixin_note_content_5')}")
+    print_info(f"  {_tr('weixin_note_content_6')}")
     group_choices = [
-        "Disable group chats (recommended)",
-        "Allow all group chats",
-        "Only allow listed group chat IDs",
+        _tr("weixin_group_disabled_option"),
+        _tr("weixin_group_open_option"),
+        _tr("weixin_group_allowlist_option"),
     ]
-    group_idx = prompt_choice("  How should group chats be handled?", group_choices, 0)
+    group_idx = prompt_choice(f"  {_tr('weixin_group_policy_prompt')}", group_choices, 0)
     if group_idx == 0:
         save_env_value("WEIXIN_GROUP_POLICY", "disabled")
         save_env_value("WEIXIN_GROUP_ALLOWED_USERS", "")
-        print_info("  Group chats disabled.")
+        print_info(f"  {_tr('weixin_group_disabled')}")
     elif group_idx == 1:
         save_env_value("WEIXIN_GROUP_POLICY", "open")
         save_env_value("WEIXIN_GROUP_ALLOWED_USERS", "")
-        print_warning("  All group chats enabled (only takes effect if iLink delivers group events).")
+        print_warning(f"  {_tr('weixin_group_open_warning')}")
     else:
-        allow_groups = prompt("  Allowed group chat IDs (comma-separated, not member user IDs)", "", password=False).replace(" ", "")
+        allow_groups = prompt(f"  {_tr('weixin_group_allowlist_prompt')}", "", password=False).replace(" ", "")
         save_env_value("WEIXIN_GROUP_POLICY", "allowlist")
         save_env_value("WEIXIN_GROUP_ALLOWED_USERS", allow_groups)
-        print_success("  Group allowlist saved (only takes effect if iLink delivers group events).")
+        print_success(f"  {_tr('weixin_group_allowlist_saved')}")
 
     if user_id:
         print()
-        if prompt_yes_no(f"  Use your Weixin user ID ({user_id}) as the home channel?", True):
+        if prompt_yes_no(f"  {_tr('weixin_home_channel_prompt', user_id=user_id)}", True):
             save_env_value("WEIXIN_HOME_CHANNEL", user_id)
-            print_success(f"  Home channel set to {user_id}")
+            print_success(f"  {_tr('weixin_home_channel_set', user_id=user_id)}")
 
     print()
-    print_success("Weixin configured!")
+    print_success(_tr("weixin_configured"))
     print_info(f"  Account ID: {account_id}")
     if user_id:
         print_info(f"  User ID: {user_id}")
@@ -4468,23 +4484,23 @@ def _setup_feishu():
 def _setup_qqbot():
     """Interactive setup for QQ Bot — scan-to-configure or manual credentials."""
     print()
-    print(color("  ─── 🐧 QQ Bot Setup ───", Colors.CYAN))
+    print(color(f"  ─── {_tr('qqbot_setup_title')} ───", Colors.CYAN))
 
     existing_app_id = get_env_value("QQ_APP_ID")
     existing_secret = get_env_value("QQ_CLIENT_SECRET")
     if existing_app_id and existing_secret:
         print()
-        print_success("QQ Bot is already configured.")
-        if not prompt_yes_no("  Reconfigure QQ Bot?", False):
+        print_success(_tr("qqbot_already_configured"))
+        if not prompt_yes_no(f"  {_tr('qqbot_reconfigure_prompt')}", False):
             return
 
     # ── Choose setup method ──
     print()
     method_choices = [
-        "Scan QR code to add bot automatically (recommended)",
-        "Enter existing App ID and App Secret manually",
+        _tr("qqbot_method_qr"),
+        _tr("qqbot_method_manual"),
     ]
-    method_idx = prompt_choice("  How would you like to set up QQ Bot?", method_choices, 0)
+    method_idx = prompt_choice(f"  {_tr('qqbot_method_title')}", method_choices, 0)
 
     credentials = None
 
@@ -4495,24 +4511,24 @@ def _setup_qqbot():
             credentials = qr_register()
         except KeyboardInterrupt:
             print()
-            print_warning("  QQ Bot setup cancelled.")
+            print_warning(f"  {_tr('qqbot_qr_cancelled')}")
             return
         if not credentials:
-            print_info("  QR setup did not complete. Continuing with manual input.")
+            print_info(f"  {_tr('qqbot_qr_incomplete')}")
 
     # ── Manual credential input ──
     if not credentials:
         print()
-        print_info("  Go to https://q.qq.com to register a QQ Bot application.")
-        print_info("  Note your App ID and App Secret from the application page.")
+        print_info(f"  {_tr('qqbot_register_info_1')}")
+        print_info(f"  {_tr('qqbot_register_info_2')}")
         print()
-        app_id = prompt("  App ID", password=False)
+        app_id = prompt(f"  {_tr('qqbot_app_id_prompt')}", password=False)
         if not app_id:
-            print_warning("  Skipped — QQ Bot won't work without an App ID.")
+            print_warning(f"  {_tr('qqbot_skip_no_app_id')}")
             return
-        app_secret = prompt("  App Secret", password=True)
+        app_secret = prompt(f"  {_tr('qqbot_app_secret_prompt')}", password=True)
         if not app_secret:
-            print_warning("  Skipped — QQ Bot won't work without an App Secret.")
+            print_warning(f"  {_tr('qqbot_skip_no_secret')}")
             return
         credentials = {"app_id": app_id.strip(), "client_secret": app_secret.strip(), "user_openid": ""}
 
@@ -4525,51 +4541,51 @@ def _setup_qqbot():
     # ── DM security policy ──
     print()
     access_choices = [
-        "Use DM pairing approval (recommended)",
-        "Allow all direct messages",
-        "Only allow listed user OpenIDs",
+        _tr("qqbot_access_pairing"),
+        _tr("qqbot_access_all"),
+        _tr("qqbot_access_allowlist"),
     ]
-    access_idx = prompt_choice("  How should direct messages be authorized?", access_choices, 0)
+    access_idx = prompt_choice(f"  {_tr('qqbot_access_title')}", access_choices, 0)
     if access_idx == 0:
         save_env_value("QQ_ALLOW_ALL_USERS", "false")
         if user_openid:
             print()
-            if prompt_yes_no(f"  Add yourself ({user_openid}) to the allow list?", True):
+            if prompt_yes_no(f"  {_tr('qqbot_add_self_prompt', user_openid=user_openid)}", True):
                 save_env_value("QQ_ALLOWED_USERS", user_openid)
-                print_success(f"  Allow list set to {user_openid}")
+                print_success(f"  {_tr('qqbot_allowlist_set', user_openid=user_openid)}")
             else:
                 save_env_value("QQ_ALLOWED_USERS", "")
         else:
             save_env_value("QQ_ALLOWED_USERS", "")
-        print_success("  DM pairing enabled.")
-        print_info("  Unknown users can request access; approve with `hermes pairing approve`.")
+        print_success(f"  {_tr('qqbot_dm_pairing_enabled')}")
+        print_info(f"  {_tr('qqbot_dm_pairing_info')}")
     elif access_idx == 1:
         save_env_value("QQ_ALLOW_ALL_USERS", "true")
         save_env_value("QQ_ALLOWED_USERS", "")
-        print_warning("  Open DM access enabled for QQ Bot.")
+        print_warning(f"  {_tr('qqbot_open_dm_warning')}")
     else:
         default_allow = user_openid or ""
-        allowlist = prompt("  Allowed user OpenIDs (comma-separated)", default_allow, password=False).replace(" ", "")
+        allowlist = prompt(f"  {_tr('qqbot_allowlist_prompt')}", default_allow, password=False).replace(" ", "")
         save_env_value("QQ_ALLOW_ALL_USERS", "false")
         save_env_value("QQ_ALLOWED_USERS", allowlist)
-        print_success("  Allowlist saved.")
+        print_success(f"  {_tr('qqbot_allowlist_saved')}")
 
     # ── Home channel ──
     if user_openid:
         print()
-        if prompt_yes_no(f"  Use your QQ user ID ({user_openid}) as the home channel?", True):
+        if prompt_yes_no(f"  {_tr('qqbot_home_channel_prompt', user_openid=user_openid)}", True):
             save_env_value("QQBOT_HOME_CHANNEL", user_openid)
-            print_success(f"  Home channel set to {user_openid}")
+            print_success(f"  {_tr('qqbot_home_channel_set', user_openid=user_openid)}")
     else:
         print()
-        home_channel = prompt("  Home channel OpenID (for cron/notifications, or empty)", password=False)
+        home_channel = prompt(f"  {_tr('qqbot_home_channel_manual_prompt')}", password=False)
         if home_channel:
             save_env_value("QQBOT_HOME_CHANNEL", home_channel.strip())
-            print_success(f"  Home channel set to {home_channel.strip()}")
+            print_success(f"  {_tr('qqbot_home_channel_manual_set', home_channel=home_channel.strip())}")
 
     print()
-    print_success("🐧 QQ Bot configured!")
-    print_info(f"  App ID: {credentials['app_id']}")
+    print_success(_tr("qqbot_configured"))
+    print_info(_tr("qqbot_app_id_display", app_id=credentials['app_id']))
 
 
 def _setup_signal():

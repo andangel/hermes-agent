@@ -11,6 +11,34 @@ because its dispatch is tightly coupled to module-level ``cmd_*`` functions.
 """
 
 import argparse
+from agent.i18n import t as _t
+
+
+def _tr(key: str, **kwargs) -> str:
+    """Translate a CLI help string."""
+    return _t(f"cli.{key}", **kwargs)
+
+
+class _TranslatedHelpFormatter(argparse.RawDescriptionHelpFormatter):
+    """Custom HelpFormatter that translates the -h/--help option text."""
+    
+    def _format_action_invocation(self, action):
+        """Override to translate the help option text."""
+        if action.option_strings == ['-h', '--help']:
+            # Translate the help text for -h/--help
+            action.help = _tr("option_help")
+        return super()._format_action_invocation(action)
+
+
+def add_translated_subparser(subparsers, name, **kwargs):
+    """Add a subparser with translated help formatter.
+    
+    This is a helper function to ensure all subcommands use the
+    _TranslatedHelpFormatter for consistent i18n support.
+    """
+    if 'formatter_class' not in kwargs:
+        kwargs['formatter_class'] = _TranslatedHelpFormatter
+    return subparsers.add_parser(name, **kwargs)
 
 
 # `--profile` / `-p` is consumed by ``main._apply_profile_override`` before
@@ -86,28 +114,70 @@ def build_top_level_parser():
     ``chat_parser.set_defaults(func=cmd_chat)`` and continues registering
     other subparsers via ``subparsers.add_parser(...)``.
     """
+    # Build translated epilogue
+    examples_title = _tr("epilogue_examples_title")
+    for_more_help = _tr("epilogue_for_more_help")
+    
+    # Get all example lines with translations
+    example_lines = [
+        _tr("epilogue_example_hermes"),
+        _tr("epilogue_example_chat_q"),
+        _tr("epilogue_example_c"),
+        _tr("epilogue_example_c_name"),
+        _tr("epilogue_example_resume"),
+        _tr("epilogue_example_setup"),
+        _tr("epilogue_example_logout"),
+        _tr("epilogue_example_auth_add"),
+        _tr("epilogue_example_auth_list"),
+        _tr("epilogue_example_auth_remove"),
+        _tr("epilogue_example_auth_reset"),
+        _tr("epilogue_example_model"),
+        _tr("epilogue_example_fallback"),
+        _tr("epilogue_example_fallback_add"),
+        _tr("epilogue_example_fallback_remove"),
+        _tr("epilogue_example_config"),
+        _tr("epilogue_example_config_edit"),
+        _tr("epilogue_example_config_set"),
+        _tr("epilogue_example_gateway"),
+        _tr("epilogue_example_skills"),
+        _tr("epilogue_example_worktree"),
+        _tr("epilogue_example_gateway_install"),
+        _tr("epilogue_example_sessions_list"),
+        _tr("epilogue_example_sessions_browse"),
+        _tr("epilogue_example_sessions_rename"),
+        _tr("epilogue_example_logs"),
+        _tr("epilogue_example_logs_f"),
+        _tr("epilogue_example_logs_errors"),
+        _tr("epilogue_example_logs_since"),
+        _tr("epilogue_example_debug_share"),
+        _tr("epilogue_example_update"),
+        _tr("epilogue_example_dashboard"),
+        _tr("epilogue_example_dashboard_stop"),
+        _tr("epilogue_example_dashboard_status"),
+    ]
+    
+    # Build the translated epilogue
+    translated_epilogue = f"\n{examples_title}\n"
+    for line in example_lines:
+        translated_epilogue += f"{line}\n"
+    translated_epilogue += f"\n{for_more_help}\n    hermes <command> --help\n"
+    
     parser = argparse.ArgumentParser(
         prog="hermes",
-        description="Hermes Agent - AI assistant with tool-calling capabilities",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog=_EPILOGUE,
+        description=_tr("description"),
+        formatter_class=_TranslatedHelpFormatter,
+        epilog=translated_epilogue,
     )
 
     parser.add_argument(
-        "--version", "-V", action="store_true", help="Show version and exit"
+        "--version", "-V", action="store_true", help=_tr("option_version")
     )
     parser.add_argument(
         "-z",
         "--oneshot",
         metavar="PROMPT",
         default=None,
-        help=(
-            "One-shot mode: send a single prompt and print ONLY the final "
-            "response text to stdout. No banner, no spinner, no tool "
-            "previews, no session_id line. Tools, memory, rules, and "
-            "AGENTS.md in the CWD are loaded as normal; approvals are "
-            "auto-bypassed. Intended for scripts / pipes."
-        ),
+        help=_tr("option_oneshot"),
     )
     # --model / --provider are accepted at the top level so they can pair
     # with -z without needing the `chat` subcommand.  If neither -z nor a
@@ -118,32 +188,26 @@ def build_top_level_parser():
         "-m",
         "--model",
         default=None,
-        help=(
-            "Model override for this invocation (e.g. anthropic/claude-sonnet-4.6). "
-            "Applies to -z/--oneshot and --tui. Also settable via HERMES_INFERENCE_MODEL env var."
-        ),
+        help=_tr("option_model"),
     )
     _inherited_flag(
         parser,
         "--provider",
         default=None,
-        help=(
-            "Provider override for this invocation (e.g. openrouter, anthropic). "
-            "Applies to -z/--oneshot and --tui. Also settable via HERMES_INFERENCE_PROVIDER env var."
-        ),
+        help=_tr("option_provider"),
     )
     parser.add_argument(
         "-t",
         "--toolsets",
         default=None,
-        help="Comma-separated toolsets to enable for this invocation. Applies to -z/--oneshot and --tui.",
+        help=_tr("option_toolsets"),
     )
     parser.add_argument(
         "--resume",
         "-r",
         metavar="SESSION",
         default=None,
-        help="Resume a previous session by ID or title",
+        help=_tr("option_resume"),
     )
     parser.add_argument(
         "--continue",
@@ -153,26 +217,21 @@ def build_top_level_parser():
         const=True,
         default=None,
         metavar="SESSION_NAME",
-        help="Resume a session by name, or the most recent if no name given",
+        help=_tr("option_continue"),
     )
     parser.add_argument(
         "--worktree",
         "-w",
         action="store_true",
         default=False,
-        help="Run in an isolated git worktree (for parallel agents)",
+        help=_tr("option_worktree"),
     )
     _inherited_flag(
         parser,
         "--accept-hooks",
         action="store_true",
         default=False,
-        help=(
-            "Auto-approve any unseen shell hooks declared in config.yaml "
-            "without a TTY prompt.  Equivalent to HERMES_ACCEPT_HOOKS=1 or "
-            "hooks_auto_accept: true in config.yaml.  Use on CI / headless "
-            "runs that can't prompt."
-        ),
+        help=_tr("option_accept_hooks"),
     )
     _inherited_flag(
         parser,
@@ -180,42 +239,42 @@ def build_top_level_parser():
         "-s",
         action="append",
         default=None,
-        help="Preload one or more skills for the session (repeat flag or comma-separate)",
+        help=_tr("option_skills"),
     )
     _inherited_flag(
         parser,
         "--yolo",
         action="store_true",
         default=False,
-        help="Bypass all dangerous command approval prompts (use at your own risk)",
+        help=_tr("option_yolo"),
     )
     _inherited_flag(
         parser,
         "--pass-session-id",
         action="store_true",
         default=False,
-        help="Include the session ID in the agent's system prompt",
+        help=_tr("option_pass_session_id"),
     )
     _inherited_flag(
         parser,
         "--ignore-user-config",
         action="store_true",
         default=False,
-        help="Ignore ~/.hermes/config.yaml and fall back to built-in defaults (credentials in .env are still loaded)",
+        help=_tr("option_ignore_user_config"),
     )
     _inherited_flag(
         parser,
         "--ignore-rules",
         action="store_true",
         default=False,
-        help="Skip auto-injection of AGENTS.md, SOUL.md, .cursorrules, memory, and preloaded skills",
+        help=_tr("option_ignore_rules"),
     )
     _inherited_flag(
         parser,
         "--tui",
         action="store_true",
         default=False,
-        help="Launch the modern TUI instead of the classic REPL",
+        help=_tr("option_tui"),
     )
     _inherited_flag(
         parser,
@@ -223,31 +282,32 @@ def build_top_level_parser():
         dest="tui_dev",
         action="store_true",
         default=False,
-        help="With --tui: run TypeScript sources via tsx (skip dist build)",
+        help=_tr("option_dev"),
     )
 
-    subparsers = parser.add_subparsers(dest="command", help="Command to run")
+    subparsers = parser.add_subparsers(dest="command", help=_tr("subcommand_help"))
 
     # =========================================================================
     # chat command
     # =========================================================================
-    chat_parser = subparsers.add_parser(
+    chat_parser = add_translated_subparser(
+        subparsers,
         "chat",
-        help="Interactive chat with the agent",
-        description="Start an interactive chat session with Hermes Agent",
+        help=_tr("chat_help"),
+        description=_tr("chat_description"),
     )
     chat_parser.add_argument(
-        "-q", "--query", help="Single query (non-interactive mode)"
+        "-q", "--query", help=_tr("chat_option_query")
     )
     chat_parser.add_argument(
-        "--image", help="Optional local image path to attach to a single query"
+        "--image", help=_tr("chat_option_image")
     )
     _inherited_flag(
         chat_parser,
-        "-m", "--model", help="Model to use (e.g., anthropic/claude-sonnet-4)",
+        "-m", "--model", help=_tr("chat_option_model"),
     )
     chat_parser.add_argument(
-        "-t", "--toolsets", help="Comma-separated toolsets to enable"
+        "-t", "--toolsets", help=_tr("chat_option_toolsets")
     )
     _inherited_flag(
         chat_parser,
@@ -255,7 +315,7 @@ def build_top_level_parser():
         "--skills",
         action="append",
         default=argparse.SUPPRESS,
-        help="Preload one or more skills for the session (repeat flag or comma-separate)",
+        help=_tr("option_skills"),
     )
     _inherited_flag(
         chat_parser,
@@ -265,23 +325,23 @@ def build_top_level_parser():
         # handles validation/error reporting consistently with the top-level
         # `--provider` flag.
         default=None,
-        help="Inference provider (default: auto). Built-in or a user-defined name from `providers:` in config.yaml.",
+        help=_tr("chat_option_provider"),
     )
     chat_parser.add_argument(
-        "-v", "--verbose", action="store_true", help="Verbose output"
+        "-v", "--verbose", action="store_true", help=_tr("chat_option_verbose")
     )
     chat_parser.add_argument(
         "-Q",
         "--quiet",
         action="store_true",
-        help="Quiet mode for programmatic use: suppress banner, spinner, and tool previews. Only output the final response and session info.",
+        help=_tr("chat_option_quiet"),
     )
     chat_parser.add_argument(
         "--resume",
         "-r",
         metavar="SESSION_ID",
         default=argparse.SUPPRESS,
-        help="Resume a previous session by ID (shown on exit)",
+        help=_tr("chat_option_resume"),
     )
     chat_parser.add_argument(
         "--continue",
@@ -291,78 +351,74 @@ def build_top_level_parser():
         const=True,
         default=argparse.SUPPRESS,
         metavar="SESSION_NAME",
-        help="Resume a session by name, or the most recent if no name given",
+        help=_tr("option_continue"),
     )
     chat_parser.add_argument(
         "--worktree",
         "-w",
         action="store_true",
         default=argparse.SUPPRESS,
-        help="Run in an isolated git worktree (for parallel agents on the same repo)",
+        help=_tr("chat_option_worktree"),
     )
     _inherited_flag(
         chat_parser,
         "--accept-hooks",
         action="store_true",
         default=argparse.SUPPRESS,
-        help=(
-            "Auto-approve any unseen shell hooks declared in config.yaml "
-            "without a TTY prompt (see also HERMES_ACCEPT_HOOKS env var and "
-            "hooks_auto_accept: in config.yaml)."
-        ),
+        help=_tr("chat_option_accept_hooks"),
     )
     chat_parser.add_argument(
         "--checkpoints",
         action="store_true",
         default=False,
-        help="Enable filesystem checkpoints before destructive file operations (use /rollback to restore)",
+        help=_tr("chat_option_checkpoints"),
     )
     chat_parser.add_argument(
         "--max-turns",
         type=int,
         default=None,
         metavar="N",
-        help="Maximum tool-calling iterations per conversation turn (default: 90, or agent.max_turns in config)",
+        help=_tr("chat_option_max_turns"),
     )
     _inherited_flag(
         chat_parser,
         "--yolo",
         action="store_true",
         default=argparse.SUPPRESS,
-        help="Bypass all dangerous command approval prompts (use at your own risk)",
+        help=_tr("option_yolo"),
     )
     _inherited_flag(
         chat_parser,
         "--pass-session-id",
         action="store_true",
         default=argparse.SUPPRESS,
-        help="Include the session ID in the agent's system prompt",
+        help=_tr("option_pass_session_id"),
     )
     _inherited_flag(
         chat_parser,
         "--ignore-user-config",
         action="store_true",
         default=argparse.SUPPRESS,
-        help="Ignore ~/.hermes/config.yaml and fall back to built-in defaults (credentials in .env are still loaded). Useful for isolated CI runs, reproduction, and third-party integrations.",
+        help=_tr("chat_option_ignore_user_config"),
     )
     _inherited_flag(
         chat_parser,
         "--ignore-rules",
         action="store_true",
         default=argparse.SUPPRESS,
-        help="Skip auto-injection of AGENTS.md, SOUL.md, .cursorrules, memory, and preloaded skills. Combine with --ignore-user-config for a fully isolated run.",
+        help=_tr("chat_option_ignore_rules"),
     )
     chat_parser.add_argument(
         "--source",
         default=None,
-        help="Session source tag for filtering (default: cli). Use 'tool' for third-party integrations that should not appear in user session lists.",
+        help=_tr("chat_option_source"),
     )
     _inherited_flag(
         chat_parser,
         "--tui",
         action="store_true",
         default=False,
-        help="Launch the modern TUI instead of the classic REPL",
+        help=_tr("option_tui"),
     )
     _inherited_flag(
         chat_parser,
@@ -370,7 +426,7 @@ def build_top_level_parser():
         dest="tui_dev",
         action="store_true",
         default=False,
-        help="With --tui: run TypeScript sources via tsx (skip dist build)",
+        help=_tr("option_dev"),
     )
 
     return parser, subparsers, chat_parser

@@ -31,6 +31,13 @@ from hermes_cli.nous_subscription import (
 from tools.tool_backend_helpers import fal_key_is_configured, managed_nous_tools_enabled
 from utils import base_url_hostname, is_truthy_value
 
+# i18n support
+from agent.i18n import t as _t
+
+def _tr(key: str, **kwargs) -> str:
+    """Translate a tools config string."""
+    return _t(f"setup.{key}", **kwargs)
+
 logger = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).parent.parent.resolve()
@@ -2298,7 +2305,7 @@ def tools_command(args=None, first_install: bool = False, config: dict = None):
     # Non-interactive summary mode for CLI usage
     if getattr(args, "summary", False):
         total = len(_get_effective_configurable_toolsets())
-        print(color("⚕ Tool Summary", Colors.CYAN, Colors.BOLD))
+        print(color(_tr("tools.tool_summary"), Colors.CYAN, Colors.BOLD))
         print()
         summary = _platform_toolset_summary(config, enabled_platforms)
         for pkey in enabled_platforms:
@@ -2311,13 +2318,13 @@ def tools_command(args=None, first_install: bool = False, config: dict = None):
                     label = next((l for k, l, _ in _get_effective_configurable_toolsets() if k == ts_key), ts_key)
                     print(color(f"    ✓ {label}", Colors.GREEN))
             else:
-                print(color("    (none enabled)", Colors.DIM))
+                print(color(f"    {_tr('tools.none_enabled')}", Colors.DIM))
         print()
         return
-    print(color("⚕ Hermes Tool Configuration", Colors.CYAN, Colors.BOLD))
-    print(color("  Enable or disable tools per platform.", Colors.DIM))
-    print(color("  Tools that need API keys will be configured when enabled.", Colors.DIM))
-    print(color("  Guide: https://hermes-agent.nousresearch.com/docs/user-guide/features/tools", Colors.DIM))
+    print(color(f"⚕ {_tr('tools.title')}", Colors.CYAN, Colors.BOLD))
+    print(color(f"  {_tr('tools.description')}", Colors.DIM))
+    print(color(f"  {_tr('tools.api_key_info')}", Colors.DIM))
+    print(color(f"  {_tr('tools.guide_link')}", Colors.DIM))
     print()
 
     # ── First-time install: linear flow, no platform menu ──
@@ -2350,7 +2357,7 @@ def tools_command(args=None, first_install: bool = False, config: dict = None):
             if managed_nous_tools_enabled():
                 for ts_key in sorted(auto_configured):
                     label = next((l for k, l, _ in CONFIGURABLE_TOOLSETS if k == ts_key), ts_key)
-                    print(color(f"  ✓ {label}: using your Nous subscription defaults", Colors.GREEN))
+                    print(color(_tr("tools.nous_defaults").format(label=label), Colors.GREEN))
 
             # Walk through ALL selected tools that have provider options or
             # need API keys.  This ensures browser (Local vs Browserbase),
@@ -2364,18 +2371,18 @@ def tools_command(args=None, first_install: bool = False, config: dict = None):
 
             if to_configure:
                 print()
-                print(color(f"  Configuring {len(to_configure)} tool(s):", Colors.YELLOW))
+                print(color(f"  {_tr('tools.configuring_tools').format(count=len(to_configure))}", Colors.YELLOW))
                 for ts_key in to_configure:
                     label = next((l for k, l, _ in _get_effective_configurable_toolsets() if k == ts_key), ts_key)
                     print(color(f"    • {label}", Colors.DIM))
-                print(color("  You can skip any tool you don't need right now.", Colors.DIM))
+                print(color(f"  {_tr('tools.skip_hint')}", Colors.DIM))
                 print()
                 for ts_key in to_configure:
                     _configure_toolset(ts_key, config)
 
             _save_platform_tools(config, pkey, new_enabled)
             save_config(config)
-            print(color(f"  ✓ Saved {pinfo['label']} tool configuration", Colors.GREEN))
+            print(color(f"  ✓ {_tr('tools.saved_config').format(platform=pinfo['label'])}", Colors.GREEN))
             print()
 
         return
@@ -2393,15 +2400,15 @@ def tools_command(args=None, first_install: bool = False, config: dict = None):
         platform_keys.append(pkey)
 
     if len(platform_keys) > 1:
-        platform_choices.append("Configure all platforms (global)")
-    platform_choices.append("Reconfigure an existing tool's provider or API key")
+        platform_choices.append(_tr("tools.configure_all"))
+    platform_choices.append(_tr("tools.reconfigure_tool"))
 
     # Show MCP option if any MCP servers are configured
     _has_mcp = bool(config.get("mcp_servers"))
     if _has_mcp:
-        platform_choices.append("Configure MCP server tools")
+        platform_choices.append(_tr("tools.configure_mcp"))
 
-    platform_choices.append("Done")
+    platform_choices.append(_tr("tools.done"))
 
     # Index offsets for the extra options after per-platform entries
     _global_idx = len(platform_keys) if len(platform_keys) > 1 else -1
@@ -2410,7 +2417,7 @@ def tools_command(args=None, first_install: bool = False, config: dict = None):
     _done_idx = _reconfig_idx + (2 if _has_mcp else 1)
 
     while True:
-        idx = _prompt_choice("Select an option:", platform_choices, default=0)
+        idx = _prompt_choice(_tr("tools.select_option"), platform_choices, default=0)
 
         # "Done" selected
         if idx == _done_idx:
@@ -2456,14 +2463,14 @@ def tools_command(args=None, first_install: bool = False, config: dict = None):
                                 _configure_toolset(ts_key, config)
                     _save_platform_tools(config, pk, new_enabled)
                 save_config(config)
-                print(color("  ✓ Saved configuration for all platforms", Colors.GREEN))
+                print(color(f"  ✓ {_tr('tools.saved_all_platforms')}", Colors.GREEN))
                 # Update choice labels
                 for ci, pk in enumerate(platform_keys):
                     new_count = len(_get_platform_tools(config, pk, include_default_mcp_servers=False))
                     total = len(_get_effective_configurable_toolsets())
                     platform_choices[ci] = f"Configure {PLATFORMS[pk]['label']}  ({new_count}/{total} enabled)"
             else:
-                print(color("  No changes", Colors.DIM))
+                print(color(f"  {_tr('tools.no_changes')}", Colors.DIM))
             print()
             continue
 
@@ -2497,9 +2504,9 @@ def tools_command(args=None, first_install: bool = False, config: dict = None):
 
             _save_platform_tools(config, pkey, new_enabled)
             save_config(config)
-            print(color(f"  ✓ Saved {pinfo['label']} configuration", Colors.GREEN))
+            print(color(f"  ✓ {_tr('tools.saved_config').format(platform=pinfo['label'])}", Colors.GREEN))
         else:
-            print(color(f"  No changes to {pinfo['label']}", Colors.DIM))
+            print(color(f"  {_tr('tools.no_changes')} {_tr('tools.to').format(platform=pinfo['label'])}", Colors.DIM))
 
         print()
 
@@ -2510,8 +2517,8 @@ def tools_command(args=None, first_install: bool = False, config: dict = None):
 
     print()
     from hermes_constants import display_hermes_home
-    print(color(f"  Tool configuration saved to {display_hermes_home()}/config.yaml", Colors.DIM))
-    print(color("  Changes take effect on next 'hermes' or gateway restart.", Colors.DIM))
+    print(color(f"  {_tr('tools.config_saved_to').format(path=display_hermes_home() + '/config.yaml')}", Colors.DIM))
+    print(color(f"  {_tr('tools.changes_effect')}", Colors.DIM))
     print()
 
 
@@ -2542,8 +2549,8 @@ def _configure_mcp_tools_interactive(config: dict):
         return
 
     print()
-    print(color("  Discovering tools from MCP servers...", Colors.YELLOW))
-    print(color(f"  Connecting to {len(enabled_names)} server(s): {', '.join(enabled_names)}", Colors.DIM))
+    print(color(f"  {_tr('tools.discovering_mcp')}", Colors.YELLOW))
+    print(color(f"  {_tr('tools.connecting_servers').format(count=len(enabled_names), servers=', '.join(enabled_names))}", Colors.DIM))
 
     try:
         from tools.mcp_tool import probe_mcp_server_tools

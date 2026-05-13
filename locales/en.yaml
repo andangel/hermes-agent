@@ -1,365 +1,1465 @@
-# Hermes static-message catalog -- English (baseline / source of truth)
-#
-# Only user-facing static messages from the CLI approval prompt and a handful
-# of gateway slash-command replies live here.  Agent-generated output, log
-# lines, error tracebacks, tool outputs, and slash-command descriptions stay
-# in English and are NOT translated -- see agent/i18n.py for scope rationale.
-#
-# Keys are dotted paths; nesting below is purely for readability.  Values may
-# contain {placeholder} tokens for str.format substitution.  When adding a
-# new key, add it to EVERY locale file (en/zh/ja/de/es/fr/tr/uk) in the same commit --
-# tests/agent/test_i18n.py asserts catalog parity.
-
 approval:
-  # CLI approval prompt -- shown when a dangerous command needs user review.
-  dangerous_header: "⚠️  DANGEROUS COMMAND: {description}"
-  choose_long:     "      [o]nce  |  [s]ession  |  [a]lways  |  [d]eny"
-  choose_short:    "      [o]nce  |  [s]ession  |  [d]eny"
-  prompt_long:     "      Choice [o/s/a/D]: "
-  prompt_short:    "      Choice [o/s/D]: "
-  timeout:         "      ⏱ Timeout - denying command"
-  allowed_once:    "      ✓ Allowed once"
-  allowed_session: "      ✓ Allowed for this session"
-  allowed_always:  "      ✓ Added to permanent allowlist"
-  denied:          "      ✗ Denied"
-  cancelled:       "      ✗ Cancelled"
-  blocklist_message: "This command is on the unconditional blocklist and cannot be approved."
-
+  dangerous_header: '⚠️  DANGEROUS COMMAND: {description}'
+  choose_long: '      [o]nce  |  [s]ession  |  [a]lways  |  [d]eny'
+  choose_short: '      [o]nce  |  [s]ession  |  [d]eny'
+  prompt_long: '      Choice [o/s/a/D]: '
+  prompt_short: '      Choice [o/s/D]: '
+  timeout: '      ⏱ Timeout - denying command'
+  allowed_once: '      ✓ Allowed once'
+  allowed_session: '      ✓ Allowed for this session'
+  allowed_always: '      ✓ Added to permanent allowlist'
+  denied: '      ✗ Denied'
+  cancelled: '      ✗ Cancelled'
+  blocklist_message: This command is on the unconditional blocklist and cannot be
+    approved.
 gateway:
-  # Messenger replies to slash commands and implicit state changes.
-  approval_expired: "⚠️ Approval expired (agent is no longer waiting). Ask the agent to try again."
-  draining:         "⏳ Draining {count} active agent(s) before restart..."
-  goal_cleared:     "✓ Goal cleared."
-  no_active_goal:   "No active goal."
-  config_read_failed: "⚠️ Could not read config.yaml: {error}"
-  config_save_failed: "⚠️ Could not save config: {error}"
-
-  # /model command output -- shown after a model switch or when listing models.
-  # Provider names, model IDs, capability strings, and cost figures are NOT
-  # translated -- they're identifiers/values, not prose.  Only the labels
-  # ("Provider:", "Context:", etc.) and the help/footer lines are localized.
+  approval_expired: ⚠️ Approval expired (agent is no longer waiting). Ask the agent
+    to try again.
+  draining: ⏳ Draining {count} active agent(s) before restart...
+  goal_cleared: ✓ Goal cleared.
+  no_active_goal: No active goal.
+  config_read_failed: '⚠️ Could not read config.yaml: {error}'
+  config_save_failed: '⚠️ Could not save config: {error}'
   model:
-    error_prefix:           "Error: {error}"
-    switched:               "Model switched to `{model}`"
-    provider_label:         "Provider: {provider}"
-    context_label:          "Context: {tokens} tokens"
-    max_output_label:       "Max output: {tokens} tokens"
-    cost_label:             "Cost: {cost}"
-    capabilities_label:     "Capabilities: {capabilities}"
-    prompt_caching_enabled: "Prompt caching: enabled"
-    warning_prefix:         "Warning: {warning}"
-    saved_global:           "Saved to config.yaml (`--global`)"
-    session_only_hint:      "_(session only — add `--global` to persist)_"
-    current_label:          "Current: `{model}` on {provider}"
-    current_tag:            " (current)"
-    more_models_suffix:     " (+{count} more)"
-    usage_switch_model:     "`/model <name>` — switch model"
-    usage_switch_provider:  "`/model <name> --provider <slug>` — switch provider"
-    usage_persist:          "`/model <name> --global` — persist"
-
+    error_prefix: 'Error: {error}'
+    switched: Model switched to `{model}`
+    provider_label: 'Provider: {provider}'
+    context_label: 'Context: {tokens} tokens'
+    max_output_label: 'Max output: {tokens} tokens'
+    cost_label: 'Cost: {cost}'
+    capabilities_label: 'Capabilities: {capabilities}'
+    prompt_caching_enabled: 'Prompt caching: enabled'
+    warning_prefix: 'Warning: {warning}'
+    saved_global: Saved to config.yaml (`--global`)
+    session_only_hint: _(session only — add `--global` to persist)_
+    current_label: 'Current: `{model}` on {provider}'
+    current_tag: ' (current)'
+    more_models_suffix: ' (+{count} more)'
+    usage_switch_model: '`/model <name>` — switch model'
+    usage_switch_provider: '`/model <name> --provider <slug>` — switch provider'
+    usage_persist: '`/model <name> --global` — persist'
   agents:
-    header:                "🤖 **Active Agents & Tasks**"
-    active_agents:         "**Active agents:** {count}"
-    this_chat:             " · this chat"
-    more:                  "... and {count} more"
-    running_processes:     "**Running background processes:** {count}"
-    async_jobs:            "**Gateway async jobs:** {count}"
-    none:                  "No active agents or running tasks."
-    state_starting:        "starting"
-    state_running:         "running"
-
+    header: 🤖 **Active Agents & Tasks**
+    active_agents: '**Active agents:** {count}'
+    this_chat: ' · this chat'
+    more: '... and {count} more'
+    running_processes: '**Running background processes:** {count}'
+    async_jobs: '**Gateway async jobs:** {count}'
+    none: No active agents or running tasks.
+    state_starting: starting
+    state_running: running
   approve:
-    no_pending:            "No pending command to approve."
-    once_singular:         "✅ Command approved. The agent is resuming..."
-    once_plural:           "✅ Commands approved ({count} commands). The agent is resuming..."
-    session_singular:      "✅ Command approved (pattern approved for this session). The agent is resuming..."
-    session_plural:        "✅ Commands approved (pattern approved for this session) ({count} commands). The agent is resuming..."
-    always_singular:       "✅ Command approved (pattern approved permanently). The agent is resuming..."
-    always_plural:         "✅ Commands approved (pattern approved permanently) ({count} commands). The agent is resuming..."
-
+    no_pending: No pending command to approve.
+    once_singular: ✅ Command approved. The agent is resuming...
+    once_plural: ✅ Commands approved ({count} commands). The agent is resuming...
+    session_singular: ✅ Command approved (pattern approved for this session). The
+      agent is resuming...
+    session_plural: ✅ Commands approved (pattern approved for this session) ({count}
+      commands). The agent is resuming...
+    always_singular: ✅ Command approved (pattern approved permanently). The agent
+      is resuming...
+    always_plural: ✅ Commands approved (pattern approved permanently) ({count} commands).
+      The agent is resuming...
   background:
-    usage:                 "Usage: /background <prompt>\nExample: /background Summarize the top HN stories today\n\nRuns the prompt in a separate session. You can keep chatting — the result will appear here when done."
-    started:               "🔄 Background task started: \"{preview}\"\nTask ID: {task_id}\nYou can keep chatting — results will appear when done."
+    usage: 'Usage: /background <prompt>
 
+      Example: /background Summarize the top HN stories today
+
+
+      Runs the prompt in a separate session. You can keep chatting — the result will
+      appear here when done.'
+    started: '🔄 Background task started: "{preview}"
+
+      Task ID: {task_id}
+
+      You can keep chatting — results will appear when done.'
   branch:
-    db_unavailable:        "Session database not available."
-    no_conversation:       "No conversation to branch — send a message first."
-    create_failed:         "Failed to create branch: {error}"
-    switch_failed:         "Branch created but failed to switch to it."
-    branched_one:          "⑂ Branched to **{title}** ({count} message copied)\nOriginal: `{parent}`\nBranch: `{new}`\nUse `/resume` to switch back to the original."
-    branched_many:         "⑂ Branched to **{title}** ({count} messages copied)\nOriginal: `{parent}`\nBranch: `{new}`\nUse `/resume` to switch back to the original."
+    db_unavailable: Session database not available.
+    no_conversation: No conversation to branch — send a message first.
+    create_failed: 'Failed to create branch: {error}'
+    switch_failed: Branch created but failed to switch to it.
+    branched_one: '⑂ Branched to **{title}** ({count} message copied)
 
+      Original: `{parent}`
+
+      Branch: `{new}`
+
+      Use `/resume` to switch back to the original.'
+    branched_many: '⑂ Branched to **{title}** ({count} messages copied)
+
+      Original: `{parent}`
+
+      Branch: `{new}`
+
+      Use `/resume` to switch back to the original.'
   commands:
-    usage:                 "Usage: `/commands [page]`"
-    skill_header:          "⚡ **Skill Commands**:"
-    default_desc:          "Skill command"
-    none:                  "No commands available."
-    header:                "📚 **Commands** ({total} total, page {page}/{total_pages})"
-    nav_prev:              "`/commands {page}` ← prev"
-    nav_next:              "next → `/commands {page}`"
-    out_of_range:          "_(Requested page {requested} was out of range, showing page {page}.)_"
-
+    usage: 'Usage: `/commands [page]`'
+    skill_header: '⚡ **Skill Commands**:'
+    default_desc: Skill command
+    none: No commands available.
+    header: 📚 **Commands** ({total} total, page {page}/{total_pages})
+    nav_prev: '`/commands {page}` ← prev'
+    nav_next: next → `/commands {page}`
+    out_of_range: _(Requested page {requested} was out of range, showing page {page}.)_
   compress:
-    not_enough:            "Not enough conversation to compress (need at least 4 messages)."
-    no_provider:           "No provider configured -- cannot compress."
-    nothing_to_do:         "Nothing to compress yet (the transcript is still all protected context)."
-    focus_line:            "Focus: \"{topic}\""
-    summary_failed:        "⚠️ Summary generation failed ({error}). {count} historical message(s) were removed and replaced with a placeholder; earlier context is no longer recoverable. Consider checking your auxiliary.compression model configuration."
-    aux_failed:            "ℹ️ Configured compression model `{model}` failed ({error}). Recovered using your main model — context is intact — but you may want to check `auxiliary.compression.model` in config.yaml."
-    failed:                "Compression failed: {error}"
-
+    not_enough: Not enough conversation to compress (need at least 4 messages).
+    no_provider: No provider configured -- cannot compress.
+    nothing_to_do: Nothing to compress yet (the transcript is still all protected
+      context).
+    focus_line: 'Focus: "{topic}"'
+    summary_failed: ⚠️ Summary generation failed ({error}). {count} historical message(s)
+      were removed and replaced with a placeholder; earlier context is no longer recoverable.
+      Consider checking your auxiliary.compression model configuration.
+    aux_failed: ℹ️ Configured compression model `{model}` failed ({error}). Recovered
+      using your main model — context is intact — but you may want to check `auxiliary.compression.model`
+      in config.yaml.
+    failed: 'Compression failed: {error}'
   debug:
-    upload_failed:         "✗ Failed to upload debug report: {error}"
-    header:                "**Debug report uploaded:**"
-    auto_delete:           "⏱ Pastes will auto-delete in 6 hours."
-    full_logs_hint:        "For full log uploads, use `hermes debug share` from the CLI."
-    share_hint:            "Share these links with the Hermes team for support."
-
+    upload_failed: '✗ Failed to upload debug report: {error}'
+    header: '**Debug report uploaded:**'
+    auto_delete: ⏱ Pastes will auto-delete in 6 hours.
+    full_logs_hint: For full log uploads, use `hermes debug share` from the CLI.
+    share_hint: Share these links with the Hermes team for support.
   deny:
-    stale:                 "❌ Command denied (approval was stale)."
-    no_pending:            "No pending command to deny."
-    denied_singular:       "❌ Command denied."
-    denied_plural:         "❌ Commands denied ({count} commands)."
-
+    stale: ❌ Command denied (approval was stale).
+    no_pending: No pending command to deny.
+    denied_singular: ❌ Command denied.
+    denied_plural: ❌ Commands denied ({count} commands).
   fast:
-    not_supported:         "⚡ /fast is only available for OpenAI models that support Priority Processing."
-    status:                "⚡ Priority Processing\n\nCurrent mode: `{mode}`\n\n_Usage:_ `/fast <normal|fast|status>`"
-    unknown_arg:           "⚠️ Unknown argument: `{arg}`\n\n**Valid options:** normal, fast, status"
-    saved:                 "⚡ ✓ Priority Processing: **{label}** (saved to config)\n_(takes effect on next message)_"
-    session_only:          "⚡ ✓ Priority Processing: **{label}** (this session only)"
-    label_fast:            "FAST"
-    label_normal:          "NORMAL"
-    status_fast:           "fast"
-    status_normal:         "normal"
+    not_supported: ⚡ /fast is only available for OpenAI models that support Priority
+      Processing.
+    status: '⚡ Priority Processing
 
+
+      Current mode: `{mode}`
+
+
+      _Usage:_ `/fast <normal|fast|status>`'
+    unknown_arg: '⚠️ Unknown argument: `{arg}`
+
+
+      **Valid options:** normal, fast, status'
+    saved: '⚡ ✓ Priority Processing: **{label}** (saved to config)
+
+      _(takes effect on next message)_'
+    session_only: '⚡ ✓ Priority Processing: **{label}** (this session only)'
+    label_fast: FAST
+    label_normal: NORMAL
+    status_fast: fast
+    status_normal: normal
   footer:
-    status:                "📎 Runtime footer: **{state}**\nFields: `{fields}`\nPlatform: `{platform}`"
-    usage:                 "Usage: `/footer [on|off|status]`"
-    saved:                 "📎 Runtime footer: **{state}**{example}\n_(saved globally — takes effect on next message)_"
-    example_line:          "\nExample: `{preview}`"
-    state_on:              "ON"
-    state_off:             "OFF"
+    status: '📎 Runtime footer: **{state}**
 
+      Fields: `{fields}`
+
+      Platform: `{platform}`'
+    usage: 'Usage: `/footer [on|off|status]`'
+    saved: '📎 Runtime footer: **{state}**{example}
+
+      _(saved globally — takes effect on next message)_'
+    example_line: '
+
+      Example: `{preview}`'
+    state_on: 'ON'
+    state_off: 'OFF'
   goal:
-    unavailable:           "Goals unavailable on this session."
-    no_goal_set:           "No goal set."
-    paused:                "⏸ Goal paused: {goal}"
-    no_resume:             "No goal to resume."
-    resumed:               "▶ Goal resumed: {goal}\nSend any message to continue, or wait — I'll take the next step on the next turn."
-    invalid:               "Invalid goal: {error}"
-    set:                   "⊙ Goal set ({budget}-turn budget): {goal}\nI'll keep working until the goal is done, you pause/clear it, or the budget is exhausted.\nControls: /goal status · /goal pause · /goal resume · /goal clear"
+    unavailable: Goals unavailable on this session.
+    no_goal_set: No goal set.
+    paused: '⏸ Goal paused: {goal}'
+    no_resume: No goal to resume.
+    resumed: '▶ Goal resumed: {goal}
 
+      Send any message to continue, or wait — I''ll take the next step on the next
+      turn.'
+    invalid: 'Invalid goal: {error}'
+    set: '⊙ Goal set ({budget}-turn budget): {goal}
+
+      I''ll keep working until the goal is done, you pause/clear it, or the budget
+      is exhausted.
+
+      Controls: /goal status · /goal pause · /goal resume · /goal clear'
   help:
-    header:                "📖 **Hermes Commands**\n"
-    skill_header:          "\n⚡ **Skill Commands** ({count} active):"
-    more_use_commands:     "\n... and {count} more. Use `/commands` for the full paginated list."
+    header: '📖 **Hermes Commands**
 
+      '
+    skill_header: '
+
+      ⚡ **Skill Commands** ({count} active):'
+    more_use_commands: '
+
+      ... and {count} more. Use `/commands` for the full paginated list.'
   insights:
-    invalid_days:          "Invalid --days value: {value}"
-    error:                 "Error generating insights: {error}"
-
+    invalid_days: 'Invalid --days value: {value}'
+    error: 'Error generating insights: {error}'
   kanban:
-    error_prefix:          "⚠ kanban error: {error}"
-    subscribed_suffix:     "(subscribed — you'll be notified when {task_id} completes or blocks)"
-    truncated_suffix:      "… (truncated; use `hermes kanban …` in your terminal for full output)"
-    no_output:             "(no output)"
-
+    error_prefix: '⚠ kanban error: {error}'
+    subscribed_suffix: (subscribed — you'll be notified when {task_id} completes or
+      blocks)
+    truncated_suffix: … (truncated; use `hermes kanban …` in your terminal for full
+      output)
+    no_output: (no output)
   personality:
-    none_configured:       "No personalities configured in `{path}/config.yaml`"
-    header:                "🎭 **Available Personalities**\n"
-    none_option:           "• `none` — (no personality overlay)"
-    item:                  "• `{name}` — {preview}"
-    usage:                 "\nUsage: `/personality <name>`"
-    save_failed:           "⚠️ Failed to save personality change: {error}"
-    cleared:               "🎭 Personality cleared — using base agent behavior.\n_(takes effect on next message)_"
-    set_to:                "🎭 Personality set to **{name}**\n_(takes effect on next message)_"
-    unknown:               "Unknown personality: `{name}`\n\nAvailable: {available}"
+    none_configured: No personalities configured in `{path}/config.yaml`
+    header: '🎭 **Available Personalities**
 
+      '
+    none_option: • `none` — (no personality overlay)
+    item: • `{name}` — {preview}
+    usage: '
+
+      Usage: `/personality <name>`'
+    save_failed: '⚠️ Failed to save personality change: {error}'
+    cleared: '🎭 Personality cleared — using base agent behavior.
+
+      _(takes effect on next message)_'
+    set_to: '🎭 Personality set to **{name}**
+
+      _(takes effect on next message)_'
+    unknown: 'Unknown personality: `{name}`
+
+
+      Available: {available}'
   profile:
-    header:                "👤 **Profile:** `{profile}`"
-    home:                  "📂 **Home:** `{home}`"
-
+    header: 👤 **Profile:** `{profile}`
+    home: 📂 **Home:** `{home}`
   reasoning:
-    level_default:             "medium (default)"
-    level_disabled:            "none (disabled)"
-    scope_session:             "session override"
-    scope_global:              "global config"
-    status:                    "🧠 **Reasoning Settings**\n\n**Effort:** `{level}`\n**Scope:** {scope}\n**Display:** {display}\n\n_Usage:_ `/reasoning <none|minimal|low|medium|high|xhigh|reset|show|hide> [--global]`"
-    display_on:                "on ✓"
-    display_off:               "off"
-    display_set_on:            "🧠 ✓ Reasoning display: **ON**\nModel thinking will be shown before each response on **{platform}**."
-    display_set_off:           "🧠 ✓ Reasoning display: **OFF** for **{platform}**"
-    reset_global_unsupported:  "⚠️ `/reasoning reset --global` is not supported. Use `/reasoning <level> --global` to change the global default."
-    reset_done:                "🧠 ✓ Session reasoning override cleared; falling back to global config."
-    unknown_arg:               "⚠️ Unknown argument: `{arg}`\n\n**Valid levels:** none, minimal, low, medium, high, xhigh\n**Display:** show, hide\n**Persist:** add `--global` to save beyond this session"
-    set_global:                "🧠 ✓ Reasoning effort set to `{effort}` (saved to config)\n_(takes effect on next message)_"
-    set_global_save_failed:    "🧠 ✓ Reasoning effort set to `{effort}` (session only — config save failed)\n_(takes effect on next message)_"
-    set_session:               "🧠 ✓ Reasoning effort set to `{effort}` (session only — add `--global` to persist)\n_(takes effect on next message)_"
+    level_default: medium (default)
+    level_disabled: none (disabled)
+    scope_session: session override
+    scope_global: global config
+    status: '🧠 **Reasoning Settings**
 
+
+      **Effort:** `{level}`
+
+      **Scope:** {scope}
+
+      **Display:** {display}
+
+
+      _Usage:_ `/reasoning <none|minimal|low|medium|high|xhigh|reset|show|hide> [--global]`'
+    display_on: on ✓
+    display_off: 'off'
+    display_set_on: '🧠 ✓ Reasoning display: **ON**
+
+      Model thinking will be shown before each response on **{platform}**.'
+    display_set_off: '🧠 ✓ Reasoning display: **OFF** for **{platform}**'
+    reset_global_unsupported: ⚠️ `/reasoning reset --global` is not supported. Use
+      `/reasoning <level> --global` to change the global default.
+    reset_done: 🧠 ✓ Session reasoning override cleared; falling back to global config.
+    unknown_arg: '⚠️ Unknown argument: `{arg}`
+
+
+      **Valid levels:** none, minimal, low, medium, high, xhigh
+
+      **Display:** show, hide
+
+      **Persist:** add `--global` to save beyond this session'
+    set_global: '🧠 ✓ Reasoning effort set to `{effort}` (saved to config)
+
+      _(takes effect on next message)_'
+    set_global_save_failed: '🧠 ✓ Reasoning effort set to `{effort}` (session only
+      — config save failed)
+
+      _(takes effect on next message)_'
+    set_session: '🧠 ✓ Reasoning effort set to `{effort}` (session only — add `--global`
+      to persist)
+
+      _(takes effect on next message)_'
   reload_mcp:
-    cancelled:             "🟡 /reload-mcp cancelled. MCP tools unchanged."
-    always_followup:       "ℹ️ Future `/reload-mcp` calls will run without confirmation. Re-enable via `approvals.mcp_reload_confirm: true` in config.yaml."
-    confirm_prompt:        "⚠️ **Confirm /reload-mcp**\n\nReloading MCP servers rebuilds the tool set for this session and **invalidates the provider prompt cache** — the next message will re-send full input tokens.  On long-context or high-reasoning models this can be expensive.\n\nChoose:\n• **Approve Once** — reload now\n• **Always Approve** — reload now and silence this prompt permanently\n• **Cancel** — leave MCP tools unchanged\n\n_Text fallback: reply `/approve`, `/always`, or `/cancel`._"
-    header:                "🔄 **MCP Servers Reloaded**\n"
-    reconnected:           "♻️ Reconnected: {names}"
-    added:                 "➕ Added: {names}"
-    removed:               "➖ Removed: {names}"
-    none_connected:        "No MCP servers connected."
-    tools_available:       "\n🔧 {tools} tool(s) available from {servers} server(s)"
-    failed:                "❌ MCP reload failed: {error}"
+    cancelled: 🟡 /reload-mcp cancelled. MCP tools unchanged.
+    always_followup: 'ℹ️ Future `/reload-mcp` calls will run without confirmation.
+      Re-enable via `approvals.mcp_reload_confirm: true` in config.yaml.'
+    confirm_prompt: '⚠️ **Confirm /reload-mcp**
 
+
+      Reloading MCP servers rebuilds the tool set for this session and **invalidates
+      the provider prompt cache** — the next message will re-send full input tokens.  On
+      long-context or high-reasoning models this can be expensive.
+
+
+      Choose:
+
+      • **Approve Once** — reload now
+
+      • **Always Approve** — reload now and silence this prompt permanently
+
+      • **Cancel** — leave MCP tools unchanged
+
+
+      _Text fallback: reply `/approve`, `/always`, or `/cancel`._'
+    header: '🔄 **MCP Servers Reloaded**
+
+      '
+    reconnected: '♻️ Reconnected: {names}'
+    added: '➕ Added: {names}'
+    removed: '➖ Removed: {names}'
+    none_connected: No MCP servers connected.
+    tools_available: '
+
+      🔧 {tools} tool(s) available from {servers} server(s)'
+    failed: '❌ MCP reload failed: {error}'
   reload_skills:
-    header:                "🔄 **Skills Reloaded**\n"
-    no_new:                "No new skills detected."
-    total:                 "\n📚 {count} skill(s) available"
-    added_header:          "➕ **Added Skills:**"
-    removed_header:        "➖ **Removed Skills:**"
-    item_with_desc:        "    - {name}: {desc}"
-    item_no_desc:          "    - {name}"
-    failed:                "❌ Skills reload failed: {error}"
+    header: '🔄 **Skills Reloaded**
 
+      '
+    no_new: No new skills detected.
+    total: '
+
+      📚 {count} skill(s) available'
+    added_header: ➕ **Added Skills:**
+    removed_header: ➖ **Removed Skills:**
+    item_with_desc: '    - {name}: {desc}'
+    item_no_desc: '    - {name}'
+    failed: '❌ Skills reload failed: {error}'
   reset:
-    header_default:        "✨ Session reset! Starting fresh."
-    header_new:            "✨ New session started!"
-    header_titled:         "✨ New session started: {title}"
-    title_rejected:        "\n⚠️ Title rejected: {error}"
-    title_error_untitled:  "\n⚠️ {error} — session started untitled."
-    title_empty_untitled:  "\n⚠️ Title is empty after cleanup — session started untitled."
-    tip:                   "\n✦ Tip: {tip}"
+    header_default: ✨ Session reset! Starting fresh.
+    header_new: ✨ New session started!
+    header_titled: '✨ New session started: {title}'
+    title_rejected: '
 
+      ⚠️ Title rejected: {error}'
+    title_error_untitled: '
+
+      ⚠️ {error} — session started untitled.'
+    title_empty_untitled: '
+
+      ⚠️ Title is empty after cleanup — session started untitled.'
+    tip: '
+
+      ✦ Tip: {tip}'
   restart:
-    in_progress:           "⏳ Gateway restart already in progress..."
-    restarting:            "♻ Restarting gateway. If you aren't notified within 60 seconds, restart from the console with `hermes gateway restart`."
-
+    in_progress: ⏳ Gateway restart already in progress...
+    restarting: ♻ Restarting gateway. If you aren't notified within 60 seconds, restart
+      from the console with `hermes gateway restart`.
   resume:
-    db_unavailable:        "Session database not available."
-    no_named_sessions:     "No named sessions found.\nUse `/title My Session` to name your current session, then `/resume My Session` to return to it later."
-    list_header:           "📋 **Named Sessions**\n"
-    list_item:             "• **{title}**{preview_part}"
-    list_preview_suffix:   " — _{preview}_"
-    list_footer:           "\nUsage: `/resume <session name>`"
-    list_failed:           "Could not list sessions: {error}"
-    not_found:             "No session found matching '**{name}**'.\nUse `/resume` with no arguments to see available sessions."
-    already_on:            "📌 Already on session **{name}**."
-    switch_failed:         "Failed to switch session."
-    resumed_one:           "↻ Resumed session **{title}** ({count} message). Conversation restored."
-    resumed_many:          "↻ Resumed session **{title}** ({count} messages). Conversation restored."
-    resumed_no_count:      "↻ Resumed session **{title}**. Conversation restored."
+    db_unavailable: Session database not available.
+    no_named_sessions: 'No named sessions found.
 
+      Use `/title My Session` to name your current session, then `/resume My Session`
+      to return to it later.'
+    list_header: '📋 **Named Sessions**
+
+      '
+    list_item: • **{title}**{preview_part}
+    list_preview_suffix: ' — _{preview}_'
+    list_footer: '
+
+      Usage: `/resume <session name>`'
+    list_failed: 'Could not list sessions: {error}'
+    not_found: 'No session found matching ''**{name}**''.
+
+      Use `/resume` with no arguments to see available sessions.'
+    already_on: 📌 Already on session **{name}**.
+    switch_failed: Failed to switch session.
+    resumed_one: ↻ Resumed session **{title}** ({count} message). Conversation restored.
+    resumed_many: ↻ Resumed session **{title}** ({count} messages). Conversation restored.
+    resumed_no_count: ↻ Resumed session **{title}**. Conversation restored.
   retry:
-    no_previous:           "No previous message to retry."
-
+    no_previous: No previous message to retry.
   rollback:
-    not_enabled:           "Checkpoints are not enabled.\nEnable in config.yaml:\n```\ncheckpoints:\n  enabled: true\n```"
-    none_found:            "No checkpoints found for {cwd}"
-    invalid_number:        "Invalid checkpoint number. Use 1-{max}."
-    restored:              "✅ Restored to checkpoint {hash}: {reason}\nA pre-rollback snapshot was saved automatically."
-    restore_failed:        "❌ {error}"
+    not_enabled: "Checkpoints are not enabled.\nEnable in config.yaml:\n```\ncheckpoints:\n\
+      \  enabled: true\n```"
+    none_found: No checkpoints found for {cwd}
+    invalid_number: Invalid checkpoint number. Use 1-{max}.
+    restored: '✅ Restored to checkpoint {hash}: {reason}
 
+      A pre-rollback snapshot was saved automatically.'
+    restore_failed: ❌ {error}
   set_home:
-    save_failed:           "Failed to save home channel: {error}"
-    success:               "✅ Home channel set to **{name}** (ID: {chat_id}).\nCron jobs and cross-platform messages will be delivered here."
+    save_failed: 'Failed to save home channel: {error}'
+    success: '✅ Home channel set to **{name}** (ID: {chat_id}).
 
+      Cron jobs and cross-platform messages will be delivered here.'
   status:
-    header:                "📊 **Hermes Gateway Status**"
-    session_id:            "**Session ID:** `{session_id}`"
-    title:                 "**Title:** {title}"
-    created:               "**Created:** {timestamp}"
-    last_activity:         "**Last Activity:** {timestamp}"
-    tokens:                "**Tokens:** {tokens}"
-    agent_running:         "**Agent Running:** {state}"
-    state_yes:             "Yes ⚡"
-    state_no:              "No"
-    queued:                "**Queued follow-ups:** {count}"
-    platforms:             "**Connected Platforms:** {platforms}"
-
+    header: 📊 **Hermes Gateway Status**
+    session_id: '**Session ID:** `{session_id}`'
+    title: '**Title:** {title}'
+    created: '**Created:** {timestamp}'
+    last_activity: '**Last Activity:** {timestamp}'
+    tokens: '**Tokens:** {tokens}'
+    agent_running: '**Agent Running:** {state}'
+    state_yes: Yes ⚡
+    state_no: 'No'
+    queued: '**Queued follow-ups:** {count}'
+    platforms: '**Connected Platforms:** {platforms}'
   stop:
-    stopped_pending:       "⚡ Stopped. The agent hadn't started yet — you can continue this session."
-    stopped:               "⚡ Stopped. You can continue this session."
-    no_active:             "No active task to stop."
-
+    stopped_pending: ⚡ Stopped. The agent hadn't started yet — you can continue this
+      session.
+    stopped: ⚡ Stopped. You can continue this session.
+    no_active: No active task to stop.
   title:
-    db_unavailable:        "Session database not available."
-    warn_prefix:           "⚠️ {error}"
-    empty_after_clean:     "⚠️ Title is empty after cleanup. Please use printable characters."
-    set_to:                "✏️ Session title set: **{title}**"
-    not_found:             "Session not found in database."
-    current_with_title:    "📌 Session: `{session_id}`\nTitle: **{title}**"
-    current_no_title:      "📌 Session: `{session_id}`\nNo title set. Usage: `/title My Session Name`"
+    db_unavailable: Session database not available.
+    warn_prefix: ⚠️ {error}
+    empty_after_clean: ⚠️ Title is empty after cleanup. Please use printable characters.
+    set_to: '✏️ Session title set: **{title}**'
+    not_found: Session not found in database.
+    current_with_title: '📌 Session: `{session_id}`
 
+      Title: **{title}**'
+    current_no_title: '📌 Session: `{session_id}`
+
+      No title set. Usage: `/title My Session Name`'
   topic:
-    not_telegram_dm:         "The /topic command is only available in Telegram private chats."
-    no_session_db:           "Session database not available."
-    unauthorized:            "You are not authorized to use /topic on this bot."
-    restore_needs_topic:     "To restore a session, first create or open a Telegram topic, then send /topic <session-id> inside that topic. To create a new topic, open All Messages and send any message there."
-    topics_disabled:         "Telegram topics are not enabled for this bot yet.\n\nHow to enable them:\n1. Open @BotFather.\n2. Choose your bot.\n3. Open Bot Settings → Threads Settings.\n4. Turn on Threaded Mode and make sure users are allowed to create new threads.\n\nThen send /topic again."
-    topics_user_disallowed:  "Telegram topics are enabled, but users are not allowed to create topics.\n\nOpen @BotFather → choose your bot → Bot Settings → Threads Settings, then turn off 'Disallow users to create new threads'.\n\nThen send /topic again."
-    enable_failed:           "Failed to enable Telegram topic mode: {error}"
-    bound_status:            "This topic is linked to:\nSession: {label}\nID: {session_id}\n\nUse /new to replace this topic with a fresh session.\nFor parallel work, open All Messages and send a message there to create another topic."
-    thread_ready:            "Telegram multi-session topics are enabled.\n\nThis topic will be used as an independent Hermes session. Use /new to replace this topic's current session. For parallel work, open All Messages and send a message there to create another topic."
-    untitled_session:        "Untitled session"
+    not_telegram_dm: The /topic command is only available in Telegram private chats.
+    no_session_db: Session database not available.
+    unauthorized: You are not authorized to use /topic on this bot.
+    restore_needs_topic: To restore a session, first create or open a Telegram topic,
+      then send /topic <session-id> inside that topic. To create a new topic, open
+      All Messages and send any message there.
+    topics_disabled: 'Telegram topics are not enabled for this bot yet.
 
+
+      How to enable them:
+
+      1. Open @BotFather.
+
+      2. Choose your bot.
+
+      3. Open Bot Settings → Threads Settings.
+
+      4. Turn on Threaded Mode and make sure users are allowed to create new threads.
+
+
+      Then send /topic again.'
+    topics_user_disallowed: 'Telegram topics are enabled, but users are not allowed
+      to create topics.
+
+
+      Open @BotFather → choose your bot → Bot Settings → Threads Settings, then turn
+      off ''Disallow users to create new threads''.
+
+
+      Then send /topic again.'
+    enable_failed: 'Failed to enable Telegram topic mode: {error}'
+    bound_status: 'This topic is linked to:
+
+      Session: {label}
+
+      ID: {session_id}
+
+
+      Use /new to replace this topic with a fresh session.
+
+      For parallel work, open All Messages and send a message there to create another
+      topic.'
+    thread_ready: 'Telegram multi-session topics are enabled.
+
+
+      This topic will be used as an independent Hermes session. Use /new to replace
+      this topic''s current session. For parallel work, open All Messages and send
+      a message there to create another topic.'
+    untitled_session: Untitled session
   undo:
-    nothing:               "Nothing to undo."
-    removed:               "↩️ Undid {count} message(s).\nRemoved: \"{preview}\""
+    nothing: Nothing to undo.
+    removed: '↩️ Undid {count} message(s).
 
+      Removed: "{preview}"'
   update:
-    platform_not_messaging:  "✗ /update is only available from messaging platforms. Run `hermes update` from the terminal."
-    not_git_repo:            "✗ Not a git repository — cannot update."
-    hermes_cmd_not_found:    "✗ Could not locate the `hermes` command. Hermes is running, but the update command could not find the executable on PATH or via the current Python interpreter. Try running `hermes update` manually in your terminal."
-    start_failed:            "✗ Failed to start update: {error}"
-    starting:                "⚕ Starting Hermes update… I'll stream progress here."
-
+    platform_not_messaging: ✗ /update is only available from messaging platforms.
+      Run `hermes update` from the terminal.
+    not_git_repo: ✗ Not a git repository — cannot update.
+    hermes_cmd_not_found: ✗ Could not locate the `hermes` command. Hermes is running,
+      but the update command could not find the executable on PATH or via the current
+      Python interpreter. Try running `hermes update` manually in your terminal.
+    start_failed: '✗ Failed to start update: {error}'
+    starting: ⚕ Starting Hermes update… I'll stream progress here.
   usage:
-    rate_limits:              "⏱️ **Rate Limits:** {state}"
-    header_session:           "📊 **Session Token Usage**"
-    label_model:              "Model: `{model}`"
-    label_input_tokens:       "Input tokens: {count}"
-    label_cache_read:         "Cache read tokens: {count}"
-    label_cache_write:        "Cache write tokens: {count}"
-    label_output_tokens:      "Output tokens: {count}"
-    label_total:              "Total: {count}"
-    label_api_calls:          "API calls: {count}"
-    label_cost:               "Cost: {prefix}${amount}"
-    label_cost_included:      "Cost: included"
-    label_context:            "Context: {used} / {total} ({pct}%)"
-    label_compressions:       "Compressions: {count}"
-    header_session_info:      "📊 **Session Info**"
-    label_messages:           "Messages: {count}"
-    label_estimated_context:  "Estimated context: ~{count} tokens"
-    detailed_after_first:     "_(Detailed usage available after the first agent response)_"
-    no_data:                  "No usage data available for this session."
-
+    rate_limits: ⏱️ **Rate Limits:** {state}
+    header_session: 📊 **Session Token Usage**
+    label_model: 'Model: `{model}`'
+    label_input_tokens: 'Input tokens: {count}'
+    label_cache_read: 'Cache read tokens: {count}'
+    label_cache_write: 'Cache write tokens: {count}'
+    label_output_tokens: 'Output tokens: {count}'
+    label_total: 'Total: {count}'
+    label_api_calls: 'API calls: {count}'
+    label_cost: 'Cost: {prefix}${amount}'
+    label_cost_included: 'Cost: included'
+    label_context: 'Context: {used} / {total} ({pct}%)'
+    label_compressions: 'Compressions: {count}'
+    header_session_info: 📊 **Session Info**
+    label_messages: 'Messages: {count}'
+    label_estimated_context: 'Estimated context: ~{count} tokens'
+    detailed_after_first: _(Detailed usage available after the first agent response)_
+    no_data: No usage data available for this session.
   verbose:
-    not_enabled:           "The `/verbose` command is not enabled for messaging platforms.\n\nEnable it in `config.yaml`:\n```yaml\ndisplay:\n  tool_progress_command: true\n```"
-    mode_off:              "⚙️ Tool progress: **OFF** — no tool activity shown."
-    mode_new:              "⚙️ Tool progress: **NEW** — shown when tool changes (preview length: `display.tool_preview_length`, default 40)."
-    mode_all:              "⚙️ Tool progress: **ALL** — every tool call shown (preview length: `display.tool_preview_length`, default 40)."
-    mode_verbose:          "⚙️ Tool progress: **VERBOSE** — every tool call with full arguments."
-    saved_suffix:          "_(saved for **{platform}** — takes effect on next message)_"
-    save_failed:           "_(could not save to config: {error})_"
+    not_enabled: 'The `/verbose` command is not enabled for messaging platforms.
 
+
+      Enable it in `config.yaml`: ```yaml display: tool_progress_command: true ```'
+    mode_off: '⚙️ Tool progress: **OFF** — no tool activity shown.'
+    mode_new: '⚙️ Tool progress: **NEW** — shown when tool changes (preview length:
+      `display.tool_preview_length`, default 40).'
+    mode_all: '⚙️ Tool progress: **ALL** — every tool call shown (preview length:
+      `display.tool_preview_length`, default 40).'
+    mode_verbose: '⚙️ Tool progress: **VERBOSE** — every tool call with full arguments.'
+    saved_suffix: _(saved for **{platform}** — takes effect on next message)_
+    save_failed: '_(could not save to config: {error})_'
   voice:
-    enabled_voice_only:    "Voice mode enabled.\nI'll reply with voice when you send voice messages.\nUse /voice tts to get voice replies for all messages."
-    disabled_text:         "Voice mode disabled. Text-only replies."
-    tts_enabled:           "Auto-TTS enabled.\nAll replies will include a voice message."
-    status_mode:           "Voice mode: {label}"
-    status_channel:        "Voice channel: #{channel}"
-    status_participants:   "Participants: {count}"
-    status_member:         "  - {name}{status}"
-    speaking:              " (speaking)"
-    enabled_short:         "Voice mode enabled."
-    disabled_short:        "Voice mode disabled."
-    label_off:             "Off (text only)"
-    label_voice_only:      "On (voice reply to voice messages)"
-    label_all:             "TTS (voice reply to all messages)"
+    enabled_voice_only: 'Voice mode enabled.
 
+      I''ll reply with voice when you send voice messages.
+
+      Use /voice tts to get voice replies for all messages.'
+    disabled_text: Voice mode disabled. Text-only replies.
+    tts_enabled: 'Auto-TTS enabled.
+
+      All replies will include a voice message.'
+    status_mode: 'Voice mode: {label}'
+    status_channel: 'Voice channel: #{channel}'
+    status_participants: 'Participants: {count}'
+    status_member: '  - {name}{status}'
+    speaking: ' (speaking)'
+    enabled_short: Voice mode enabled.
+    disabled_short: Voice mode disabled.
+    label_off: Off (text only)
+    label_voice_only: On (voice reply to voice messages)
+    label_all: TTS (voice reply to all messages)
   yolo:
-    disabled:                   "⚠️ YOLO mode **OFF** for this session — dangerous commands will require approval."
-    enabled:                    "⚡ YOLO mode **ON** for this session — all commands auto-approved. Use with caution."
-
+    disabled: ⚠️ YOLO mode **OFF** for this session — dangerous commands will require
+      approval.
+    enabled: ⚡ YOLO mode **ON** for this session — all commands auto-approved. Use
+      with caution.
   shared:
-    session_db_unavailable:      "Session database not available."
-    session_db_unavailable_prefix: "Session database not available"
-    session_not_found:           "Session not found in database."
-    warn_passthrough:            "⚠️ {error}"
+    session_db_unavailable: Session database not available.
+    session_db_unavailable_prefix: Session database not available
+    session_not_found: Session not found in database.
+    warn_passthrough: ⚠️ {error}
+setup:
+  wizard_title: Hermes Agent Setup Wizard
+  welcome_message: Let's configure your Hermes Agent installation.
+  exit_hint: Press Ctrl+C at any time to exit.
+  quick_setup: Quick setup — provider, model & messaging (recommended)
+  full_setup: Full setup — configure everything
+  how_to_setup: How would you like to set up Hermes?
+  reconfigure: Reconfigure
+  already_configured: You already have Hermes configured.
+  wizard_info: Running the full wizard — each prompt shows your current value.
+  keep_or_change: Press Enter to keep it, or type a new value to change it.
+  section_jump_tip: 'Tip: jump straight to a section with ''hermes setup model|terminal|gateway|tools|agent'''
+  quick_fill_tip: or fill only missing items with --quick.
+  first_time: First-time setup
+  no_existing_config: No existing configuration found — running first-time setup.
+  config_location: Configuration Location
+  config_file: Config file
+  secrets_file: Secrets file
+  data_folder: Data folder
+  install_dir: Install dir
+  edit_hint: You can edit these files directly or use 'hermes config edit'
+  migration_imported: Settings were imported from OpenClaw.
+  migration_review: Each section below will show what was imported — press Enter to
+    keep,
+  migration_reconfigure: or choose to reconfigure if needed.
+  section_model_provider: Model & Provider
+  section_terminal_backend: Terminal Backend
+  section_agent_settings: Agent Settings
+  section_messaging_platforms: Messaging Platforms
+  section_tools: Tools
+  backup_info: 'Previous config backed up to:'
+  restore_hint: 'If setup changed a value you customized, restore it with:'
+  non_interactive_title: Hermes Setup — Non-interactive mode
+  non_interactive_reason: The interactive wizard cannot be used here.
+  configure_hint: 'Configure Hermes using environment variables or config commands:'
+  env_hint: Or set OPENROUTER_API_KEY / OPENAI_API_KEY in your environment.
+  interactive_hint: Run 'hermes setup' in an interactive terminal to use the full
+    wizard.
+  reconfigure_prompt: Reconfigure {label}?
+  press_enter_to_keep: Press Enter to keep current value
+  gateway:
+    description: Connect to messaging platforms to chat with Hermes from anywhere.
+    toggle_hint: Toggle with Space, confirm with Enter.
+    select_platforms: 'Select platforms to configure:'
+    no_platforms_selected: No platforms selected. Run 'hermes setup gateway' later
+      to configure.
+    platforms_configured: Messaging platforms configured!
+    missing_home_channel: 'No home channel set for: {platforms}'
+    home_channel_info: Without a home channel, cron jobs and cross-platform messages
+      can't be delivered to those platforms.
+    set_home_hint: 'Set one later with /set-home in your chat, or:'
+    restart_gateway_prompt: Restart the gateway to pick up changes?
+    start_gateway_prompt: Start the gateway service?
+    install_service_prompt: Install the gateway as a {service} service? (runs in background,
+      starts on boot)
+    start_service_prompt: Start the service now?
+    install_failed: 'Install failed: {error}'
+    install_manual_hint: 'You can try manually: hermes gateway install'
+    install_later_hint: 'You can install later: hermes gateway install'
+    install_system_hint: 'Or as a boot-time service: sudo hermes gateway install --system'
+    run_foreground_hint: 'Or run in foreground: hermes gateway'
+    container_start_hint: 'Start the gateway to bring your bots online:'
+    container_run_hint: 'hermes gateway run          # Run as container main process'
+    container_restart_hint: 'For automatic restarts, use a Docker restart policy:'
+    container_docker_hint: docker run --restart unless-stopped ...
+    container_manual_restart: 'docker restart <container>  # Manual restart'
+    native_start_hint: 'Start the gateway to bring your bots online:'
+    native_run_hint: 'hermes gateway              # Run in foreground'
+    restart_failed: 'Restart failed: {error}'
+    start_failed: 'Start failed: {error}'
+    systemd_unreachable: 'Restart failed — user systemd not reachable:'
+    system_scope_remind: System-level service requires root privileges
+  tools:
+    title: Hermes Tool Configuration
+    description: Enable or disable tools per platform.
+    api_key_info: Tools that need API keys will be configured when enabled.
+    guide_link: 'Guide: https://hermes-agent.nousresearch.com/docs/user-guide/features/tools'
+    tool_summary: ⚕ Tool Summary
+    none_enabled: (none enabled)
+    configuring_tools: 'Configuring {count} tool(s):'
+    skip_hint: You can skip any tool you don't need right now.
+    saved_config: Saved {platform} tool configuration
+    nous_defaults: '✓ {label}: using your Nous subscription defaults'
+    select_option: 'Select an option:'
+    configure_all: Configure all platforms (global)
+    reconfigure_tool: Reconfigure an existing tool's provider or API key
+    configure_mcp: Configure MCP server tools
+    done: Done
+    no_changes: No changes
+    saved_all_platforms: Saved configuration for all platforms
+    config_saved_to: Tool configuration saved to {path}
+    changes_effect: Changes take effect on next 'hermes' or gateway restart.
+    discovering_mcp: Discovering tools from MCP servers...
+    connecting_servers: 'Connecting to {count} server(s): {servers}'
+    to: to {platform}
+  model:
+    title: Model & Provider
+    choose_provider: 'Choose your AI provider:'
+    select_provider: Select provider
+    openrouter: OpenRouter (Recommended)
+    openai: OpenAI
+    anthropic: Anthropic (Claude)
+    custom: Custom
+    api_key_prompt: Enter {provider} API Key
+    base_url_prompt: 'API base URL [{example}]: '
+    model_select: Select default model
+    model_prompt: Enter model name
+    provider_configured: Provider configured
+    api_key_saved: API Key saved
+    guide_link: 'Guide: {_DOCS_BASE}/integrations/providers'
+    inference_provider: Inference Provider
+    connect_info: Choose how to connect to your main chat model.
+    provider_setup_skipped: Provider setup skipped.
+    setup_error: 'Provider setup encountered an error: {error}'
+    try_again_later: 'You can try again later with: hermes model'
+    fallback_rotation: Same-Provider Fallback & Rotation
+    fallback_description: Hermes can keep multiple credentials for one provider and
+      rotate between them when a credential is exhausted or rate-limited.
+    fallback_benefit: This preserves your primary provider while reducing interruptions
+      from quota issues.
+    current_credentials: 'Current pooled credentials for {provider}: {count}'
+    credential_detail: ({manual} manual, {auto} auto-detected from env/shared auth)
+    add_credential_prompt: Add another credential for same-provider fallback?
+    pool_updated: Provider pool now has {count} credential(s).
+    rotation_strategy: 'Select same-provider rotation strategy:'
+    strategy_fill_first: Fill-first / sticky — keep using the first healthy credential
+      until it is exhausted
+    strategy_round_robin: Round robin — rotate to the next healthy credential after
+      each selection
+    strategy_random: Random — pick a random healthy credential each time
+    strategy_saved: 'Saved {provider} rotation strategy: {strategy}'
+    vision_setup: Vision & Image Analysis (optional)
+    vision_info: Vision uses a separate multimodal backend. {provider}
+    vision_no_backend: doesn't currently provide one Hermes can auto-use for vision,
+    vision_choose: so choose a backend now or skip and configure later.
+    vision_configure: 'Configure vision:'
+    vision_openrouter: OpenRouter — uses Gemini (free tier at openrouter.ai/keys)
+    vision_openai_compatible: OpenAI-compatible endpoint — base URL, API key, and
+      vision model
+    vision_skip: Skip for now
+    vision_openrouter_key: OpenRouter API key
+    vision_openrouter_saved: OpenRouter key saved — vision will use Gemini
+    vision_skipped: Skipped — vision won't be available
+    vision_base_url: Base URL (blank for OpenAI)
+    vision_api_key: API key
+    vision_openai_key: OpenAI API key
+    vision_model_select: 'Select vision model:'
+    vision_model_default: Use default (gpt-4o-mini)
+    vision_model_prompt: Vision model (blank = use main/custom default)
+    vision_configured: Vision configured with {base_url}{model_info}
+    vision_later_hint: Skipped — add later with 'hermes setup' or configure AUXILIARY_VISION_*
+      settings
+    tts_needs_espeak: NeuTTS requires espeak-ng for phonemization.
+    tts_install_espeak_mac: 'Install with: brew install espeak-ng'
+    tts_install_espeak_win: 'Install with: choco install espeak-ng'
+    tts_install_espeak_linux: 'Install with: sudo apt install espeak-ng'
+    tts_install_espeak_prompt: Install espeak-ng now?
+    tts_espeak_installed: espeak-ng installed
+    tts_install_failed: 'Could not install espeak-ng automatically: {error}'
+    tts_manual_install: Please install it manually and re-run setup.
+    tts_espeak_required: espeak-ng is required for NeuTTS. Install it manually before
+      using NeuTTS.
+    tts_installing_neutts: Installing neutts Python package...
+    tts_model_download: This will also download the TTS model (~300MB) on first use.
+    no_provider_warning: 'Warning: No inference provider configured. Run ''hermes
+      model'' to choose a provider and model, or set an API key (OPENROUTER_API_KEY,
+      OPENAI_API_KEY, etc.) in ~/.hermes/.env. Falling back to auto provider detection.'
+    current_model_label: 'Current model: {model}'
+    active_provider_label: 'Active provider: {provider}'
+    custom_endpoint_title: 'Custom OpenAI-compatible endpoint configuration:'
+    current_url_label: '  Current URL: {url}'
+    current_key_label: '  Current key: {key}'
+    base_url_example: e.g. https://api.example.com/v1
+    api_key_prompt_custom: 'API key [{placeholder}]: '
+    api_key_optional: optional
+    api_key_preview: '{prefix}...'
+    cancelled: Cancelled.
+    no_url_provided: No URL provided. Cancelled.
+    invalid_url: 'Invalid URL: {url} (must start with http:// or https://)'
+    hint_add_v1: '  Hint: Did you mean to add /v1 at the end?'
+    hint_local_servers: '  Most local model servers (Ollama, vLLM, llama.cpp) require
+      it.'
+    hint_example_url: '  e.g. {url}/v1'
+    add_v1_prompt: '  Add /v1? [Y/n]: '
+    updated_url: '  Updated URL: {url}'
+    verified_endpoint: Verified endpoint via {url} ({count} model(s) visible)
+    detected_model: '  Detected model: {model}'
+    use_model_confirm: '  Use this model? [Y/n]: '
+    model_name_prompt: 'Model name (e.g. gpt-4, llama-3-70b): '
+    available_models_title: '  Available models:'
+    select_model_prompt: '  Select model [1-{count}] or type name: '
+    context_length_prompt: 'Context length in tokens [leave blank for auto-detect]: '
+    display_name_prompt: 'Display name [{default}]: '
+    default_model_set: 'Default model set to: {model} (via {url})'
+    no_change: No change.
+    warning_endpoint_fallback: 'Warning: endpoint verification worked at {url}/models,
+      not the exact URL you entered. Saving the working base URL instead.'
+    warning_cannot_verify: 'Warning: could not verify this endpoint via {url}. Hermes
+      will still save it.'
+    warning_suggest_v1: '  If this server expects /v1 in the path, try base URL: {url}'
+    warning_suggest_no_v1: '  If /v1 should not be in the base URL, try: {url}'
+    invalid_context_length: 'Invalid context length: {value} — will auto-detect.'
+    auto_provider_name: Custom endpoint ({host})
+  launch_chat_prompt: Launch hermes chat now?
+  setup_complete: Setup complete! You're ready to go.
+  configure_all_hint: 'Configure all settings:    hermes setup'
+  connect_messaging_hint: 'Connect Telegram/Discord:  hermes setup gateway'
+  connect_messaging_title: Connect a messaging platform? (Telegram, Discord, etc.)
+  setup_messaging_now: Set up messaging now (recommended)
+  skip_messaging_later: Skip — set up later with 'hermes setup gateway'
+  quick_setup_title: Quick Setup — Missing Items Only
+  everything_configured: Everything is configured! Nothing to do.
+  reconfigure_hint_1: Run 'hermes setup' and choose 'Full Setup' to reconfigure,
+  reconfigure_hint_2: or pick a specific section from the menu.
+  required_settings_missing: '{count} required setting(s) missing:'
+  tool_api_keys_title: Tool API Keys
+  which_tools_prompt: Which tools would you like to configure?
+  messaging_platforms_title: Messaging Platforms
+  messaging_info_1: Connect Hermes to messaging apps to chat from anywhere.
+  messaging_info_2: You can configure these later with 'hermes setup gateway'.
+  which_platforms_prompt: Which platforms would you like to set up?
+  saved_short: ✓ Saved
+  skipped_short: Skipped
+  adding_config_defaults: Adding {count} new config option(s) with defaults...
+  added_config_field: Added {key} = {default}
+  platform_not_configured: not configured
+  platform_configured: configured
+  platform_partially_configured: partially configured
+  platform_enabled_not_paired: enabled, not paired
+  platform_configured_paired: configured + paired
+  platform_plugin_disabled: plugin disabled
+  weixin_setup_title: 💬 Weixin / WeChat Setup
+  weixin_step_1: 1. Hermes will open Tencent iLink QR login in this terminal.
+  weixin_step_2: 2. Use WeChat to scan and confirm the QR code.
+  weixin_step_3: 3. Hermes will store the returned account_id/token in ~/.hermes/.env.
+  weixin_step_4: 4. This adapter supports native text, image, video, and document
+    delivery.
+  weixin_already_configured: Weixin is already configured.
+  weixin_reconfigure_prompt: Reconfigure Weixin?
+  weixin_import_failed: 'Weixin adapter import failed: {error}'
+  weixin_install_deps_hint: Install gateway dependencies first, then retry.
+  weixin_missing_deps: 'Missing dependencies: Weixin needs aiohttp and cryptography.'
+  weixin_install_retry_hint: Install them, then rerun `hermes gateway setup`.
+  weixin_start_qr_prompt: Start QR login now?
+  weixin_cancelled: Cancelled.
+  weixin_setup_cancelled: Weixin setup cancelled.
+  weixin_qr_login_failed: 'QR login failed: {error}'
+  weixin_qr_incomplete: QR login did not complete.
+  weixin_dm_auth_prompt: How should direct messages be authorized?
+  weixin_dm_pairing_option: Use DM pairing approval (recommended)
+  weixin_dm_open_option: Allow all direct messages
+  weixin_dm_allowlist_option: Only allow listed user IDs
+  weixin_dm_disabled_option: Disable direct messages
+  weixin_dm_pairing_enabled: DM pairing enabled.
+  weixin_dm_pairing_info: Unknown DM users can request access and you approve them
+    with `hermes pairing approve`.
+  weixin_dm_open_warning: Open DM access enabled for Weixin.
+  weixin_allowlist_prompt: Allowed Weixin user IDs (comma-separated)
+  weixin_allowlist_saved: Weixin allowlist saved.
+  weixin_dm_disabled: Direct messages disabled.
+  weixin_note_title: 'Note:'
+  weixin_note_content_1: QR login connects an iLink bot identity (e.g. ...@im.bot),
+    not a
+  weixin_note_content_2: scriptable personal WeChat account. Ordinary WeChat groups
+    typically cannot
+  weixin_note_content_3: invite an @im.bot identity, and iLink does not deliver ordinary-group
+    events
+  weixin_note_content_4: to most bot accounts. The settings below only apply when
+    iLink actually
+  weixin_note_content_5: delivers group events for your account type — otherwise DM
+    remains the only
+  weixin_note_content_6: working channel regardless of this choice.
+  weixin_group_policy_prompt: How should group chats be handled?
+  weixin_group_disabled_option: Disable group chats (recommended)
+  weixin_group_open_option: Allow all group chats
+  weixin_group_allowlist_option: Only allow listed group chat IDs
+  weixin_group_disabled: Group chats disabled.
+  weixin_group_open_warning: All group chats enabled (only takes effect if iLink delivers
+    group events).
+  weixin_group_allowlist_prompt: Allowed group chat IDs (comma-separated, not member
+    user IDs)
+  weixin_group_allowlist_saved: Group allowlist saved (only takes effect if iLink
+    delivers group events).
+  weixin_home_channel_prompt: Use your Weixin user ID ({user_id}) as the home channel?
+  weixin_home_channel_set: Home channel set to {user_id}
+  weixin_configured: Weixin configured!
+  qqbot_setup_title: 🐧 QQ Bot Setup
+  qqbot_already_configured: QQ Bot is already configured.
+  qqbot_reconfigure_prompt: Reconfigure QQ Bot?
+  qqbot_method_title: How would you like to set up QQ Bot?
+  qqbot_method_qr: Scan QR code to add bot automatically (recommended)
+  qqbot_method_manual: Enter existing App ID and App Secret manually
+  qqbot_qr_cancelled: QQ Bot setup cancelled.
+  qqbot_qr_incomplete: QR setup did not complete. Continuing with manual input.
+  qqbot_register_info_1: Go to https://q.qq.com to register a QQ Bot application.
+  qqbot_register_info_2: Note your App ID and App Secret from the application page.
+  qqbot_app_id_prompt: App ID
+  qqbot_skip_no_app_id: Skipped — QQ Bot won't work without an App ID.
+  qqbot_app_secret_prompt: App Secret
+  qqbot_skip_no_secret: Skipped — QQ Bot won't work without an App Secret.
+  qqbot_access_title: How should direct messages be authorized?
+  qqbot_access_pairing: Use DM pairing approval (recommended)
+  qqbot_access_all: Allow all direct messages
+  qqbot_access_allowlist: Only allow listed user OpenIDs
+  qqbot_add_self_prompt: Add yourself ({user_openid}) to the allow list?
+  qqbot_allowlist_set: Allow list set to {user_openid}
+  qqbot_dm_pairing_enabled: DM pairing enabled.
+  qqbot_dm_pairing_info: Unknown users can request access; approve with `hermes pairing
+    approve`.
+  qqbot_open_dm_warning: Open DM access enabled for QQ Bot.
+  qqbot_allowlist_prompt: Allowed user OpenIDs (comma-separated)
+  qqbot_allowlist_saved: Allowlist saved.
+  qqbot_home_channel_prompt: Use your QQ user ID ({user_openid}) as the home channel?
+  qqbot_home_channel_set: Home channel set to {user_openid}
+  qqbot_home_channel_manual_prompt: Home channel OpenID (for cron/notifications, or
+    empty)
+  qqbot_home_channel_manual_set: Home channel set to {home_channel}
+  qqbot_configured: 🐧 QQ Bot configured!
+  qqbot_app_id_display: 'App ID: {app_id}'
+  standard_setup_title: '{emoji} {label} Setup'
+  standard_already_configured: '{label} is already configured.'
+  standard_reconfigure_prompt: Reconfigure {label}?
+  standard_allowlist_info_1: The gateway DENIES all users by default for security.
+  standard_allowlist_info_2: Enter user IDs to create an allowlist, or leave empty
+  standard_allowlist_info_3: and you'll be asked about open access next.
+  standard_access_title: How should unauthorized users be handled?
+  standard_access_open: Enable open access (anyone can message the bot)
+  standard_access_pairing: Use DM pairing (unknown users request access, you approve
+    with 'hermes pairing approve')
+  standard_access_skip: Skip for now (bot will deny all users until configured)
+  standard_open_access_warning: Open access enabled — anyone can use your bot!
+  standard_pairing_success: DM pairing mode — users will receive a code to request
+    access.
+  standard_pairing_info: 'Approve with: hermes pairing approve <platform> <code>'
+  standard_skip_configure_later: Skipped — configure later with 'hermes gateway setup'
+  standard_saved: Saved {var_name}
+  standard_skipped_no_token: Skipped — {label} won't work without this.
+  standard_skipped_later: Skipped (can configure later)
+  standard_home_channel_prompt: Use your user ID ({user_id}) as the home channel?
+  standard_home_channel_set: Home channel set to {user_id}
+  standard_configured: '{emoji} {label} configured!'
+  telegram_already_configured: 'Telegram: already configured'
+  telegram_reconfigure_prompt: Reconfigure Telegram?
+  telegram_no_allowlist_warning: ⚠️  Telegram has no user allowlist - anyone can use
+    your bot!
+  telegram_add_users_prompt: Add allowed users now?
+  telegram_find_id_info: 'To find your Telegram user ID: message @userinfobot'
+  telegram_allowed_users_prompt: Allowed user IDs (comma-separated)
+  telegram_allowlist_configured: Telegram allowlist configured
+  telegram_create_bot_info: Create a bot via @BotFather on Telegram
+  telegram_token_prompt: Telegram bot token
+  telegram_invalid_token: 'Invalid token format. Expected: <numeric_id>:<alphanumeric_hash>
+    (e.g., 123456789:ABCdefGHI-jklMNOpqrSTUvwxYZ)'
+  telegram_token_saved: Telegram token saved
+  telegram_security_title: '🔒 Security: Restrict who can use your bot'
+  telegram_find_id_step_1: 1. Message @userinfobot on Telegram
+  telegram_find_id_step_2: 2. It will reply with your numeric ID (e.g., 123456789)
+  telegram_allowed_users_full_prompt: Allowed user IDs (comma-separated, leave empty
+    for open access)
+  telegram_allowlist_full_configured: Telegram allowlist configured - only listed
+    users can use the bot
+  telegram_no_allowlist_open_warning: ⚠️  No allowlist set - anyone who finds your
+    bot can use it!
+  telegram_home_channel_title: '📬 Home Channel: where Hermes delivers cron job results,'
+  telegram_home_channel_info_1: cross-platform messages, and notifications.
+  telegram_home_channel_info_2: For Telegram DMs, this is your user ID (same as above).
+  telegram_use_as_home_prompt: Use your user ID ({user_id}) as the home channel?
+  telegram_home_set: Telegram home channel set to {channel_id}
+  telegram_manual_home_prompt: Home channel ID (or leave empty to set later with /set-home
+    in Telegram)
+  telegram_set_home_later_info: You can also set this later by typing /set-home in
+    your Telegram chat.
+  telegram_home_empty_prompt: Home channel ID (leave empty to set later)
+  discord_already_configured: 'Discord: already configured'
+  discord_reconfigure_prompt: Reconfigure Discord?
+  discord_no_allowlist_warning: ⚠️  Discord has no user allowlist - anyone can use
+    your bot!
+  discord_add_users_prompt: Add allowed users now?
+  discord_find_id_info: 'To find your Discord user ID:'
+  discord_find_id_step_1: 1. Enable Developer Mode in Discord settings
+  discord_find_id_step_2: 2. Right-click your name → Copy ID
+  discord_allowed_users_prompt: Allowed user IDs (comma-separated)
+  discord_allowlist_configured: Discord allowlist configured
+  discord_create_app_info: Create an application at https://discord.com/developers/applications
+  discord_bot_token_prompt: Discord bot token
+  discord_token_saved: Discord token saved
+  discord_security_title: '🔒 Security: Restrict who can use your bot'
+  discord_allowed_users_full_prompt: Allowed user IDs (comma-separated, leave empty
+    for open access)
+  discord_allowlist_full_configured: Discord allowlist configured - only listed users
+    can use the bot
+  discord_no_allowlist_open_warning: ⚠️  No allowlist set - anyone who finds your
+    bot can use it!
+  discord_home_channel_title: '📬 Home Channel: where Hermes delivers cron job results,'
+  discord_home_channel_info: For Discord DMs, this is your user ID (same as above).
+  discord_use_as_home_prompt: Use your user ID ({user_id}) as the home channel?
+  discord_home_set: Discord home channel set to {channel_id}
+  discord_manual_home_prompt: Home channel ID (or leave empty to set later)
+  discord_home_empty_prompt: Home channel ID (leave empty to set later)
+  slack_already_configured: 'Slack: already configured'
+  slack_reconfigure_prompt: Reconfigure Slack?
+  slack_no_allowlist_warning: ⚠️  Slack has no user allowlist - anyone can use your
+    bot!
+  slack_add_users_prompt: Add allowed users now?
+  slack_find_id_info: 'To find your Slack user ID:'
+  slack_find_id_step_1: 1. Click your profile picture in Slack
+  slack_find_id_step_2: 2. Click 'Copy member ID'
+  slack_allowed_users_prompt: Allowed user IDs (comma-separated)
+  slack_allowlist_configured: Slack allowlist configured
+  slack_create_app_info: Create a Slack app at https://api.slack.com/apps
+  slack_bot_token_prompt: Slack bot token (starts with xoxb-)
+  slack_token_saved: Slack token saved
+  slack_security_title: '🔒 Security: Restrict who can use your bot'
+  slack_allowed_users_full_prompt: Allowed user IDs (comma-separated, leave empty
+    for open access)
+  slack_allowlist_full_configured: Slack allowlist configured - only listed users
+    can use the bot
+  slack_no_allowlist_open_warning: ⚠️  No allowlist set - anyone who finds your bot
+    can use it!
+  slack_home_channel_title: '📬 Home Channel: where Hermes delivers cron job results,'
+  slack_home_channel_info: For Slack DMs, this is your user ID (same as above).
+  slack_use_as_home_prompt: Use your user ID ({user_id}) as the home channel?
+  slack_home_set: Slack home channel set to {channel_id}
+  slack_manual_home_prompt: Home channel ID (or leave empty to set later)
+  slack_home_empty_prompt: Home channel ID (leave empty to set later)
+  whatsapp_setup_title: ⚕ WhatsApp Setup
+  whatsapp_mode_question: How will you use WhatsApp with Hermes?
+  whatsapp_mode_bot: 1. Separate bot number (recommended)
+  whatsapp_mode_bot_desc_1: People message the bot's number directly — cleanest experience.
+  whatsapp_mode_bot_desc_2: Requires a second phone number with WhatsApp installed
+    on a device.
+  whatsapp_mode_self: 2. Personal number (self-chat)
+  whatsapp_mode_self_desc_1: You message yourself to talk to the agent.
+  whatsapp_mode_self_desc_2: Quick to set up, but the UX is less intuitive.
+  whatsapp_choose_mode_prompt: 'Choose [1/2]:'
+  whatsapp_setup_cancelled: Setup cancelled.
+  whatsapp_mode_bot_selected: '✓ Mode: separate bot number'
+  whatsapp_second_number_title: 'Getting a second number for the bot:'
+  whatsapp_second_number_tip_1: 'Easiest: Install WhatsApp Business (free app)'
+  whatsapp_second_number_tip_2: 'on your phone with a second number:'
+  whatsapp_second_number_option_1: '• Dual-SIM: use your 2nd SIM slot'
+  whatsapp_second_number_option_2: '• Google Voice: free US number (voice.google)'
+  whatsapp_second_number_option_3: '• Prepaid SIM: $3-10, verify once'
+  whatsapp_second_number_note_1: WhatsApp Business runs alongside your personal
+  whatsapp_second_number_note_2: WhatsApp — no second phone needed.
+  whatsapp_mode_self_selected: '✓ Mode: personal number (self-chat)'
+  whatsapp_mode_display: '✓ Mode: {mode_label}'
+  whatsapp_already_enabled: ✓ WhatsApp is already enabled
+  whatsapp_enabled: ✓ WhatsApp enabled
+  whatsapp_allowed_users_display: '✓ Allowed users: {users}'
+  whatsapp_update_users_prompt: Update allowed users? [y/N]
+  whatsapp_bot_users_prompt: 'Phone numbers that can message the bot (comma-separated):'
+  whatsapp_self_users_prompt: 'Your phone number (e.g. 15551234567):'
+  whatsapp_users_updated: '✓ Updated to: {phone}'
+  whatsapp_who_allowed_bot: Who should be allowed to message the bot?
+  whatsapp_users_prompt_all: 'Phone numbers (comma-separated, or * for anyone):'
+  whatsapp_users_set: '✓ Allowed users set: {phone}'
+  whatsapp_no_allowlist_warning: ⚠ No allowlist — the agent will respond to ALL incoming
+    messages
+  whatsapp_bridge_not_found: ✗ Bridge script not found at {path}
+  whatsapp_install_deps: → Installing WhatsApp bridge dependencies (this can take
+    a few minutes)...
+  whatsapp_npm_not_found: ✗ npm not found on PATH — install Node.js first
+  whatsapp_install_cancelled: ✗ Install cancelled
+  whatsapp_install_failed: '✗ npm install failed:'
+  whatsapp_deps_installed: ✓ Dependencies installed
+  whatsapp_deps_already_installed: ✓ Bridge dependencies already installed
+  whatsapp_session_found: ✓ Existing WhatsApp session found
+  whatsapp_repair_prompt: Re-pair? This will clear the existing session. [y/N]
+  whatsapp_session_cleared: ✓ Session cleared
+  whatsapp_configured_paired: ✓ WhatsApp is configured and paired!
+  whatsapp_start_gateway_hint: 'Start the gateway with: hermes gateway'
+  whatsapp_scan_title_bot: "\U0001F4F1 Open WhatsApp (or WhatsApp Business) on the\n\
+    \   phone with the BOT's number, then scan:"
+  whatsapp_scan_title_self: '📱 Open WhatsApp on your phone, then scan:'
+  whatsapp_scan_instructions: Settings → Linked Devices → Link a Device
+  whatsapp_paired_success: ✓ WhatsApp paired successfully!
+  whatsapp_next_steps_bot_1: '1. Start the gateway:  hermes gateway'
+  whatsapp_next_steps_bot_2: 2. Send a message to the bot's WhatsApp number
+  whatsapp_next_steps_bot_3: 3. The agent will reply automatically
+  whatsapp_next_steps_self_1: '1. Start the gateway:  hermes gateway'
+  whatsapp_next_steps_self_2: 2. Open WhatsApp → Message Yourself
+  whatsapp_next_steps_self_3: 3. Type a message — the agent will reply
+  whatsapp_tip_prefix: 'Tip: Agent responses are prefixed with ''⚕ Hermes Agent'''
+  whatsapp_tip_self_chat: so you can tell them apart from your own messages.
+  whatsapp_install_service_hint: 'Or install as a service: hermes gateway install'
+  whatsapp_pairing_incomplete: ⚠ Pairing may not have completed. Run 'hermes whatsapp'
+    to try again.
+  email_setup_instruction_1: 1. Use a dedicated email account for your Hermes agent
+  email_setup_instruction_2: '2. For Gmail: enable 2FA, then create an App Password
+    at'
+  email_setup_instruction_3: '   https://myaccount.google.com/apppasswords'
+  email_setup_instruction_4: '3. For other providers: use your email password or app-specific
+    password'
+  email_setup_instruction_5: 4. IMAP must be enabled on your email account
+  tool_availability_title: Tool Availability Summary
+  tool_categories_available: '{available}/{total} tool categories available:'
+  tools_disabled_warning_1: Some tools are disabled. Run 'hermes setup tools' to configure
+    them,
+  tools_disabled_warning_2: or edit {hermes_home}/.env directly to add the missing
+    API keys.
+  setup_complete_banner: ✓ Setup Complete!
+  files_location_title: '📁 All your files are in {hermes_home}/:'
+  settings_label: 'Settings:'
+  api_keys_label: 'API Keys:'
+  data_label: 'Data:'
+  edit_config_title: '📝 To edit your configuration:'
+  cmd_hermes_setup: hermes setup
+  cmd_hermes_setup_desc: Re-run the full wizard
+  cmd_hermes_setup_model: hermes setup model
+  cmd_hermes_setup_model_desc: Change model/provider
+  cmd_hermes_setup_terminal: hermes setup terminal
+  cmd_hermes_setup_terminal_desc: Change terminal backend
+  cmd_hermes_setup_gateway: hermes setup gateway
+  cmd_hermes_setup_gateway_desc: Configure messaging
+  cmd_hermes_setup_tools: hermes setup tools
+  cmd_hermes_setup_tools_desc: Configure tool providers
+  cmd_hermes_config: hermes config
+  cmd_hermes_config_desc: View current settings
+  cmd_hermes_config_edit: hermes config edit
+  cmd_hermes_config_edit_desc: Open config in your editor
+  cmd_hermes_config_set: hermes config set <key> <value>
+  cmd_hermes_config_set_desc: Set a specific value
+  edit_files_directly: 'Or edit the files directly:'
+  ready_to_go_title: 🚀 Ready to go!
+  cmd_hermes: hermes
+  cmd_hermes_desc: Start chatting
+  cmd_hermes_gateway: hermes gateway
+  cmd_hermes_gateway_desc: Start messaging gateway
+  cmd_hermes_doctor: hermes doctor
+  cmd_hermes_doctor_desc: Check for issues
+  terminal:
+    title: Terminal Backend
+    description: Choose the environment where Hermes executes commands.
+    affects_info: This affects tool execution, file access, and isolation.
+    guide_link: 'Guide: {_DOCS_BASE}/developer-guide/environments'
+    select_backend: 'Select terminal backend:'
+    backend_local: Local - run directly on this machine (default)
+    backend_docker: Docker - isolated container with configurable resources
+    backend_modal: Modal - serverless cloud sandbox
+    backend_ssh: SSH - run on a remote machine
+    backend_daytona: Daytona - persistent cloud development environment
+    backend_vercel: Vercel Sandbox - cloud microVM with snapshot filesystem persistence
+    backend_singularity: Singularity/Apptainer - HPC-friendly container
+    keep_current: Keep current ({backend})
+    keeping_current: 'Keeping current backend: {backend}'
+    backend_set: 'Terminal backend set to: {backend}'
+    local_title: 'Terminal backend: Local'
+    local_info: Commands run directly on this machine.
+    gateway_cwd: 'Gateway working directory:'
+    gateway_cwd_info: Used by Telegram/Discord/cron sessions.
+    cli_tui_info: CLI/TUI always uses your launch directory instead.
+    cwd_prompt: Gateway working directory
+    sudo_support: Enable sudo support? (stores password for apt install, etc.)
+    sudo_configured: 'Sudo password: configured'
+    sudo_saved: Sudo password saved
+    sudo_prompt: Sudo password
+    docker_title: 'Terminal backend: Docker'
+    docker_not_found: Docker not found in PATH!
+    docker_install_hint: 'Install Docker: https://docs.docker.com/get-docker/'
+    docker_found: 'Docker found: {path}'
+    docker_image_prompt: Docker image
+    singularity_title: 'Terminal backend: Singularity/Apptainer'
+    singularity_not_found: Singularity/Apptainer not found in PATH!
+    singularity_install_hint: 'Install: https://apptainer.org/docs/admin/main/installation.html'
+    singularity_found: 'Found: {path}'
+    container_image_prompt: Container image
+    modal_title: 'Terminal backend: Modal'
+    modal_info: Serverless cloud sandboxes. Each session gets its own container.
+    managed_modal: Use my Nous subscription
+    own_modal: Use my own Modal account
+    modal_billing: 'Select how Modal execution should be billed:'
+    managed_modal_info: Modal execution will use the managed Nous gateway and bill
+      to your subscription.
+    direct_modal_credentials: Direct Modal credentials are still configured, but this
+      backend is pinned to managed mode.
+    direct_modal_info: 'Requires a Modal account: https://modal.com'
+    installing_modal: Installing modal SDK...
+    modal_installed: modal SDK installed
+    modal_install_failed: 'Install failed — run manually: pip install modal'
+    modal_auth: 'Modal authentication:'
+    modal_token_info: 'Get your token at: https://modal.com/settings'
+    modal_token_configured: 'Modal token: already configured'
+    update_modal_credentials: Update Modal credentials?
+    modal_token_id_prompt: Modal Token ID
+    modal_token_secret_prompt: Modal Token Secret
+    daytona_title: 'Terminal backend: Daytona'
+    daytona_info: Persistent cloud development environments.
+    daytona_persistence: Each session gets a dedicated sandbox with filesystem persistence.
+    daytona_signup: 'Sign up at: https://daytona.io'
+    installing_daytona: Installing daytona SDK...
+    daytona_installed: daytona SDK installed
+    daytona_install_failed: 'Install failed — run manually: pip install daytona'
+    daytona_api_key_configured: 'Daytona API key: already configured'
+    update_api_key: Update API key?
+    daytona_api_key_prompt: Daytona API key
+    daytona_updated: Updated
+    daytona_configured: Configured
+    sandbox_image_prompt: Sandbox image
+    vercel_title: 'Terminal backend: Vercel Sandbox'
+    vercel_info: Cloud microVM sandboxes with snapshot-backed filesystem persistence.
+    vercel_sdk_hint: 'Requires the optional SDK: pip install ''hermes-agent[vercel]'''
+    installing_vercel: Installing vercel SDK...
+    vercel_installed: vercel SDK installed
+    vercel_install_failed: 'Install failed — run manually: pip install ''hermes-agent[vercel]'''
+    ssh_title: 'Terminal backend: SSH'
+    ssh_info: Run commands on a remote machine via SSH.
+    ssh_host_prompt: SSH host (hostname or IP)
+    ssh_user_prompt: SSH user
+    ssh_port_prompt: SSH port
+    ssh_key_prompt: SSH private key path
+    test_ssh_connection: Test SSH connection?
+    testing_connection: Testing connection...
+    ssh_success: SSH connection successful!
+    ssh_failed: 'SSH connection failed: {error}'
+    ssh_check_hint: Check your SSH key and host settings.
+  agent:
+    title: Agent Settings
+    guide_link: 'Guide: {_DOCS_BASE}/user-guide/configuration'
+    max_iterations_title: Maximum Iterations
+    max_iterations_info: Maximum tool-calling iterations per conversation.
+    max_iterations_cost: Higher = more complex tasks, but costs more tokens.
+    max_iterations_hint: Press Enter to keep {current}. Use 90 for most tasks or 150+
+      for open exploration.
+    max_iterations_prompt: Max iterations
+    max_iterations_set: Max iterations set to {value}
+    invalid_number: Invalid number, keeping current value
+    tool_progress_title: Tool Progress Display
+    tool_progress_info: Controls how much tool activity is shown (CLI and messaging).
+    tool_progress_off: off     — Silent, just the final response
+    tool_progress_new: new     — Show tool name only when it changes (less noise)
+    tool_progress_all: all     — Show every tool call with a short preview
+    tool_progress_verbose: verbose — Full args, results, and debug logs
+    tool_progress_prompt: Tool progress mode
+    tool_progress_set: 'Tool progress set to: {mode}'
+    unknown_mode: Unknown mode '{mode}', keeping '{current}'
+    compression_title: Context Compression
+    compression_info: Automatically summarizes old messages when context gets too
+      long.
+    compression_threshold_info: Higher threshold = compress later (use more context).
+      Lower = compress sooner.
+    compression_threshold_prompt: Compression threshold (0.5-0.95)
+    compression_set: Context compression threshold set to {value}
+    reset_title: Session Reset Policy
+    reset_info_1: Messaging sessions (Telegram, Discord, etc.) accumulate context
+      over time.
+    reset_info_2: Each message adds to the conversation history, which means growing
+      API costs.
+    reset_info_3: To manage this, sessions can automatically reset after a period
+      of inactivity
+    reset_info_4: or at a fixed time each day. When a reset happens, the agent saves
+      important
+    reset_info_5: things to its persistent memory first — but the conversation context
+      is cleared.
+    reset_manual_hint: You can also manually reset anytime by typing /reset in chat.
+    reset_mode_both: Inactivity + daily reset (recommended - reset whichever comes
+      first)
+    reset_mode_idle: Inactivity only (reset after N minutes of no messages)
+    reset_mode_daily: Daily only (reset at a fixed hour each day)
+    reset_mode_none: Never auto-reset (context lives until /reset or context compression)
+    reset_keep_current: Keep current settings
+    reset_mode_prompt: 'Session reset mode:'
+    reset_idle_prompt: Inactivity timeout (minutes)
+    reset_hour_prompt: Daily reset hour (0-23, local time)
+    reset_both_success: Sessions reset after {idle} min idle or daily at {hour}:00
+    reset_idle_success: Sessions reset after {idle} min of inactivity
+    reset_daily_success: Sessions reset daily at {hour}:00
+    reset_none_info: Sessions will never auto-reset. Context is managed only by compression.
+    reset_none_warning: Long conversations will grow in cost. Use /reset manually
+      when needed.
+cli:
+  description: Hermes Agent - AI assistant with tool-calling capabilities
+  subcommand_help: Command to run
+  chat_help: Interactive chat with the agent
+  chat_description: Start an interactive chat session with Hermes Agent
+  model_help: Select default model and provider
+  fallback_help: Manage fallback providers (tried when the primary model fails)
+  gateway_help: Messaging gateway management
+  setup_help: Interactive setup wizard
+  whatsapp_help: Set up WhatsApp integration
+  slack_help: Slack integration helpers (manifest generation, etc.)
+  login_help: Authenticate with an inference provider
+  logout_help: Clear authentication for an inference provider
+  auth_help: Manage pooled provider credentials
+  status_help: Show status of all components
+  cron_help: Cron job management
+  webhook_help: Manage dynamic webhook subscriptions
+  kanban_help: Multi-profile collaboration board (tasks, links, comments)
+  hooks_help: Inspect and manage shell-script hooks
+  doctor_help: Check configuration and dependencies
+  dump_help: Dump setup summary for support/debugging
+  debug_help: Debug tools — upload logs and system info for support
+  backup_help: Back up Hermes home directory to a zip file
+  checkpoints_help: Inspect / prune / clear ~/.hermes/checkpoints/
+  import_help: Restore a Hermes backup from a zip file
+  config_help: View and edit configuration
+  pairing_help: Manage DM pairing codes for user authorization
+  skills_help: Search, install, configure, and manage skills
+  plugins_help: Manage plugins — install, update, remove, list
+  curator_help: Background skill maintenance (curator) — status, run, pause, pin
+  memory_help: Configure external memory provider
+  tools_help: Configure which tools are enabled per platform
+  tools_option_summary: Print a summary of enabled tools per platform and exit
+  tools_sub_list_help: Show all tools and their enabled/disabled status
+  tools_sub_disable_help: Disable toolsets or MCP tools
+  tools_sub_enable_help: Enable toolsets or MCP tools
+  tools_sub_list_platform_help: 'Platform to show (default: cli)'
+  tools_sub_disable_names_help: Toolset name or MCP tool
+  tools_sub_disable_platform_help: 'Platform to apply to (default: cli)'
+  tools_sub_enable_names_help: Toolset name or MCP tool
+  tools_sub_enable_platform_help: 'Platform to apply to (default: cli)'
+  computer_use_help: Manage the Computer Use (cua-driver) backend (macOS)
+  mcp_help: Manage MCP servers and run Hermes as an MCP server
+  sessions_help: Manage session history (list, rename, export, prune, delete)
+  insights_help: Show usage insights and analytics
+  claw_help: OpenClaw migration tools
+  version_help: Show version information
+  update_help: Update Hermes Agent to the latest version
+  uninstall_help: Uninstall Hermes Agent
+  acp_help: Run Hermes Agent as an ACP (Agent Client Protocol) server
+  profile_help: Manage profiles — multiple isolated Hermes instances
+  completion_help: Print shell completion script (bash, zsh, or fish)
+  dashboard_help: Start the web UI dashboard
+  logs_help: View and filter Hermes log files
+  option_version: Show version and exit
+  option_oneshot: 'One-shot mode: send a single prompt and print ONLY the final response
+    text to stdout. No banner, no spinner, no tool previews, no session_id line. Tools,
+    memory, rules, and AGENTS.md in the CWD are loaded as normal; approvals are auto-bypassed.
+    Intended for scripts / pipes.'
+  option_model: Model override for this invocation (e.g. anthropic/claude-sonnet-4.6).
+    Applies to -z/--oneshot and --tui. Also settable via HERMES_INFERENCE_MODEL env
+    var.
+  option_provider: Provider override for this invocation (e.g. openrouter, anthropic).
+    Applies to -z/--oneshot and --tui. Also settable via HERMES_INFERENCE_PROVIDER
+    env var.
+  option_toolsets: Comma-separated toolsets to enable for this invocation. Applies
+    to -z/--oneshot and --tui.
+  option_resume: Resume a previous session by ID or title
+  option_continue: Resume a session by name, or the most recent if no name given
+  option_worktree: Run in an isolated git worktree (for parallel agents)
+  option_accept_hooks: 'Auto-approve any unseen shell hooks declared in config.yaml
+    without a TTY prompt. Equivalent to HERMES_ACCEPT_HOOKS=1 or hooks_auto_accept:
+    true in config.yaml. Use on CI / headless runs that can''t prompt.'
+  option_skills: Preload one or more skills for the session (repeat flag or comma-separate)
+  option_yolo: Bypass all dangerous command approval prompts (use at your own risk)
+  option_pass_session_id: Include the session ID in the agent's system prompt
+  option_ignore_user_config: Ignore ~/.hermes/config.yaml and fall back to built-in
+    defaults (credentials in .env are still loaded)
+  option_ignore_rules: Skip auto-injection of AGENTS.md, SOUL.md, .cursorrules, memory,
+    and preloaded skills
+  option_tui: Launch the modern TUI instead of the classic REPL
+  option_dev: 'With --tui: run TypeScript sources via tsx (skip dist build)'
+  option_help: show this help message and exit
+  chat_option_query: Single query (non-interactive mode)
+  chat_option_image: Optional local image path to attach to a single query
+  chat_option_model: 'Model to use (e.g., anthropic/claude-sonnet-4)'
+  chat_option_toolsets: Comma-separated toolsets to enable
+  chat_option_provider: 'Inference provider (default: auto). Built-in or a user-defined name from `providers:` in config.yaml.'
+  chat_option_verbose: Verbose output
+  chat_option_quiet: 'Quiet mode for programmatic use: suppress banner, spinner, and tool previews. Only output the final response and session info.'
+  chat_option_resume: Resume a previous session by ID (shown on exit)
+  chat_option_worktree: Run in an isolated git worktree (for parallel agents on the same repo)
+  chat_option_accept_hooks: 'Auto-approve any unseen shell hooks declared in config.yaml without a TTY prompt (see also HERMES_ACCEPT_HOOKS env var and hooks_auto_accept: in config.yaml).'
+  chat_option_checkpoints: Enable filesystem checkpoints before destructive file operations (use /rollback to restore)
+  chat_option_max_turns: 'Maximum tool-calling iterations per conversation turn (default: 90, or agent.max_turns in config)'
+  chat_option_ignore_user_config: 'Ignore ~/.hermes/config.yaml and fall back to built-in defaults (credentials in .env are still loaded). Useful for isolated CI runs, reproduction, and third-party integrations.'
+  chat_option_ignore_rules: 'Skip auto-injection of AGENTS.md, SOUL.md, .cursorrules, memory, and preloaded skills. Combine with --ignore-user-config for a fully isolated run.'
+  chat_option_source: 'Session source tag for filtering (default: cli). Use ''tool'' for third-party integrations that should not appear in user session lists.'
+  model_description: Interactively select your inference provider and default model
+  model_option_portal_url: 'Portal base URL for Nous login (default: production portal)'
+  model_option_inference_url: 'Inference API base URL for Nous login (default: production inference API)'
+  model_option_client_id: 'OAuth client id to use for Nous login (default: hermes-cli)'
+  model_option_scope: OAuth scope to request for Nous login
+  model_option_no_browser: Do not attempt to open the browser automatically during Nous login
+  model_option_timeout: 'HTTP request timeout in seconds for Nous login (default: 15)'
+  model_option_ca_bundle: Path to CA bundle PEM file for Nous TLS verification
+  model_option_insecure: Disable TLS verification for Nous login (testing only)
+  fallback_description: 'Manage the fallback provider chain. Fallback providers are tried in order when the primary model fails with rate-limit, overload, or connection errors.'
+  fallback_sub_list_help: Show the current fallback chain (default when no subcommand)
+  fallback_sub_add_help: Pick a provider + model (same picker as `hermes model`) and append to the chain
+  fallback_sub_remove_help: Pick an entry to delete from the chain
+  fallback_sub_clear_help: Remove all fallback entries
+  gateway_description: Manage the messaging gateway (Telegram, Discord, WhatsApp)
+  gateway_option_accept_hooks: 'Auto-approve unseen shell hooks without a TTY prompt (equivalent to HERMES_ACCEPT_HOOKS=1 / hooks_auto_accept: true).'
+  gateway_sub_run_help: Run gateway in foreground (recommended for WSL, Docker, Termux)
+  gateway_sub_start_help: Start the installed systemd/launchd background service
+  gateway_sub_stop_help: Stop gateway service
+  gateway_sub_restart_help: Restart gateway service
+  gateway_sub_status_help: Show gateway status
+  gateway_sub_install_help: Install gateway as a systemd/launchd background service
+  gateway_sub_uninstall_help: Uninstall gateway service
+  gateway_sub_list_help: List all profiles and their gateway status
+  gateway_sub_setup_help: Configure messaging platforms
+  gateway_sub_migrate_legacy_help: Remove legacy hermes.service units from pre-rename installs
+  setup_description: 'Configure Hermes Agent with an interactive wizard. Run a specific section: hermes setup model|tts|terminal|gateway|tools|agent'
+  setup_option_non_interactive: Non-interactive mode (use defaults/env vars)
+  setup_option_reset: Reset configuration to defaults
+  setup_option_reconfigure: '(Default on existing installs.) Re-run the full wizard, showing current values as defaults. Kept for backwards compatibility — a bare ''hermes setup'' now does this.'
+  setup_option_quick: 'On existing installs: only prompt for items that are missing or unset, instead of running the full reconfigure wizard.'
+  setup_option_section: Run a specific setup section instead of the full wizard
+  whatsapp_description: Configure WhatsApp and pair via QR code
+  slack_description: Slack integration helpers for Hermes.
+  login_description: Run OAuth device authorization flow for Hermes CLI
+  logout_description: Remove stored credentials and reset provider config
+  status_description: Display status of Hermes Agent components
+  webhook_description: Create, list, and remove webhook subscriptions for event-driven agent activation
+  doctor_description: Diagnose issues with Hermes Agent setup
+  dump_description: Output a compact, plain-text summary of your Hermes setup
+  debug_description: Debug utilities for Hermes Agent. Use 'hermes debug share' to upload logs and system info for support.
+  backup_description: Create a zip archive of your entire Hermes configuration, sessions, and data for safe keeping or migration.
+  checkpoints_description: Manage the filesystem checkpoint store — the shadow git repo that tracks file changes during agent runs.
+  import_description: Extract a previously created Hermes backup into your home directory to restore or migrate your setup.
+  config_description: Manage Hermes Agent configuration
+  pairing_description: Approve or revoke user access via pairing codes
+  skills_description: Search, install, inspect, audit, configure, and manage skills from skills.sh, well-known agent skill endpoints, GitHub, ClawHub, and other registries.
+  plugins_description: Install plugins from Git repositories, update, remove, or list them.
+  sessions_description: View and manage the SQLite session store
+  insights_description: Analyze session history to show token usage, costs, tool patterns, and activity trends
+  claw_description: Migrate settings, memories, skills, and API keys from OpenClaw to Hermes
+  claw_migrate_description: Import settings, memories, skills, and API keys from an OpenClaw installation.
+  claw_cleanup_description: Scan for and archive leftover OpenClaw directories to prevent state fragmentation
+  update_description: Pull the latest changes from git and reinstall dependencies
+  uninstall_description: Remove Hermes Agent from your system. Can keep configs/data for reinstall.
+  acp_description: Start Hermes Agent in ACP mode for editor integration (VS Code, Zed, JetBrains)
+  dashboard_description: Launch the Hermes Agent web dashboard for managing config, API keys, and sessions
+  logs_description: View, tail, and filter agent.log / errors.log / gateway.log
+  profile_description: Manage multiple isolated Hermes instances with separate configs, sessions, and credentials
+  cron_description: Manage scheduled tasks
+  cron_sub_list_help: List scheduled jobs
+  cron_sub_create_help: Create a scheduled job
+  cron_sub_edit_help: Edit an existing scheduled job
+  cron_sub_pause_help: Pause a scheduled job
+  cron_sub_resume_help: Resume a paused job
+  cron_sub_run_help: Run a job on the next scheduler tick
+  cron_sub_remove_help: Remove a scheduled job
+  cron_sub_status_help: Check if cron scheduler is running
+  cron_sub_tick_help: Run due jobs once and exit
+  auth_description: Manage pooled provider credentials
+  auth_sub_add_help: Add a pooled credential
+  auth_sub_list_help: List pooled credentials
+  auth_sub_remove_help: Remove a pooled credential
+  auth_sub_reset_help: Reset a credential to force re-auth
+  auth_sub_status_help: Show credential status
+  auth_sub_logout_help: Clear stored credentials
+  auth_sub_spotify_help: Authenticate with Spotify for voice/music features
+  login_option_provider: 'Provider to authenticate with (default: nous)'
+  login_option_portal_url: 'Portal base URL (default: production portal)'
+  login_option_inference_url: 'Inference API base URL (default: production inference API)'
+  login_option_client_id: 'OAuth client id to use (default: hermes-cli)'
+  login_option_scope: OAuth scope to request
+  login_option_no_browser: Do not attempt to open the browser automatically
+  login_option_timeout: 'HTTP request timeout in seconds (default: 15)'
+  login_option_ca_bundle: Path to CA bundle PEM file for TLS verification
+  login_option_insecure: Disable TLS verification (testing only)
+  logout_option_provider: 'Provider to log out from (default: active provider)'
+  config_sub_show_help: Show current configuration
+  config_sub_edit_help: Open config file in editor
+  config_sub_set_help: Set a configuration value
+  config_sub_path_help: Print config file path
+  config_sub_env_path_help: Print .env file path
+  config_sub_check_help: Check for missing/outdated config
+  config_sub_migrate_help: Update config with new options
+  sessions_sub_list_help: List recent sessions
+  sessions_sub_export_help: Export sessions to JSON
+  sessions_sub_delete_help: Delete sessions by ID or name
+  sessions_sub_prune_help: Delete old sessions
+  sessions_sub_stats_help: Show session store statistics
+  sessions_sub_rename_help: Rename a session
+  sessions_sub_browse_help: Browse and manage sessions interactively
+  profile_sub_list_help: List all profiles
+  profile_sub_use_help: Set sticky default profile
+  profile_sub_create_help: Create a new profile
+  profile_sub_delete_help: Delete a profile
+  profile_sub_show_help: Show profile details
+  profile_sub_alias_help: Manage profile aliases
+  profile_sub_rename_help: Rename a profile
+  profile_sub_export_help: Export profile to zip
+  profile_sub_import_help: Import profile from zip
+  profile_sub_install_help: Install a profile from git repo
+  profile_sub_update_help: Update profile from git repo
+  profile_sub_info_help: Show profile information
+  skills_sub_browse_help: Browse all available skills (paginated)
+  skills_sub_search_help: Search skill registries
+  skills_sub_install_help: Install a skill
+  skills_sub_inspect_help: Preview a skill without installing
+  skills_sub_list_help: List installed skills
+  skills_sub_check_help: Check installed hub skills for updates
+  skills_sub_update_help: Update installed hub skills
+  skills_sub_audit_help: Re-scan installed hub skills
+  skills_sub_uninstall_help: Remove a hub-installed skill
+  skills_sub_reset_help: 'Reset a bundled skill — clears user-modified tracking so updates work again'
+  skills_sub_publish_help: Publish a skill to a registry
+  skills_sub_snapshot_help: Export/import skill configurations
+  skills_sub_tap_help: Manage skill sources
+  skills_sub_config_help: Interactive skill configuration — enable/disable individual skills
+  plugins_sub_install_help: Install a plugin from a Git URL or owner/repo
+  plugins_sub_update_help: Pull latest changes for an installed plugin
+  plugins_sub_remove_help: Remove an installed plugin
+  plugins_sub_list_help: List installed plugins
+  plugins_sub_enable_help: Enable a disabled plugin
+  plugins_sub_disable_help: Disable a plugin without removing it
+  epilogue_examples_title: 'Examples:'
+  epilogue_for_more_help: 'For more help on a command:'
+  epilogue_example_hermes: '    hermes                        Start interactive chat'
+  epilogue_example_chat_q: '    hermes chat -q "Hello"        Single query mode'
+  epilogue_example_c: '    hermes -c                     Resume the most recent session'
+  epilogue_example_c_name: '    hermes -c "my project"        Resume a session by name (latest in lineage)'
+  epilogue_example_resume: '    hermes --resume <session_id>  Resume a specific session by ID'
+  epilogue_example_setup: '    hermes setup                  Run setup wizard'
+  epilogue_example_logout: '    hermes logout                 Clear stored authentication'
+  epilogue_example_auth_add: '    hermes auth add <provider>    Add a pooled credential'
+  epilogue_example_auth_list: '    hermes auth list              List pooled credentials'
+  epilogue_example_auth_remove: '    hermes auth remove <p> <t>    Remove pooled credential by index, id, or label'
+  epilogue_example_auth_reset: '    hermes auth reset <provider>  Clear exhaustion status for a provider'
+  epilogue_example_model: '    hermes model                  Select default model'
+  epilogue_example_fallback: '    hermes fallback [list]        Show fallback provider chain'
+  epilogue_example_fallback_add: '    hermes fallback add           Add a fallback provider (same picker as `hermes model`)'
+  epilogue_example_fallback_remove: '    hermes fallback remove        Remove a fallback provider from the chain'
+  epilogue_example_config: '    hermes config                 View configuration'
+  epilogue_example_config_edit: '    hermes config edit            Edit config in $EDITOR'
+  epilogue_example_config_set: '    hermes config set model gpt-4 Set a config value'
+  epilogue_example_gateway: '    hermes gateway                Run messaging gateway'
+  epilogue_example_skills: '    hermes -s hermes-agent-dev,github-auth'
+  epilogue_example_worktree: '    hermes -w                     Start in isolated git worktree'
+  epilogue_example_gateway_install: '    hermes gateway install        Install gateway background service'
+  epilogue_example_sessions_list: '    hermes sessions list          List past sessions'
+  epilogue_example_sessions_browse: '    hermes sessions browse        Interactive session picker'
+  epilogue_example_sessions_rename: '    hermes sessions rename ID T   Rename/title a session'
+  epilogue_example_logs: '    hermes logs                   View agent.log (last 50 lines)'
+  epilogue_example_logs_f: '    hermes logs -f                Follow agent.log in real time'
+  epilogue_example_logs_errors: '    hermes logs errors            View errors.log'
+  epilogue_example_logs_since: '    hermes logs --since 1h        Lines from the last hour'
+  epilogue_example_debug_share: '    hermes debug share             Upload debug report for support'
+  epilogue_example_update: '    hermes update                 Update to latest version'
+  epilogue_example_dashboard: '    hermes dashboard              Start web UI dashboard (port 9119)'
+  epilogue_example_dashboard_stop: '    hermes dashboard --stop       Stop running dashboard processes'
+  epilogue_example_dashboard_status: '    hermes dashboard --status     List running dashboard processes'

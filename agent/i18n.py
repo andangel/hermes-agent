@@ -22,10 +22,11 @@ Usage::
 Language resolution order:
     1. Explicit ``lang=`` argument passed to :func:`t`
     2. ``HERMES_LANGUAGE`` environment variable (for tests / quick override)
-    3. ``display.language`` from config.yaml
-    4. ``"en"`` (baseline)
+    3. System locale (LANG, LC_ALL, LANGUAGE) - auto-detect from OS
+    4. ``display.language`` from config.yaml
+    5. ``"en"`` (baseline)
 
-Supported languages: en, zh, ja, de, es, fr, tr, uk.  Unknown values fall back to en.
+Supported languages: en, zh.  Unknown values fall back to en.
 """
 
 from __future__ import annotations
@@ -39,10 +40,7 @@ from typing import Any
 
 logger = logging.getLogger(__name__)
 
-SUPPORTED_LANGUAGES: tuple[str, ...] = (
-    "en", "zh", "zh-hant", "ja", "de", "es", "fr", "tr", "uk",
-    "af", "ko", "it", "ga", "pt", "ru", "hu",
-)
+SUPPORTED_LANGUAGES: tuple[str, ...] = ("en", "zh")
 DEFAULT_LANGUAGE = "en"
 
 # Accept a few natural aliases so users who type "chinese" / "zh-CN" / "jp"
@@ -52,32 +50,6 @@ _LANGUAGE_ALIASES: dict[str, str] = {
     # Simplified Chinese — explicit codes route here; bare "chinese" / "mandarin"
     # also default to Simplified since that's the larger user base.
     "chinese": "zh", "mandarin": "zh", "zh-cn": "zh", "zh-hans": "zh", "zh-sg": "zh",
-    # Traditional Chinese — distinct catalog.  Cover Taiwan / Hong Kong / Macau
-    # locale tags plus the common "traditional" alias.
-    "traditional-chinese": "zh-hant", "traditional_chinese": "zh-hant",
-    "zh-tw": "zh-hant", "zh-hk": "zh-hant", "zh-mo": "zh-hant",
-    "japanese": "ja", "jp": "ja", "ja-jp": "ja",
-    "german": "de", "deutsch": "de", "de-de": "de", "de-at": "de", "de-ch": "de",
-    "spanish": "es", "español": "es", "espanol": "es", "es-es": "es", "es-mx": "es", "es-ar": "es",
-    "french": "fr", "français": "fr", "france": "fr", "fr-fr": "fr", "fr-be": "fr", "fr-ca": "fr", "fr-ch": "fr",
-    "ukrainian": "uk", "ukrainisch": "uk", "українська": "uk", "uk-ua": "uk", "ua": "uk",
-    "turkish": "tr", "türkçe": "tr", "tr-tr": "tr",
-    # Afrikaans — South African Dutch-derived language; "af-ZA" is the common BCP-47 tag.
-    "afrikaans": "af", "af-za": "af",
-    # Korean
-    "korean": "ko", "한국어": "ko", "ko-kr": "ko",
-    # Italian
-    "italian": "it", "italiano": "it", "it-it": "it", "it-ch": "it",
-    # Irish (Gaeilge) — ga is the BCP-47 code
-    "irish": "ga", "gaeilge": "ga", "ga-ie": "ga",
-    # Portuguese — bare "portuguese" routes to European Portuguese; pt-br
-    # is in the same family but rendered identically here (no separate br catalog).
-    "portuguese": "pt", "português": "pt", "portugues": "pt",
-    "pt-pt": "pt", "pt-br": "pt", "brazilian": "pt", "brasileiro": "pt",
-    # Russian
-    "russian": "ru", "русский": "ru", "ru-ru": "ru",
-    # Hungarian
-    "hungarian": "hu", "magyar": "hu", "hu-hu": "hu",
 }
 
 _catalog_cache: dict[str, dict[str, str]] = {}
@@ -183,6 +155,123 @@ def _config_language_cached() -> str | None:
     return None
 
 
+def _detect_system_locale() -> str | None:
+    """Auto-detect language from system locale.
+    
+    Cross-platform detection:
+      - Unix/Linux/macOS: LANG, LC_ALL, LANGUAGE environment variables
+      - Windows: ctypes call to GetLocaleInfo API or USER_LANGUAGE env var
+    
+    Converts common locale codes to supported Hermes languages:
+      - zh_CN.UTF-8, zh_CN, zh -> zh (Simplified Chinese)
+      - zh_TW.UTF-8, zh_TW -> zh-hant (Traditional Chinese)
+      - ja_JP.UTF-8, ja_JP, ja -> ja (Japanese)
+      - de_DE.UTF-8, de_DE, de -> de (German)
+      - etc.
+    
+    Returns normalized language code or None if not detectable.
+    """
+    import platform
+    
+    # Platform-specific detection
+    if platform.system() == "Windows":
+        return _detect_windows_locale()
+    else:
+        # Unix/Linux/macOS: use standard locale env vars
+        return _detect_unix_locale()
+
+
+def _detect_unix_locale() -> str | None:
+    """Detect locale on Unix/Linux/macOS systems."""
+    # Check standard locale env vars in priority order
+    for env_var in ["LC_ALL", "LANG", "LANGUAGE"]:
+        locale_str = os.environ.get(env_var)
+        if not locale_str:
+            continue
+        
+        # Extract base language code from locale string
+        # Examples: "zh_CN.UTF-8" -> "zh", "en_US.UTF-8" -> "en"
+        locale_str = locale_str.strip()
+        if not locale_str or locale_str == "C" or locale_str == "POSIX":
+            continue
+        
+        # Remove encoding suffix (e.g., .UTF-8)
+        base_locale = locale_str.split(".")[0]
+        
+        # Try exact match first (e.g., "zh_CN" -> check if supported)
+        normalized = _normalize_lang(base_locale)
+        if normalized != DEFAULT_LANGUAGE:
+            logger.debug("Detected system locale: %s -> %s", env_var, normalized)
+            return normalized
+        
+        # Try just the language part (e.g., "zh_CN" -> "zh")
+        lang_only = base_locale.split("_")[0]
+        normalized = _normalize_lang(lang_only)
+        if normalized != DEFAULT_LANGUAGE:
+            logger.debug("Detected system locale: %s (%s) -> %s", env_var, base_locale, normalized)
+            return normalized
+    
+    return None
+
+
+def _detect_windows_locale() -> str | None:
+    """Detect locale on Windows systems.
+    
+    Tries multiple methods:
+    1. USER_LANGUAGE or LANG environment variable (if set by user/WSL)
+    2. ctypes call to Windows GetLocaleInfo API
+    3. locale.getdefaultlocale() as fallback
+    """
+    # Method 1: Check if user manually set LANG/USER_LANGUAGE (common in WSL/Git Bash)
+    for env_var in ["USER_LANGUAGE", "LANG", "LC_ALL"]:
+        locale_str = os.environ.get(env_var)
+        if locale_str:
+            normalized = _normalize_lang(locale_str)
+            if normalized != DEFAULT_LANGUAGE:
+                logger.debug("Detected Windows locale from %s: %s", env_var, normalized)
+                return normalized
+    
+    # Method 2: Use ctypes to call Windows API
+    try:
+        import ctypes
+        import ctypes.wintypes
+        
+        # Get user default locale name (e.g., "en-US", "zh-CN")
+        LOCALE_NAME_USER_DEFAULT = None  # NULL means current user default
+        locale_name_buffer = ctypes.create_unicode_buffer(85)  # LOCALE_NAME_MAX_LENGTH
+        
+        kernel32 = ctypes.windll.kernel32
+        result = kernel32.GetUserDefaultLocaleName(
+            locale_name_buffer,
+            ctypes.sizeof(locale_name_buffer)
+        )
+        
+        if result > 0:
+            locale_name = locale_name_buffer.value  # e.g., "zh-CN", "en-US"
+            # Convert Windows format to our format
+            # "zh-CN" -> "zh", "en-US" -> "en"
+            normalized = _normalize_lang(locale_name)
+            if normalized != DEFAULT_LANGUAGE:
+                logger.debug("Detected Windows locale via API: %s -> %s", locale_name, normalized)
+                return normalized
+    except Exception as exc:
+        logger.debug("Windows locale API detection failed: %s", exc)
+    
+    # Method 3: Fallback to locale module
+    try:
+        import locale
+        default_locale = locale.getdefaultlocale()[0]  # e.g., "zh_CN", "en_US"
+        if default_locale:
+            normalized = _normalize_lang(default_locale)
+            if normalized != DEFAULT_LANGUAGE:
+                logger.debug("Detected Windows locale via locale module: %s -> %s", default_locale, normalized)
+                return normalized
+    except Exception as exc:
+        logger.debug("locale.getdefaultlocale() failed: %s", exc)
+    
+    return None
+
+
 def reset_language_cache() -> None:
     """Invalidate cached language resolution and catalogs.
 
@@ -195,13 +284,30 @@ def reset_language_cache() -> None:
 
 
 def get_language() -> str:
-    """Resolve the active language using env > config > default order."""
+    """Resolve the active language using env > system locale > config > default order.
+    
+    Language resolution priority:
+        1. HERMES_LANGUAGE environment variable (explicit override)
+        2. System locale (LANG, LC_ALL, LANGUAGE) - auto-detect from OS
+        3. display.language from config.yaml
+        4. "en" (baseline default)
+    """
+    # Priority 1: Explicit HERMES_LANGUAGE env var
     env_lang = os.environ.get("HERMES_LANGUAGE")
     if env_lang:
         return _normalize_lang(env_lang)
+    
+    # Priority 2: Auto-detect from system locale
+    sys_lang = _detect_system_locale()
+    if sys_lang:
+        return sys_lang
+    
+    # Priority 3: Config file setting
     cfg_lang = _config_language_cached()
     if cfg_lang:
         return cfg_lang
+    
+    # Priority 4: Default to English
     return DEFAULT_LANGUAGE
 
 

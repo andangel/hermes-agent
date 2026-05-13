@@ -23,7 +23,14 @@ import time
 from pathlib import Path
 from typing import Any, Optional
 
+from agent.i18n import t as _t
 from hermes_cli import kanban_db as kb
+from hermes_cli._parser import add_translated_subparser
+
+
+def _cli_tr(key: str, **kwargs) -> str:
+    """Translate a CLI command help string."""
+    return _t(f"cli.{key}", **kwargs)
 
 
 # ---------------------------------------------------------------------------
@@ -159,9 +166,10 @@ def build_parser(parent_subparsers: argparse._SubParsersAction) -> argparse.Argu
 
     Returns the top-level ``kanban`` parser so caller can ``set_defaults``.
     """
-    kanban_parser = parent_subparsers.add_parser(
+    kanban_parser = add_translated_subparser(
+        parent_subparsers,
         "kanban",
-        help="Multi-profile collaboration board (tasks, links, comments)",
+        help=_cli_tr("kanban_help"),
         description=(
             "Durable SQLite-backed task board shared across Hermes profiles. "
             "Tasks are claimed atomically, can depend on other tasks, and "

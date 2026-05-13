@@ -26,12 +26,18 @@ from hermes_cli.nous_subscription import get_nous_subscription_features
 from tools.tool_backend_helpers import managed_nous_tools_enabled
 from utils import base_url_hostname
 from hermes_constants import get_optional_skills_dir
+from agent.i18n import t as _t
 
 logger = logging.getLogger(__name__)
 
 PROJECT_ROOT = Path(__file__).parent.parent.resolve()
 
 _DOCS_BASE = "https://hermes-agent.nousresearch.com/docs"
+
+
+def _tr(key: str, **kwargs) -> str:
+    """Translate a setup wizard string."""
+    return _t(f"setup.{key}", **kwargs)
 
 
 def _model_config_dict(config: Dict[str, Any]) -> Dict[str, Any]:
@@ -177,19 +183,19 @@ def is_interactive_stdin() -> bool:
 def print_noninteractive_setup_guidance(reason: str | None = None) -> None:
     """Print guidance for headless/non-interactive setup flows."""
     print()
-    print(color("⚕ Hermes Setup — Non-interactive mode", Colors.CYAN, Colors.BOLD))
+    print(color(f"⚕ {_tr('non_interactive_title')}", Colors.CYAN, Colors.BOLD))
     print()
     if reason:
         print_info(reason)
-    print_info("The interactive wizard cannot be used here.")
+    print_info(_tr("non_interactive_reason"))
     print()
-    print_info("Configure Hermes using environment variables or config commands:")
+    print_info(_tr("configure_hint"))
     print_info("  hermes config set model.provider custom")
     print_info("  hermes config set model.base_url http://localhost:8080/v1")
     print_info("  hermes config set model.default your-model-name")
     print()
-    print_info("Or set OPENROUTER_API_KEY / OPENAI_API_KEY in your environment.")
-    print_info("Run 'hermes setup' in an interactive terminal to use the full wizard.")
+    print_info(_tr("env_hint"))
+    print_info(_tr("interactive_hint"))
     print()
 
 
@@ -360,7 +366,7 @@ def _print_setup_summary(config: dict, hermes_home):
     """Print the setup completion summary."""
     # Tool availability summary
     print()
-    print_header("Tool Availability Summary")
+    print_header(_tr("tool_availability_title"))
 
     tool_status = []
     subscription_features = get_nous_subscription_features(config)
@@ -542,7 +548,7 @@ def _print_setup_summary(config: dict, hermes_home):
     available_count = sum(1 for _, avail, _ in tool_status if avail)
     total_count = len(tool_status)
 
-    print_info(f"{available_count}/{total_count} tool categories available:")
+    print_info(_tr("tool_categories_available", available=available_count, total=total_count))
     print()
 
     for name, available, missing_var in tool_status:
@@ -557,11 +563,9 @@ def _print_setup_summary(config: dict, hermes_home):
 
     disabled_tools = [(name, var) for name, avail, var in tool_status if not avail]
     if disabled_tools:
-        print_warning(
-            "Some tools are disabled. Run 'hermes setup tools' to configure them,"
-        )
+        print_warning(_tr("tools_disabled_warning_1"))
         from hermes_constants import display_hermes_home as _dhh
-        print_warning(f"or edit {_dhh()}/.env directly to add the missing API keys.")
+        print_warning(_tr("tools_disabled_warning_2", hermes_home=_dhh()))
         print()
 
     # Done banner
@@ -573,7 +577,7 @@ def _print_setup_summary(config: dict, hermes_home):
     )
     print(
         color(
-            "│              ✓ Setup Complete!                          │", Colors.GREEN
+            f"│              {_tr('setup_complete_banner')}                          │", Colors.GREEN
         )
     )
     print(
@@ -585,44 +589,44 @@ def _print_setup_summary(config: dict, hermes_home):
 
     # Show file locations prominently
     from hermes_constants import display_hermes_home as _dhh
-    print(color(f"📁 All your files are in {_dhh()}/:", Colors.CYAN, Colors.BOLD))
+    print(color(_tr("files_location_title", hermes_home=_dhh()), Colors.CYAN, Colors.BOLD))
     print()
-    print(f"   {color('Settings:', Colors.YELLOW)}  {get_config_path()}")
-    print(f"   {color('API Keys:', Colors.YELLOW)}  {get_env_path()}")
+    print(f"   {color(_tr('settings_label'), Colors.YELLOW)}  {get_config_path()}")
+    print(f"   {color(_tr('api_keys_label'), Colors.YELLOW)}  {get_env_path()}")
     print(
-        f"   {color('Data:', Colors.YELLOW)}      {hermes_home}/cron/, sessions/, logs/"
+        f"   {color(_tr('data_label'), Colors.YELLOW)}      {hermes_home}/cron/, sessions/, logs/"
     )
     print()
 
     print(color("─" * 60, Colors.DIM))
     print()
-    print(color("📝 To edit your configuration:", Colors.CYAN, Colors.BOLD))
+    print(color(_tr("edit_config_title"), Colors.CYAN, Colors.BOLD))
     print()
-    print(f"   {color('hermes setup', Colors.GREEN)}          Re-run the full wizard")
-    print(f"   {color('hermes setup model', Colors.GREEN)}    Change model/provider")
-    print(f"   {color('hermes setup terminal', Colors.GREEN)} Change terminal backend")
-    print(f"   {color('hermes setup gateway', Colors.GREEN)}  Configure messaging")
-    print(f"   {color('hermes setup tools', Colors.GREEN)}    Configure tool providers")
+    print(f"   {color(_tr('cmd_hermes_setup'), Colors.GREEN)}          {_tr('cmd_hermes_setup_desc')}")
+    print(f"   {color(_tr('cmd_hermes_setup_model'), Colors.GREEN)}    {_tr('cmd_hermes_setup_model_desc')}")
+    print(f"   {color(_tr('cmd_hermes_setup_terminal'), Colors.GREEN)} {_tr('cmd_hermes_setup_terminal_desc')}")
+    print(f"   {color(_tr('cmd_hermes_setup_gateway'), Colors.GREEN)}  {_tr('cmd_hermes_setup_gateway_desc')}")
+    print(f"   {color(_tr('cmd_hermes_setup_tools'), Colors.GREEN)}    {_tr('cmd_hermes_setup_tools_desc')}")
     print()
-    print(f"   {color('hermes config', Colors.GREEN)}         View current settings")
+    print(f"   {color(_tr('cmd_hermes_config'), Colors.GREEN)}         {_tr('cmd_hermes_config_desc')}")
     print(
-        f"   {color('hermes config edit', Colors.GREEN)}    Open config in your editor"
+        f"   {color(_tr('cmd_hermes_config_edit'), Colors.GREEN)}    {_tr('cmd_hermes_config_edit_desc')}"
     )
-    print(f"   {color('hermes config set <key> <value>', Colors.GREEN)}")
-    print("                          Set a specific value")
+    print(f"   {color(_tr('cmd_hermes_config_set'), Colors.GREEN)}")
+    print(f"                          {_tr('cmd_hermes_config_set_desc')}")
     print()
-    print("   Or edit the files directly:")
+    print(_tr("edit_files_directly"))
     print(f"   {color(f'nano {get_config_path()}', Colors.DIM)}")
     print(f"   {color(f'nano {get_env_path()}', Colors.DIM)}")
     print()
 
     print(color("─" * 60, Colors.DIM))
     print()
-    print(color("🚀 Ready to go!", Colors.CYAN, Colors.BOLD))
+    print(color(_tr("ready_to_go_title"), Colors.CYAN, Colors.BOLD))
     print()
-    print(f"   {color('hermes', Colors.GREEN)}              Start chatting")
-    print(f"   {color('hermes gateway', Colors.GREEN)}      Start messaging gateway")
-    print(f"   {color('hermes doctor', Colors.GREEN)}       Check for issues")
+    print(f"   {color(_tr('cmd_hermes'), Colors.GREEN)}              {_tr('cmd_hermes_desc')}")
+    print(f"   {color(_tr('cmd_hermes_gateway'), Colors.GREEN)}      {_tr('cmd_hermes_gateway_desc')}")
+    print(f"   {color(_tr('cmd_hermes_doctor'), Colors.GREEN)}       {_tr('cmd_hermes_doctor_desc')}")
     print()
 
 
@@ -787,9 +791,9 @@ def setup_model_provider(config: dict, *, quick: bool = False):
     """
     from hermes_cli.config import load_config, save_config
 
-    print_header("Inference Provider")
-    print_info("Choose how to connect to your main chat model.")
-    print_info(f"   Guide: {_DOCS_BASE}/integrations/providers")
+    print_header(_tr("model.inference_provider"))
+    print_info(_tr("model.connect_info"))
+    print_info(f"   {_tr('model.guide_link')}")
     print()
 
     # Delegate to the shared hermes model flow — handles provider picker,
@@ -799,11 +803,11 @@ def setup_model_provider(config: dict, *, quick: bool = False):
         select_provider_and_model()
     except (SystemExit, KeyboardInterrupt):
         print()
-        print_info("Provider setup skipped.")
+        print_info(_tr("model.provider_setup_skipped"))
     except Exception as exc:
         logger.debug("select_provider_and_model error during setup: %s", exc)
-        print_warning(f"Provider setup encountered an error: {exc}")
-        print_info("You can try again later with: hermes model")
+        print_warning(_tr("model.setup_error").format(error=exc))
+        print_info(_tr("model.try_again_later"))
 
     # Re-sync the wizard's config dict from what cmd_model saved to disk.
     # This is critical: cmd_model writes to disk via its own load/save cycle,
@@ -835,26 +839,23 @@ def setup_model_provider(config: dict, *, quick: bool = False):
             manual_count = sum(1 for entry in entries if str(getattr(entry, "source", "")).startswith("manual"))
             auto_count = entry_count - manual_count
             print()
-            print_header("Same-Provider Fallback & Rotation")
+            print_header(_tr("model.fallback_rotation"))
             print_info(
-                "Hermes can keep multiple credentials for one provider and rotate between"
+                _tr("model.fallback_description")
             )
             print_info(
-                "them when a credential is exhausted or rate-limited. This preserves"
-            )
-            print_info(
-                "your primary provider while reducing interruptions from quota issues."
+                _tr("model.fallback_benefit")
             )
             print()
             if auto_count > 0:
                 print_info(
-                    f"Current pooled credentials for {selected_provider}: {entry_count} "
-                    f"({manual_count} manual, {auto_count} auto-detected from env/shared auth)"
+                    _tr("model.current_credentials").format(provider=selected_provider, count=entry_count) + " " +
+                    _tr("model.credential_detail").format(manual=manual_count, auto=auto_count)
                 )
             else:
-                print_info(f"Current pooled credentials for {selected_provider}: {entry_count}")
+                print_info(_tr("model.current_credentials").format(provider=selected_provider, count=entry_count))
 
-            while prompt_yes_no("Add another credential for same-provider fallback?", False):
+            while prompt_yes_no(_tr("model.add_credential_prompt"), False):
                 auth_add_command(
                     SimpleNamespace(
                         provider=selected_provider,
@@ -874,13 +875,13 @@ def setup_model_provider(config: dict, *, quick: bool = False):
                 )
                 pool = load_pool(selected_provider)
                 entry_count = len(pool.entries())
-                print_info(f"Provider pool now has {entry_count} credential(s).")
+                print_info(_tr("model.pool_updated").format(count=entry_count))
 
             if entry_count > 1:
                 strategy_labels = [
-                    "Fill-first / sticky — keep using the first healthy credential until it is exhausted",
-                    "Round robin — rotate to the next healthy credential after each selection",
-                    "Random — pick a random healthy credential each time",
+                    _tr("model.strategy_fill_first"),
+                    _tr("model.strategy_round_robin"),
+                    _tr("model.strategy_random"),
                 ]
                 current_strategy = _get_credential_pool_strategies(config).get(selected_provider, "fill_first")
                 default_strategy_idx = {
@@ -889,13 +890,13 @@ def setup_model_provider(config: dict, *, quick: bool = False):
                     "random": 2,
                 }.get(current_strategy, 0)
                 strategy_idx = prompt_choice(
-                    "Select same-provider rotation strategy:",
+                    _tr("model.rotation_strategy"),
                     strategy_labels,
                     default_strategy_idx,
                 )
                 strategy_value = ["fill_first", "round_robin", "random"][strategy_idx]
                 _set_credential_pool_strategy(config, selected_provider, strategy_value)
-                print_success(f"Saved {selected_provider} rotation strategy: {strategy_value}")
+                print_success(_tr("model.strategy_saved").format(provider=selected_provider, strategy=strategy_value))
         except Exception as exc:
             logger.debug("Could not configure same-provider fallback in setup: %s", exc)
 
@@ -932,32 +933,32 @@ def setup_model_provider(config: dict, *, quick: bool = False):
         _prov_display = _prov_names.get(selected_provider, selected_provider or "your provider")
 
         print()
-        print_header("Vision & Image Analysis (optional)")
-        print_info(f"Vision uses a separate multimodal backend. {_prov_display}")
-        print_info("doesn't currently provide one Hermes can auto-use for vision,")
-        print_info("so choose a backend now or skip and configure later.")
+        print_header(_tr("model.vision_setup"))
+        print_info(_tr("model.vision_info").format(provider=_prov_display))
+        print_info(_tr("model.vision_no_backend"))
+        print_info(_tr("model.vision_choose"))
         print()
 
         _vision_choices = [
-            "OpenRouter — uses Gemini (free tier at openrouter.ai/keys)",
-            "OpenAI-compatible endpoint — base URL, API key, and vision model",
-            "Skip for now",
+            _tr("model.vision_openrouter"),
+            _tr("model.vision_openai_compatible"),
+            _tr("model.vision_skip"),
         ]
-        _vision_idx = prompt_choice("Configure vision:", _vision_choices, 2)
+        _vision_idx = prompt_choice(_tr("model.vision_configure"), _vision_choices, 2)
 
         if _vision_idx == 0:  # OpenRouter
-            _or_key = prompt("  OpenRouter API key", password=True).strip()
+            _or_key = prompt(_tr("model.vision_openrouter_key"), password=True).strip()
             if _or_key:
                 save_env_value("OPENROUTER_API_KEY", _or_key)
-                print_success("OpenRouter key saved — vision will use Gemini")
+                print_success(_tr("model.vision_openrouter_saved"))
             else:
-                print_info("Skipped — vision won't be available")
+                print_info(_tr("model.vision_skipped"))
         elif _vision_idx == 1:  # OpenAI-compatible endpoint
-            _base_url = prompt("  Base URL (blank for OpenAI)").strip() or "https://api.openai.com/v1"
-            _api_key_label = "  API key"
+            _base_url = prompt(_tr("model.vision_base_url")).strip() or "https://api.openai.com/v1"
+            _api_key_label = _tr("model.vision_api_key")
             _is_native_openai = base_url_hostname(_base_url) == "api.openai.com"
             if _is_native_openai:
-                _api_key_label = "  OpenAI API key"
+                _api_key_label = _tr("model.vision_openai_key")
             _oai_key = prompt(_api_key_label, password=True).strip()
             if _oai_key:
                 save_env_value("OPENAI_API_KEY", _oai_key)
@@ -966,25 +967,23 @@ def setup_model_provider(config: dict, *, quick: bool = False):
                 _vaux["base_url"] = _base_url
                 if _is_native_openai:
                     _oai_vision_models = ["gpt-4o", "gpt-4o-mini", "gpt-4.1", "gpt-4.1-mini", "gpt-4.1-nano"]
-                    _vm_choices = _oai_vision_models + ["Use default (gpt-4o-mini)"]
-                    _vm_idx = prompt_choice("Select vision model:", _vm_choices, 0)
+                    _vm_choices = _oai_vision_models + [_tr("model.vision_model_default")]
+                    _vm_idx = prompt_choice(_tr("model.vision_model_select"), _vm_choices, 0)
                     _selected_vision_model = (
                         _oai_vision_models[_vm_idx]
                         if _vm_idx < len(_oai_vision_models)
                         else "gpt-4o-mini"
                     )
                 else:
-                    _selected_vision_model = prompt("  Vision model (blank = use main/custom default)").strip()
+                    _selected_vision_model = prompt(_tr("model.vision_model_prompt")).strip()
                 if _selected_vision_model:
                     save_env_value("AUXILIARY_VISION_MODEL", _selected_vision_model)
-                print_success(
-                    f"Vision configured with {_base_url}"
-                    + (f" ({_selected_vision_model})" if _selected_vision_model else "")
-                )
+                model_info = f" ({_selected_vision_model})" if _selected_vision_model else ""
+                print_success(_tr("model.vision_configured").format(base_url=_base_url, model_info=model_info))
             else:
-                print_info("Skipped — vision won't be available")
+                print_info(_tr("model.vision_skipped"))
         else:
-            print_info("Skipped — add later with 'hermes setup' or configure AUXILIARY_VISION_* settings")
+            print_info(_tr("model.vision_later_hint"))
 
 
     # Tool Gateway prompt is already shown by _model_flow_nous() above.
@@ -1012,15 +1011,15 @@ def _install_neutts_deps() -> bool:
     # Check espeak-ng
     if not _check_espeak_ng():
         print()
-        print_warning("NeuTTS requires espeak-ng for phonemization.")
+        print_warning(_tr("model.tts_needs_espeak"))
         if sys.platform == "darwin":
-            print_info("Install with: brew install espeak-ng")
+            print_info(_tr("model.tts_install_espeak_mac"))
         elif sys.platform == "win32":
-            print_info("Install with: choco install espeak-ng")
+            print_info(_tr("model.tts_install_espeak_win"))
         else:
-            print_info("Install with: sudo apt install espeak-ng")
+            print_info(_tr("model.tts_install_espeak_linux"))
         print()
-        if prompt_yes_no("Install espeak-ng now?", True):
+        if prompt_yes_no(_tr("model.tts_install_espeak_prompt"), True):
             try:
                 if sys.platform == "darwin":
                     subprocess.run(["brew", "install", "espeak-ng"], check=True)
@@ -1028,18 +1027,18 @@ def _install_neutts_deps() -> bool:
                     subprocess.run(["choco", "install", "espeak-ng", "-y"], check=True)
                 else:
                     subprocess.run(["sudo", "apt", "install", "-y", "espeak-ng"], check=True)
-                print_success("espeak-ng installed")
+                print_success(_tr("model.tts_espeak_installed"))
             except (subprocess.CalledProcessError, FileNotFoundError) as e:
-                print_warning(f"Could not install espeak-ng automatically: {e}")
-                print_info("Please install it manually and re-run setup.")
+                print_warning(_tr("model.tts_install_failed").format(error=e))
+                print_info(_tr("model.tts_manual_install"))
                 return False
         else:
-            print_warning("espeak-ng is required for NeuTTS. Install it manually before using NeuTTS.")
+            print_warning(_tr("model.tts_espeak_required"))
 
     # Install neutts Python package
     print()
-    print_info("Installing neutts Python package...")
-    print_info("This will also download the TTS model (~300MB) on first use.")
+    print_info(_tr("model.tts_installing_neutts"))
+    print_info(_tr("model.tts_model_download"))
     print()
     try:
         subprocess.run(
@@ -1291,10 +1290,10 @@ def setup_tts(config: dict):
 def setup_terminal_backend(config: dict):
     """Configure the terminal execution backend."""
     import platform as _platform
-    print_header("Terminal Backend")
-    print_info("Choose where Hermes runs shell commands and code.")
-    print_info("This affects tool execution, file access, and isolation.")
-    print_info(f"   Guide: {_DOCS_BASE}/developer-guide/environments")
+    print_header(_tr("terminal.title"))
+    print_info(_tr("terminal.description"))
+    print_info(_tr("terminal.affects_info"))
+    print_info(f"   {_tr('terminal.guide_link')}")
     print()
 
     current_backend = cfg_get(config, "terminal", "backend", default="local")
@@ -1302,51 +1301,51 @@ def setup_terminal_backend(config: dict):
 
     # Build backend choices with descriptions
     terminal_choices = [
-        "Local - run directly on this machine (default)",
-        "Docker - isolated container with configurable resources",
-        "Modal - serverless cloud sandbox",
-        "SSH - run on a remote machine",
-        "Daytona - persistent cloud development environment",
-        "Vercel Sandbox - cloud microVM with snapshot filesystem persistence",
+        _tr("terminal.backend_local"),
+        _tr("terminal.backend_docker"),
+        _tr("terminal.backend_modal"),
+        _tr("terminal.backend_ssh"),
+        _tr("terminal.backend_daytona"),
+        _tr("terminal.backend_vercel"),
     ]
     idx_to_backend = {0: "local", 1: "docker", 2: "modal", 3: "ssh", 4: "daytona", 5: "vercel_sandbox"}
     backend_to_idx = {"local": 0, "docker": 1, "modal": 2, "ssh": 3, "daytona": 4, "vercel_sandbox": 5}
 
     next_idx = 6
     if is_linux:
-        terminal_choices.append("Singularity/Apptainer - HPC-friendly container")
+        terminal_choices.append(_tr("terminal.backend_singularity"))
         idx_to_backend[next_idx] = "singularity"
         backend_to_idx["singularity"] = next_idx
         next_idx += 1
 
     # Add keep current option
     keep_current_idx = next_idx
-    terminal_choices.append(f"Keep current ({current_backend})")
+    terminal_choices.append(_tr("terminal.keep_current").format(backend=current_backend))
     idx_to_backend[keep_current_idx] = current_backend
 
     terminal_idx = prompt_choice(
-        "Select terminal backend:", terminal_choices, keep_current_idx
+        _tr("terminal.select_backend"), terminal_choices, keep_current_idx
     )
 
     selected_backend = idx_to_backend.get(terminal_idx)
 
     if terminal_idx == keep_current_idx:
-        print_info(f"Keeping current backend: {current_backend}")
+        print_info(_tr("terminal.keeping_current").format(backend=current_backend))
         return
 
     config.setdefault("terminal", {})["backend"] = selected_backend
 
     if selected_backend == "local":
-        print_success("Terminal backend: Local")
-        print_info("Commands run directly on this machine.")
+        print_success(_tr("terminal.local_title"))
+        print_info(_tr("terminal.local_info"))
 
         # Gateway/cron working directory
         print()
-        print_info("Gateway working directory:")
-        print_info("  Used by Telegram/Discord/cron sessions.")
-        print_info("  CLI/TUI always uses your launch directory instead.")
+        print_info(_tr("terminal.gateway_cwd"))
+        print_info(_tr("terminal.gateway_cwd_info"))
+        print_info(_tr("terminal.cli_tui_info"))
         current_cwd = cfg_get(config, "terminal", "cwd", default="")
-        cwd = prompt("  Gateway working directory", current_cwd or str(Path.home()))
+        cwd = prompt(_tr("terminal.cwd_prompt"), current_cwd or str(Path.home()))
         if cwd:
             config["terminal"]["cwd"] = cwd
 
@@ -1354,58 +1353,58 @@ def setup_terminal_backend(config: dict):
         print()
         existing_sudo = get_env_value("SUDO_PASSWORD")
         if existing_sudo:
-            print_info("Sudo password: configured")
+            print_info(_tr("terminal.sudo_configured"))
         else:
             if prompt_yes_no(
-                "Enable sudo support? (stores password for apt install, etc.)", False
+                _tr("terminal.sudo_support"), False
             ):
-                sudo_pass = prompt("  Sudo password", password=True)
+                sudo_pass = prompt(_tr("terminal.sudo_prompt"), password=True)
                 if sudo_pass:
                     save_env_value("SUDO_PASSWORD", sudo_pass)
-                    print_success("Sudo password saved")
+                    print_success(_tr("terminal.sudo_saved"))
 
     elif selected_backend == "docker":
-        print_success("Terminal backend: Docker")
+        print_success(_tr("terminal.docker_title"))
 
         # Check if Docker is available
         docker_bin = shutil.which("docker")
         if not docker_bin:
-            print_warning("Docker not found in PATH!")
-            print_info("Install Docker: https://docs.docker.com/get-docker/")
+            print_warning(_tr("terminal.docker_not_found"))
+            print_info(_tr("terminal.docker_install_hint"))
         else:
-            print_info(f"Docker found: {docker_bin}")
+            print_info(_tr("terminal.docker_found").format(path=docker_bin))
 
         # Docker image
         current_image = cfg_get(config, "terminal", "docker_image", default="nikolaik/python-nodejs:python3.11-nodejs20")
-        image = prompt("  Docker image", current_image)
+        image = prompt(_tr("terminal.docker_image_prompt"), current_image)
         config["terminal"]["docker_image"] = image
         save_env_value("TERMINAL_DOCKER_IMAGE", image)
 
         _prompt_container_resources(config)
 
     elif selected_backend == "singularity":
-        print_success("Terminal backend: Singularity/Apptainer")
+        print_success(_tr("terminal.singularity_title"))
 
         # Check if singularity/apptainer is available
         sing_bin = shutil.which("apptainer") or shutil.which("singularity")
         if not sing_bin:
-            print_warning("Singularity/Apptainer not found in PATH!")
+            print_warning(_tr("terminal.singularity_not_found"))
             print_info(
-                "Install: https://apptainer.org/docs/admin/main/installation.html"
+                _tr("terminal.singularity_install_hint")
             )
         else:
-            print_info(f"Found: {sing_bin}")
+            print_info(_tr("terminal.singularity_found").format(path=sing_bin))
 
         current_image = cfg_get(config, "terminal", "singularity_image", default="docker://nikolaik/python-nodejs:python3.11-nodejs20")
-        image = prompt("  Container image", current_image)
+        image = prompt(_tr("terminal.container_image_prompt"), current_image)
         config["terminal"]["singularity_image"] = image
         save_env_value("TERMINAL_SINGULARITY_IMAGE", image)
 
         _prompt_container_resources(config)
 
     elif selected_backend == "modal":
-        print_success("Terminal backend: Modal")
-        print_info("Serverless cloud sandboxes. Each session gets its own container.")
+        print_success(_tr("terminal.modal_title"))
+        print_info(_tr("terminal.modal_info"))
         from tools.managed_tool_gateway import is_managed_tool_gateway_ready
         from tools.tool_backend_helpers import normalize_modal_mode
 
@@ -1419,8 +1418,8 @@ def setup_terminal_backend(config: dict):
         use_managed_modal = False
         if managed_modal_available:
             modal_choices = [
-                "Use my Nous subscription",
-                "Use my own Modal account",
+                _tr("terminal.managed_modal"),
+                _tr("terminal.own_modal"),
             ]
             if modal_mode == "managed":
                 default_modal_idx = 0
@@ -1429,7 +1428,7 @@ def setup_terminal_backend(config: dict):
             else:
                 default_modal_idx = 1 if get_env_value("MODAL_TOKEN_ID") else 0
             modal_mode_idx = prompt_choice(
-                "Select how Modal execution should be billed:",
+                _tr("terminal.modal_billing"),
                 modal_choices,
                 default_modal_idx,
             )
@@ -1437,20 +1436,20 @@ def setup_terminal_backend(config: dict):
 
         if use_managed_modal:
             config["terminal"]["modal_mode"] = "managed"
-            print_info("Modal execution will use the managed Nous gateway and bill to your subscription.")
+            print_info(_tr("terminal.managed_modal_info"))
             if get_env_value("MODAL_TOKEN_ID") or get_env_value("MODAL_TOKEN_SECRET"):
                 print_info(
-                    "Direct Modal credentials are still configured, but this backend is pinned to managed mode."
+                    _tr("terminal.direct_modal_credentials")
                 )
         else:
             config["terminal"]["modal_mode"] = "direct"
-            print_info("Requires a Modal account: https://modal.com")
+            print_info(_tr("terminal.direct_modal_info"))
 
             # Check if modal SDK is installed
             try:
                 __import__("modal")
             except ImportError:
-                print_info("Installing modal SDK...")
+                print_info(_tr("terminal.installing_modal"))
                 import subprocess
 
                 uv_bin = shutil.which("uv")
@@ -1474,27 +1473,27 @@ def setup_terminal_backend(config: dict):
                         text=True,
                     )
                 if result.returncode == 0:
-                    print_success("modal SDK installed")
+                    print_success(_tr("terminal.modal_installed"))
                 else:
-                    print_warning("Install failed — run manually: pip install modal")
+                    print_warning(_tr("terminal.modal_install_failed"))
 
             # Modal token
             print()
-            print_info("Modal authentication:")
-            print_info("  Get your token at: https://modal.com/settings")
+            print_info(_tr("terminal.modal_auth"))
+            print_info(_tr("terminal.modal_token_info"))
             existing_token = get_env_value("MODAL_TOKEN_ID")
             if existing_token:
-                print_info("  Modal token: already configured")
-                if prompt_yes_no("  Update Modal credentials?", False):
-                    token_id = prompt("    Modal Token ID", password=True)
-                    token_secret = prompt("    Modal Token Secret", password=True)
+                print_info(_tr("terminal.modal_token_configured"))
+                if prompt_yes_no(_tr("terminal.update_modal_credentials"), False):
+                    token_id = prompt(_tr("terminal.modal_token_id_prompt"), password=True)
+                    token_secret = prompt(_tr("terminal.modal_token_secret_prompt"), password=True)
                     if token_id:
                         save_env_value("MODAL_TOKEN_ID", token_id)
                     if token_secret:
                         save_env_value("MODAL_TOKEN_SECRET", token_secret)
             else:
-                token_id = prompt("    Modal Token ID", password=True)
-                token_secret = prompt("    Modal Token Secret", password=True)
+                token_id = prompt(_tr("terminal.modal_token_id_prompt"), password=True)
+                token_secret = prompt(_tr("terminal.modal_token_secret_prompt"), password=True)
                 if token_id:
                     save_env_value("MODAL_TOKEN_ID", token_id)
                 if token_secret:
@@ -1503,16 +1502,16 @@ def setup_terminal_backend(config: dict):
         _prompt_container_resources(config)
 
     elif selected_backend == "daytona":
-        print_success("Terminal backend: Daytona")
-        print_info("Persistent cloud development environments.")
-        print_info("Each session gets a dedicated sandbox with filesystem persistence.")
-        print_info("Sign up at: https://daytona.io")
+        print_success(_tr("terminal.daytona_title"))
+        print_info(_tr("terminal.daytona_info"))
+        print_info(_tr("terminal.daytona_persistence"))
+        print_info(_tr("terminal.daytona_signup"))
 
         # Check if daytona SDK is installed
         try:
             __import__("daytona")
         except ImportError:
-            print_info("Installing daytona SDK...")
+            print_info(_tr("terminal.installing_daytona"))
             import subprocess
 
             uv_bin = shutil.which("uv")
@@ -1529,9 +1528,9 @@ def setup_terminal_backend(config: dict):
                     text=True,
                 )
             if result.returncode == 0:
-                print_success("daytona SDK installed")
+                print_success(_tr("terminal.daytona_installed"))
             else:
-                print_warning("Install failed — run manually: pip install daytona")
+                print_warning(_tr("terminal.daytona_install_failed"))
                 if result.stderr:
                     print_info(f"  Error: {result.stderr.strip().splitlines()[-1]}")
 
@@ -1539,35 +1538,35 @@ def setup_terminal_backend(config: dict):
         print()
         existing_key = get_env_value("DAYTONA_API_KEY")
         if existing_key:
-            print_info("  Daytona API key: already configured")
-            if prompt_yes_no("  Update API key?", False):
-                api_key = prompt("    Daytona API key", password=True)
+            print_info(_tr("terminal.daytona_api_key_configured"))
+            if prompt_yes_no(_tr("terminal.update_api_key"), False):
+                api_key = prompt(_tr("terminal.daytona_api_key_prompt"), password=True)
                 if api_key:
                     save_env_value("DAYTONA_API_KEY", api_key)
-                    print_success("    Updated")
+                    print_success(_tr("terminal.daytona_updated"))
         else:
-            api_key = prompt("    Daytona API key", password=True)
+            api_key = prompt(_tr("terminal.daytona_api_key_prompt"), password=True)
             if api_key:
                 save_env_value("DAYTONA_API_KEY", api_key)
-                print_success("    Configured")
+                print_success(_tr("terminal.daytona_configured"))
 
         # Daytona image
         current_image = cfg_get(config, "terminal", "daytona_image", default="nikolaik/python-nodejs:python3.11-nodejs20")
-        image = prompt("  Sandbox image", current_image)
+        image = prompt(_tr("terminal.sandbox_image_prompt"), current_image)
         config["terminal"]["daytona_image"] = image
         save_env_value("TERMINAL_DAYTONA_IMAGE", image)
 
         _prompt_container_resources(config)
 
     elif selected_backend == "vercel_sandbox":
-        print_success("Terminal backend: Vercel Sandbox")
-        print_info("Cloud microVM sandboxes with snapshot-backed filesystem persistence.")
-        print_info("Requires the optional SDK: pip install 'hermes-agent[vercel]'")
+        print_success(_tr("terminal.vercel_title"))
+        print_info(_tr("terminal.vercel_info"))
+        print_info(_tr("terminal.vercel_sdk_hint"))
 
         try:
             __import__("vercel")
         except ImportError:
-            print_info("Installing vercel SDK...")
+            print_info(_tr("terminal.installing_vercel"))
             import subprocess
 
             uv_bin = shutil.which("uv")
@@ -1584,46 +1583,46 @@ def setup_terminal_backend(config: dict):
                     text=True,
                 )
             if result.returncode == 0:
-                print_success("vercel SDK installed")
+                print_success(_tr("terminal.vercel_installed"))
             else:
-                print_warning("Install failed — run manually: pip install 'hermes-agent[vercel]'")
+                print_warning(_tr("terminal.vercel_install_failed"))
                 if result.stderr:
                     print_info(f"  Error: {result.stderr.strip().splitlines()[-1]}")
 
         _prompt_vercel_sandbox_settings(config)
 
     elif selected_backend == "ssh":
-        print_success("Terminal backend: SSH")
-        print_info("Run commands on a remote machine via SSH.")
+        print_success(_tr("terminal.ssh_title"))
+        print_info(_tr("terminal.ssh_info"))
 
         # SSH host
         current_host = get_env_value("TERMINAL_SSH_HOST") or ""
-        host = prompt("  SSH host (hostname or IP)", current_host)
+        host = prompt(_tr("terminal.ssh_host_prompt"), current_host)
         if host:
             save_env_value("TERMINAL_SSH_HOST", host)
 
         # SSH user
         current_user = get_env_value("TERMINAL_SSH_USER") or ""
-        user = prompt("  SSH user", current_user or os.getenv("USER", ""))
+        user = prompt(_tr("terminal.ssh_user_prompt"), current_user or os.getenv("USER", ""))
         if user:
             save_env_value("TERMINAL_SSH_USER", user)
 
         # SSH port
         current_port = get_env_value("TERMINAL_SSH_PORT") or "22"
-        port = prompt("  SSH port", current_port)
+        port = prompt(_tr("terminal.ssh_port_prompt"), current_port)
         if port and port != "22":
             save_env_value("TERMINAL_SSH_PORT", port)
 
         # SSH key
         current_key = get_env_value("TERMINAL_SSH_KEY") or ""
         default_key = str(Path.home() / ".ssh" / "id_rsa")
-        ssh_key = prompt("  SSH private key path", current_key or default_key)
+        ssh_key = prompt(_tr("terminal.ssh_key_prompt"), current_key or default_key)
         if ssh_key:
             save_env_value("TERMINAL_SSH_KEY", ssh_key)
 
         # Test connection
-        if host and prompt_yes_no("  Test SSH connection?", True):
-            print_info("  Testing connection...")
+        if host and prompt_yes_no(_tr("terminal.test_ssh_connection"), True):
+            print_info(_tr("terminal.testing_connection"))
             import subprocess
 
             ssh_cmd = ["ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=5"]
@@ -1635,10 +1634,10 @@ def setup_terminal_backend(config: dict):
             ssh_cmd.append("echo ok")
             result = subprocess.run(ssh_cmd, capture_output=True, text=True, timeout=10)
             if result.returncode == 0:
-                print_success("  SSH connection successful!")
+                print_success(_tr("terminal.ssh_success"))
             else:
-                print_warning(f"  SSH connection failed: {result.stderr.strip()}")
-                print_info("  Check your SSH key and host settings.")
+                print_warning(_tr("terminal.ssh_failed").format(error=result.stderr.strip()))
+                print_info(_tr("terminal.ssh_check_hint"))
 
     # Sync terminal backend to .env so terminal_tool picks it up directly.
     # config.yaml is the source of truth, but terminal_tool reads TERMINAL_ENV.
@@ -1649,7 +1648,7 @@ def setup_terminal_backend(config: dict):
         save_env_value("TERMINAL_VERCEL_RUNTIME", config["terminal"].get("vercel_runtime", "node24"))
     save_config(config)
     print()
-    print_success(f"Terminal backend set to: {selected_backend}")
+    print_success(_tr("terminal.backend_set").format(backend=selected_backend))
 
 
 # =============================================================================
@@ -1689,8 +1688,8 @@ def _apply_default_agent_settings(config: dict):
 def setup_agent_settings(config: dict):
     """Configure agent behavior: iterations, progress display, compression, session reset."""
 
-    print_header("Agent Settings")
-    print_info(f"   Guide: {_DOCS_BASE}/user-guide/configuration")
+    print_header(_tr("agent.title"))
+    print_info(f"   {_tr('agent.guide_link')}")
     print()
 
     # ── Max Iterations ──
@@ -1698,13 +1697,13 @@ def setup_agent_settings(config: dict):
     # entry is still around (from pre-PR#18413 setups), prefer the
     # config value so we don't surface a stale number to the user.
     current_max = str(cfg_get(config, "agent", "max_turns", default=90))
-    print_info("Maximum tool-calling iterations per conversation.")
-    print_info("Higher = more complex tasks, but costs more tokens.")
+    print_info(_tr("agent.max_iterations_info"))
+    print_info(_tr("agent.max_iterations_cost"))
     print_info(
-        f"Press Enter to keep {current_max}. Use 90 for most tasks or 150+ for open exploration."
+        _tr("agent.max_iterations_hint").format(current=current_max)
     )
 
-    max_iter_str = prompt("Max iterations", current_max)
+    max_iter_str = prompt(_tr("agent.max_iterations_prompt"), current_max)
     try:
         max_iter = int(max_iter_str)
         if max_iter > 0:
@@ -1715,41 +1714,41 @@ def setup_agent_settings(config: dict):
             config.setdefault("agent", {})["max_turns"] = max_iter
             config.pop("max_turns", None)
             remove_env_value("HERMES_MAX_ITERATIONS")
-            print_success(f"Max iterations set to {max_iter}")
+            print_success(_tr("agent.max_iterations_set").format(value=max_iter))
     except ValueError:
-        print_warning("Invalid number, keeping current value")
+        print_warning(_tr("agent.invalid_number"))
 
     # ── Tool Progress Display ──
     print_info("")
-    print_info("Tool Progress Display")
-    print_info("Controls how much tool activity is shown (CLI and messaging).")
-    print_info("  off     — Silent, just the final response")
-    print_info("  new     — Show tool name only when it changes (less noise)")
-    print_info("  all     — Show every tool call with a short preview")
-    print_info("  verbose — Full args, results, and debug logs")
+    print_info(_tr("agent.tool_progress_title"))
+    print_info(_tr("agent.tool_progress_info"))
+    print_info(_tr("agent.tool_progress_off"))
+    print_info(_tr("agent.tool_progress_new"))
+    print_info(_tr("agent.tool_progress_all"))
+    print_info(_tr("agent.tool_progress_verbose"))
 
     current_mode = cfg_get(config, "display", "tool_progress", default="all")
-    mode = prompt("Tool progress mode", current_mode)
+    mode = prompt(_tr("agent.tool_progress_prompt"), current_mode)
     if mode.lower() in ("off", "new", "all", "verbose"):
         if "display" not in config:
             config["display"] = {}
         config["display"]["tool_progress"] = mode.lower()
         save_config(config)
-        print_success(f"Tool progress set to: {mode.lower()}")
+        print_success(_tr("agent.tool_progress_set").format(mode=mode.lower()))
     else:
-        print_warning(f"Unknown mode '{mode}', keeping '{current_mode}'")
+        print_warning(_tr("agent.unknown_mode").format(mode=mode, current=current_mode))
 
     # ── Context Compression ──
-    print_header("Context Compression")
-    print_info("Automatically summarizes old messages when context gets too long.")
+    print_header(_tr("agent.compression_title"))
+    print_info(_tr("agent.compression_info"))
     print_info(
-        "Higher threshold = compress later (use more context). Lower = compress sooner."
+        _tr("agent.compression_threshold_info")
     )
 
     config.setdefault("compression", {})["enabled"] = True
 
     current_threshold = cfg_get(config, "compression", "threshold", default=0.50)
-    threshold_str = prompt("Compression threshold (0.5-0.95)", str(current_threshold))
+    threshold_str = prompt(_tr("agent.compression_threshold_prompt"), str(current_threshold))
     try:
         threshold = float(threshold_str)
         if 0.5 <= threshold <= 0.95:
@@ -1758,37 +1757,37 @@ def setup_agent_settings(config: dict):
         pass
 
     print_success(
-        f"Context compression threshold set to {config['compression'].get('threshold', 0.50)}"
+        _tr("agent.compression_set").format(value=config['compression'].get('threshold', 0.50))
     )
 
     # ── Session Reset Policy ──
-    print_header("Session Reset Policy")
+    print_header(_tr("agent.reset_title"))
     print_info(
-        "Messaging sessions (Telegram, Discord, etc.) accumulate context over time."
+        _tr("agent.reset_info_1")
     )
     print_info(
-        "Each message adds to the conversation history, which means growing API costs."
-    )
-    print_info("")
-    print_info(
-        "To manage this, sessions can automatically reset after a period of inactivity"
-    )
-    print_info(
-        "or at a fixed time each day. When a reset happens, the agent saves important"
-    )
-    print_info(
-        "things to its persistent memory first — but the conversation context is cleared."
+        _tr("agent.reset_info_2")
     )
     print_info("")
-    print_info("You can also manually reset anytime by typing /reset in chat.")
+    print_info(
+        _tr("agent.reset_info_3")
+    )
+    print_info(
+        _tr("agent.reset_info_4")
+    )
+    print_info(
+        _tr("agent.reset_info_5")
+    )
+    print_info("")
+    print_info(_tr("agent.reset_manual_hint"))
     print_info("")
 
     reset_choices = [
-        "Inactivity + daily reset (recommended - reset whichever comes first)",
-        "Inactivity only (reset after N minutes of no messages)",
-        "Daily only (reset at a fixed hour each day)",
-        "Never auto-reset (context lives until /reset or context compression)",
-        "Keep current settings",
+        _tr("agent.reset_mode_both"),
+        _tr("agent.reset_mode_idle"),
+        _tr("agent.reset_mode_daily"),
+        _tr("agent.reset_mode_none"),
+        _tr("agent.reset_keep_current"),
     ]
 
     current_policy = config.get("session_reset", {})
@@ -1798,20 +1797,20 @@ def setup_agent_settings(config: dict):
 
     default_reset = {"both": 0, "idle": 1, "daily": 2, "none": 3}.get(current_mode, 0)
 
-    reset_idx = prompt_choice("Session reset mode:", reset_choices, default_reset)
+    reset_idx = prompt_choice(_tr("agent.reset_mode_prompt"), reset_choices, default_reset)
 
     config.setdefault("session_reset", {})
 
     if reset_idx == 0:  # Both
         config["session_reset"]["mode"] = "both"
-        idle_str = prompt("  Inactivity timeout (minutes)", str(current_idle))
+        idle_str = prompt(_tr("agent.reset_idle_prompt"), str(current_idle))
         try:
             idle_val = int(idle_str)
             if idle_val > 0:
                 config["session_reset"]["idle_minutes"] = idle_val
         except ValueError:
             pass
-        hour_str = prompt("  Daily reset hour (0-23, local time)", str(current_hour))
+        hour_str = prompt(_tr("agent.reset_hour_prompt"), str(current_hour))
         try:
             hour_val = int(hour_str)
             if 0 <= hour_val <= 23:
@@ -1819,11 +1818,14 @@ def setup_agent_settings(config: dict):
         except ValueError:
             pass
         print_success(
-            f"Sessions reset after {config['session_reset'].get('idle_minutes', 1440)} min idle or daily at {config['session_reset'].get('at_hour', 4)}:00"
+            _tr("agent.reset_both_success").format(
+                idle=config['session_reset'].get('idle_minutes', 1440),
+                hour=config['session_reset'].get('at_hour', 4)
+            )
         )
     elif reset_idx == 1:  # Idle only
         config["session_reset"]["mode"] = "idle"
-        idle_str = prompt("  Inactivity timeout (minutes)", str(current_idle))
+        idle_str = prompt(_tr("agent.reset_idle_prompt"), str(current_idle))
         try:
             idle_val = int(idle_str)
             if idle_val > 0:
@@ -1831,11 +1833,11 @@ def setup_agent_settings(config: dict):
         except ValueError:
             pass
         print_success(
-            f"Sessions reset after {config['session_reset'].get('idle_minutes', 1440)} min of inactivity"
+            _tr("agent.reset_idle_success").format(idle=config['session_reset'].get('idle_minutes', 1440))
         )
     elif reset_idx == 2:  # Daily only
         config["session_reset"]["mode"] = "daily"
-        hour_str = prompt("  Daily reset hour (0-23, local time)", str(current_hour))
+        hour_str = prompt(_tr("agent.reset_hour_prompt"), str(current_hour))
         try:
             hour_val = int(hour_str)
             if 0 <= hour_val <= 23:
@@ -1843,15 +1845,15 @@ def setup_agent_settings(config: dict):
         except ValueError:
             pass
         print_success(
-            f"Sessions reset daily at {config['session_reset'].get('at_hour', 4)}:00"
+            _tr("agent.reset_daily_success").format(hour=config['session_reset'].get('at_hour', 4))
         )
     elif reset_idx == 3:  # None
         config["session_reset"]["mode"] = "none"
         print_info(
-            "Sessions will never auto-reset. Context is managed only by compression."
+            _tr("agent.reset_none_info")
         )
         print_warning(
-            "Long conversations will grow in cost. Use /reset manually when needed."
+            _tr("agent.reset_none_warning")
         )
     # else: keep current (idx == 4)
 
@@ -1868,68 +1870,62 @@ def _setup_telegram():
     print_header("Telegram")
     existing = get_env_value("TELEGRAM_BOT_TOKEN")
     if existing:
-        print_info("Telegram: already configured")
-        if not prompt_yes_no("Reconfigure Telegram?", False):
+        print_info(_tr("telegram_already_configured"))
+        if not prompt_yes_no(_tr("telegram_reconfigure_prompt"), False):
             # Check missing allowlist on existing config
             if not get_env_value("TELEGRAM_ALLOWED_USERS"):
-                print_info("⚠️  Telegram has no user allowlist - anyone can use your bot!")
-                if prompt_yes_no("Add allowed users now?", True):
-                    print_info("   To find your Telegram user ID: message @userinfobot")
-                    allowed_users = prompt("Allowed user IDs (comma-separated)")
+                print_info(_tr("telegram_no_allowlist_warning"))
+                if prompt_yes_no(_tr("telegram_add_users_prompt"), True):
+                    print_info(f"   {_tr('telegram_find_id_info')}")
+                    allowed_users = prompt(_tr("telegram_allowed_users_prompt"))
                     if allowed_users:
                         save_env_value("TELEGRAM_ALLOWED_USERS", allowed_users.replace(" ", ""))
-                        print_success("Telegram allowlist configured")
+                        print_success(_tr("telegram_allowlist_configured"))
             return
 
-    print_info("Create a bot via @BotFather on Telegram")
+    print_info(_tr("telegram_create_bot_info"))
     import re
 
     while True:
-        token = prompt("Telegram bot token", password=True)
+        token = prompt(_tr("telegram_token_prompt"), password=True)
         if not token:
             return
         if not re.match(r"^\d+:[A-Za-z0-9_-]{30,}$", token):
-            print_error(
-                "Invalid token format. Expected: <numeric_id>:<alphanumeric_hash> "
-                "(e.g., 123456789:ABCdefGHI-jklMNOpqrSTUvwxYZ)"
-            )
+            print_error(_tr("telegram_invalid_token"))
             continue
         break
     save_env_value("TELEGRAM_BOT_TOKEN", token)
-    print_success("Telegram token saved")
+    print_success(_tr("telegram_token_saved"))
 
     print()
-    print_info("🔒 Security: Restrict who can use your bot")
-    print_info("   To find your Telegram user ID:")
-    print_info("   1. Message @userinfobot on Telegram")
-    print_info("   2. It will reply with your numeric ID (e.g., 123456789)")
+    print_info(_tr("telegram_security_title"))
+    print_info(f"   {_tr('telegram_find_id_step_1')}")
+    print_info(f"   {_tr('telegram_find_id_step_2')}")
     print()
-    allowed_users = prompt(
-        "Allowed user IDs (comma-separated, leave empty for open access)"
-    )
+    allowed_users = prompt(_tr("telegram_allowed_users_full_prompt"))
     if allowed_users:
         save_env_value("TELEGRAM_ALLOWED_USERS", allowed_users.replace(" ", ""))
-        print_success("Telegram allowlist configured - only listed users can use the bot")
+        print_success(_tr("telegram_allowlist_full_configured"))
     else:
-        print_info("⚠️  No allowlist set - anyone who finds your bot can use it!")
+        print_info(_tr("telegram_no_allowlist_open_warning"))
 
     print()
-    print_info("📬 Home Channel: where Hermes delivers cron job results,")
-    print_info("   cross-platform messages, and notifications.")
-    print_info("   For Telegram DMs, this is your user ID (same as above).")
+    print_info(_tr("telegram_home_channel_title"))
+    print_info(f"   {_tr('telegram_home_channel_info_1')}")
+    print_info(f"   {_tr('telegram_home_channel_info_2')}")
 
     first_user_id = allowed_users.split(",")[0].strip() if allowed_users else ""
     if first_user_id:
-        if prompt_yes_no(f"Use your user ID ({first_user_id}) as the home channel?", True):
+        if prompt_yes_no(_tr("telegram_use_as_home_prompt", user_id=first_user_id), True):
             save_env_value("TELEGRAM_HOME_CHANNEL", first_user_id)
-            print_success(f"Telegram home channel set to {first_user_id}")
+            print_success(_tr("telegram_home_set", channel_id=first_user_id))
         else:
-            home_channel = prompt("Home channel ID (or leave empty to set later with /set-home in Telegram)")
+            home_channel = prompt(_tr("telegram_manual_home_prompt"))
             if home_channel:
                 save_env_value("TELEGRAM_HOME_CHANNEL", home_channel)
     else:
-        print_info("   You can also set this later by typing /set-home in your Telegram chat.")
-        home_channel = prompt("Home channel ID (leave empty to set later)")
+        print_info(f"   {_tr('telegram_set_home_later_info')}")
+        home_channel = prompt(_tr("telegram_home_empty_prompt"))
         if home_channel:
             save_env_value("TELEGRAM_HOME_CHANNEL", home_channel)
 
@@ -2365,9 +2361,9 @@ def setup_gateway(config: dict):
     """Configure messaging platform integrations."""
     from hermes_cli.gateway import _all_platforms, _platform_status, _configure_platform
 
-    print_header("Messaging Platforms")
-    print_info("Connect to messaging platforms to chat with Hermes from anywhere.")
-    print_info("Toggle with Space, confirm with Enter.")
+    print_header(_tr("section_messaging_platforms"))
+    print_info(_tr("gateway.description"))
+    print_info(_tr("gateway.toggle_hint"))
     print()
 
     platforms = _all_platforms()
@@ -2377,14 +2373,29 @@ def setup_gateway(config: dict):
     pre_selected = []
     for i, plat in enumerate(platforms):
         status = _platform_status(plat)
-        items.append(f"{plat['emoji']} {plat['label']}  ({status})")
+        # Translate status for display
+        if status == "configured":
+            translated_status = _tr("platform_configured")
+        elif status == "not configured":
+            translated_status = _tr("platform_not_configured")
+        elif status == "partially configured":
+            translated_status = _tr("platform_partially_configured")
+        elif status == "enabled, not paired":
+            translated_status = _tr("platform_enabled_not_paired")
+        elif status == "configured + paired":
+            translated_status = _tr("platform_configured_paired")
+        elif status.startswith("plugin disabled"):
+            translated_status = _tr("platform_plugin_disabled")
+        else:
+            translated_status = status  # fallback for other statuses
+        items.append(f"{plat['emoji']} {plat['label']}  ({translated_status})")
         if status == "configured":
             pre_selected.append(i)
 
-    selected = prompt_checklist("Select platforms to configure:", items, pre_selected)
+    selected = prompt_checklist(_tr("gateway.select_platforms"), items, pre_selected)
 
     if not selected:
-        print_info("No platforms selected. Run 'hermes setup gateway' later to configure.")
+        print_info(_tr("gateway.no_platforms_selected"))
         return
 
     for idx in selected:
@@ -2408,7 +2419,7 @@ def setup_gateway(config: dict):
     if any_messaging:
         print()
         print_info("━" * 50)
-        print_success("Messaging platforms configured!")
+        print_success(_tr("gateway.platforms_configured"))
 
         # Check if any home channels are missing
         missing_home = []
@@ -2431,10 +2442,9 @@ def setup_gateway(config: dict):
 
         if missing_home:
             print()
-            print_warning(f"No home channel set for: {', '.join(missing_home)}")
-            print_info("   Without a home channel, cron jobs and cross-platform")
-            print_info("   messages can't be delivered to those platforms.")
-            print_info("   Set one later with /set-home in your chat, or:")
+            print_warning(_tr("gateway.missing_home_channel").format(platforms=', '.join(missing_home)))
+            print_info(_tr("gateway.home_channel_info"))
+            print_info(_tr("gateway.set_home_hint"))
             for plat in missing_home:
                 print_info(
                     f"     hermes config set {plat.upper()}_HOME_CHANNEL <channel_id>"
@@ -2484,7 +2494,7 @@ def setup_gateway(config: dict):
         if service_running:
             if supports_systemd and _system_scope_wizard_would_need_root():
                 _print_system_scope_remediation("restart")
-            elif prompt_yes_no("  Restart the gateway to pick up changes?", True):
+            elif prompt_yes_no(_tr("gateway.restart_gateway_prompt"), True):
                 try:
                     if supports_systemd:
                         systemd_restart()
@@ -2494,22 +2504,18 @@ def setup_gateway(config: dict):
                         from hermes_cli import gateway_windows
                         gateway_windows.restart()
                 except UserSystemdUnavailableError as e:
-                    print_error("  Restart failed — user systemd not reachable:")
+                    print_error(_tr("gateway.systemd_unreachable"))
                     for line in str(e).splitlines():
                         print(f"  {line}")
                 except SystemScopeRequiresRootError as e:
-                    # Defense in depth: the pre-check above should have
-                    # caught this, but a race (unit file appearing mid-run)
-                    # could still land here. Previously this exited the
-                    # whole wizard via sys.exit(1).
-                    print_error(f"  Restart failed: {e}")
+                    print_error(_tr("gateway.restart_failed").format(error=e))
                     _print_system_scope_remediation("restart")
                 except Exception as e:
-                    print_error(f"  Restart failed: {e}")
+                    print_error(_tr("gateway.restart_failed").format(error=e))
         elif service_installed:
             if supports_systemd and _system_scope_wizard_would_need_root():
                 _print_system_scope_remediation("start")
-            elif prompt_yes_no("  Start the gateway service?", True):
+            elif prompt_yes_no(_tr("gateway.start_gateway_prompt"), True):
                 try:
                     if supports_systemd:
                         systemd_start()
@@ -2519,14 +2525,14 @@ def setup_gateway(config: dict):
                         from hermes_cli import gateway_windows
                         gateway_windows.start()
                 except UserSystemdUnavailableError as e:
-                    print_error("  Start failed — user systemd not reachable:")
+                    print_error(_tr("gateway.systemd_unreachable"))
                     for line in str(e).splitlines():
                         print(f"  {line}")
                 except SystemScopeRequiresRootError as e:
-                    print_error(f"  Start failed: {e}")
+                    print_error(_tr("gateway.start_failed").format(error=e))
                     _print_system_scope_remediation("start")
                 except Exception as e:
-                    print_error(f"  Start failed: {e}")
+                    print_error(_tr("gateway.start_failed").format(error=e))
         elif supports_service_manager:
             if supports_systemd:
                 svc_name = "systemd"
@@ -2535,7 +2541,7 @@ def setup_gateway(config: dict):
             else:
                 svc_name = "Scheduled Task"
             if prompt_yes_no(
-                f"  Install the gateway as a {svc_name} service? (runs in background, starts on boot)",
+                _tr("gateway.install_service_prompt").format(service=svc_name),
                 True,
             ):
                 try:
@@ -2557,41 +2563,41 @@ def setup_gateway(config: dict):
                         did_install = True
                         started_inline = True
                     print()
-                    if did_install and not started_inline and prompt_yes_no("  Start the service now?", True):
+                    if did_install and not started_inline and prompt_yes_no(_tr("gateway.start_service_prompt"), True):
                         try:
                             if supports_systemd:
                                 systemd_start(system=installed_scope == "system")
                             elif _is_macos:
                                 launchd_start()
                         except UserSystemdUnavailableError as e:
-                            print_error("  Start failed — user systemd not reachable:")
+                            print_error(_tr("gateway.systemd_unreachable"))
                             for line in str(e).splitlines():
                                 print(f"  {line}")
                         except SystemScopeRequiresRootError as e:
-                            print_error(f"  Start failed: {e}")
+                            print_error(_tr("gateway.start_failed").format(error=e))
                             _print_system_scope_remediation("start")
                         except Exception as e:
-                            print_error(f"  Start failed: {e}")
+                            print_error(_tr("gateway.start_failed").format(error=e))
                 except Exception as e:
-                    print_error(f"  Install failed: {e}")
-                    print_info("  You can try manually: hermes gateway install")
+                    print_error(_tr("gateway.install_failed").format(error=e))
+                    print_info(_tr("gateway.install_manual_hint"))
             else:
-                print_info("  You can install later: hermes gateway install")
+                print_info(_tr("gateway.install_later_hint"))
                 if supports_systemd:
-                    print_info("  Or as a boot-time service: sudo hermes gateway install --system")
-                print_info("  Or run in foreground:  hermes gateway")
+                    print_info(_tr("gateway.install_system_hint"))
+                print_info(_tr("gateway.run_foreground_hint"))
         else:
             from hermes_constants import is_container
             if is_container():
-                print_info("Start the gateway to bring your bots online:")
-                print_info("   hermes gateway run          # Run as container main process")
+                print_info(_tr("gateway.container_start_hint"))
+                print_info(_tr("gateway.container_run_hint"))
                 print_info("")
-                print_info("For automatic restarts, use a Docker restart policy:")
-                print_info("   docker run --restart unless-stopped ...")
-                print_info("   docker restart <container>  # Manual restart")
+                print_info(_tr("gateway.container_restart_hint"))
+                print_info(_tr("gateway.container_docker_hint"))
+                print_info(_tr("gateway.container_manual_restart"))
             else:
-                print_info("Start the gateway to bring your bots online:")
-                print_info("   hermes gateway              # Run in foreground")
+                print_info(_tr("gateway.native_start_hint"))
+                print_info(_tr("gateway.native_run_hint"))
 
         print_info("━" * 50)
 
@@ -3129,9 +3135,10 @@ def run_setup_wizard(args):
             Colors.MAGENTA,
         )
     )
+    wizard_title = _tr("wizard_title")
     print(
         color(
-            "│             ⚕ Hermes Agent Setup Wizard                │", Colors.MAGENTA
+            f"│             ⚕ {wizard_title:50s}│", Colors.MAGENTA
         )
     )
     print(
@@ -3140,14 +3147,16 @@ def run_setup_wizard(args):
             Colors.MAGENTA,
         )
     )
+    welcome_msg = _tr("welcome_message")
     print(
         color(
-            "│  Let's configure your Hermes Agent installation.       │", Colors.MAGENTA
+            f"│  {welcome_msg:56s}│", Colors.MAGENTA
         )
     )
+    exit_hint = _tr("exit_hint")
     print(
         color(
-            "│  Press Ctrl+C at any time to exit.                     │", Colors.MAGENTA
+            f"│  {exit_hint:56s}│", Colors.MAGENTA
         )
     )
     print(
@@ -3170,13 +3179,13 @@ def run_setup_wizard(args):
             return
 
         print()
-        print_header("Reconfigure")
-        print_success("You already have Hermes configured.")
-        print_info("Running the full wizard — each prompt shows your current value.")
-        print_info("Press Enter to keep it, or type a new value to change it.")
+        print_header(_tr("reconfigure"))
+        print_success(_tr("already_configured"))
+        print_info(_tr("wizard_info"))
+        print_info(_tr("keep_or_change"))
         print_info("")
-        print_info("Tip: jump straight to a section with 'hermes setup model|terminal|")
-        print_info("     gateway|tools|agent', or fill only missing items with --quick.")
+        print_info(_tr("section_jump_tip"))
+        print_info("     gateway|tools|agent', " + _tr("quick_fill_tip"))
         # Fall through to the "Full Setup — run all sections" block below.
         # --reconfigure is now the default on existing installs; the flag
         # is preserved for backwards compatibility but is a no-op here.
@@ -3187,7 +3196,7 @@ def run_setup_wizard(args):
         # --reconfigure / --quick on a fresh install are meaningless — fall
         # through to the normal first-time flow.
         if reconfigure_requested or quick_requested:
-            print_info("No existing configuration found — running first-time setup.")
+            print_info(_tr("no_existing_config"))
             print()
 
         # Offer OpenClaw migration before configuration begins
@@ -3195,9 +3204,9 @@ def run_setup_wizard(args):
         if migration_ran:
             config = load_config()
 
-        setup_mode = prompt_choice("How would you like to set up Hermes?", [
-            "Quick setup — provider, model & messaging (recommended)",
-            "Full setup — configure everything",
+        setup_mode = prompt_choice(_tr("how_to_setup"), [
+            _tr("quick_setup"),
+            _tr("full_setup"),
         ], 0)
 
         if setup_mode == 0:
@@ -3205,45 +3214,45 @@ def run_setup_wizard(args):
             return
 
     # ── Full Setup — run all sections ──
-    print_header("Configuration Location")
-    print_info(f"Config file:  {get_config_path()}")
-    print_info(f"Secrets file: {get_env_path()}")
-    print_info(f"Data folder:  {hermes_home}")
-    print_info(f"Install dir:  {PROJECT_ROOT}")
+    print_header(_tr("config_location"))
+    print_info(f"{_tr('config_file')}:  {get_config_path()}")
+    print_info(f"{_tr('secrets_file')}: {get_env_path()}")
+    print_info(f"{_tr('data_folder')}:  {hermes_home}")
+    print_info(f"{_tr('install_dir')}:  {PROJECT_ROOT}")
     print()
-    print_info("You can edit these files directly or use 'hermes config edit'")
+    print_info(_tr("edit_hint"))
 
     if migration_ran:
         print()
-        print_info("Settings were imported from OpenClaw.")
-        print_info("Each section below will show what was imported — press Enter to keep,")
-        print_info("or choose to reconfigure if needed.")
+        print_info(_tr("migration_imported"))
+        print_info(_tr("migration_review"))
+        print_info(_tr("migration_reconfigure"))
 
     # Section 1: Model & Provider
-    if not (migration_ran and _skip_configured_section(config, "model", "Model & Provider")):
+    if not (migration_ran and _skip_configured_section(config, "model", _tr("section_model_provider"))):
         setup_model_provider(config)
 
     # Section 2: Terminal Backend
-    if not (migration_ran and _skip_configured_section(config, "terminal", "Terminal Backend")):
+    if not (migration_ran and _skip_configured_section(config, "terminal", _tr("section_terminal_backend"))):
         setup_terminal_backend(config)
 
     # Section 3: Agent Settings
-    if not (migration_ran and _skip_configured_section(config, "agent", "Agent Settings")):
+    if not (migration_ran and _skip_configured_section(config, "agent", _tr("section_agent_settings"))):
         setup_agent_settings(config)
 
     # Section 4: Messaging Platforms
-    if not (migration_ran and _skip_configured_section(config, "gateway", "Messaging Platforms")):
+    if not (migration_ran and _skip_configured_section(config, "gateway", _tr("section_messaging_platforms"))):
         setup_gateway(config)
 
     # Section 5: Tools
-    if not (migration_ran and _skip_configured_section(config, "tools", "Tools")):
+    if not (migration_ran and _skip_configured_section(config, "tools", _tr("section_tools"))):
         setup_tools(config, first_install=not is_existing)
 
     # Save and show summary
     save_config(config)
     if _backup_path and _backup_path.exists():
-        print_info(f"Previous config backed up to: {_backup_path}")
-        print_info("If setup changed a value you customized, restore it with:")
+        print_info(f"{_tr('backup_info')} {_backup_path}")
+        print_info(_tr("restore_hint"))
         print_info(f"  cp {_backup_path} {config_path}")
     _print_setup_summary(config, hermes_home)
 
@@ -3253,7 +3262,7 @@ def run_setup_wizard(args):
 def _offer_launch_chat():
     """Prompt the user to jump straight into chat after setup."""
     print()
-    if not prompt_yes_no("Launch hermes chat now?", True):
+    if not prompt_yes_no(_tr("launch_chat_prompt"), True):
         return
 
     from hermes_cli.relaunch import relaunch
@@ -3280,10 +3289,10 @@ def _run_first_time_quick_setup(config: dict, hermes_home, is_existing: bool):
     # Step 4: Offer messaging gateway setup
     print()
     gateway_choice = prompt_choice(
-        "Connect a messaging platform? (Telegram, Discord, etc.)",
+        _tr("connect_messaging_title"),
         [
-            "Set up messaging now (recommended)",
-            "Skip — set up later with 'hermes setup gateway'",
+            _tr("setup_messaging_now"),
+            _tr("skip_messaging_later"),
         ],
         0,
     )
@@ -3293,11 +3302,11 @@ def _run_first_time_quick_setup(config: dict, hermes_home, is_existing: bool):
         save_config(config)
 
     print()
-    print_success("Setup complete! You're ready to go.")
+    print_success(_tr("setup_complete"))
     print()
-    print_info("  Configure all settings:    hermes setup")
+    print_info(_tr("configure_all_hint"))
     if gateway_choice != 0:
-        print_info("  Connect Telegram/Discord:  hermes setup gateway")
+        print_info(_tr("connect_messaging_hint"))
     print()
 
     _print_setup_summary(config, hermes_home)
@@ -3314,7 +3323,7 @@ def _run_quick_setup(config: dict, hermes_home):
     )
 
     print()
-    print_header("Quick Setup — Missing Items Only")
+    print_header(_tr("quick_setup_title"))
 
     # Check what's missing
     missing_required = [
@@ -3334,16 +3343,16 @@ def _run_quick_setup(config: dict, hermes_home):
     )
 
     if not has_anything_missing:
-        print_success("Everything is configured! Nothing to do.")
+        print_success(_tr("everything_configured"))
         print()
-        print_info("Run 'hermes setup' and choose 'Full Setup' to reconfigure,")
-        print_info("or pick a specific section from the menu.")
+        print_info(_tr("reconfigure_hint_1"))
+        print_info(_tr("reconfigure_hint_2"))
         return
 
     # Handle missing required env vars
     if missing_required:
         print()
-        print_info(f"{len(missing_required)} required setting(s) missing:")
+        print_info(_tr("required_settings_missing", count=len(missing_required)))
         for var in missing_required:
             print(f"     • {var['name']}")
         print()
@@ -3377,7 +3386,7 @@ def _run_quick_setup(config: dict, hermes_home):
     # ── Tool API keys (checklist) ──
     if missing_tools:
         print()
-        print_header("Tool API Keys")
+        print_header(_tr("tool_api_keys_title"))
 
         checklist_labels = []
         for var in missing_tools:
@@ -3386,7 +3395,7 @@ def _run_quick_setup(config: dict, hermes_home):
             checklist_labels.append(f"{var.get('description', var['name'])}{tools_str}")
 
         selected_indices = prompt_checklist(
-            "Which tools would you like to configure?",
+            _tr("which_tools_prompt"),
             checklist_labels,
         )
 
@@ -3397,9 +3406,9 @@ def _run_quick_setup(config: dict, hermes_home):
     # ── Messaging platforms (checklist then prompt for selected) ──
     if missing_messaging:
         print()
-        print_header("Messaging Platforms")
-        print_info("Connect Hermes to messaging apps to chat from anywhere.")
-        print_info("You can configure these later with 'hermes setup gateway'.")
+        print_header(_tr("messaging_platforms_title"))
+        print_info(_tr("messaging_info_1"))
+        print_info(_tr("messaging_info_2"))
 
         # Group by platform (preserving order)
         platform_order = []
@@ -3428,7 +3437,7 @@ def _run_quick_setup(config: dict, hermes_home):
         ]
 
         selected_indices = prompt_checklist(
-            "Which platforms would you like to set up?",
+            _tr("which_platforms_prompt"),
             platform_labels,
         )
 
@@ -3449,19 +3458,19 @@ def _run_quick_setup(config: dict, hermes_home):
                     value = prompt(f"  {var.get('prompt', var['name'])}")
                 if value:
                     save_env_value(var["name"], value)
-                    print_success("  ✓ Saved")
+                    print_success(_tr("saved_short"))
                 else:
-                    print_warning("  Skipped")
+                    print_warning(_tr("skipped_short"))
                 print()
 
     # Handle missing config fields
     if missing_config:
         print()
         print_info(
-            f"Adding {len(missing_config)} new config option(s) with defaults..."
+            _tr("adding_config_defaults", count=len(missing_config))
         )
         for field in missing_config:
-            print_success(f"  Added {field['key']} = {field['default']}")
+            print_success(_tr("added_config_field", key=field['key'], default=field['default']))
 
         # Update config version
         config["_config_version"] = latest_ver

@@ -44,6 +44,7 @@ import yaml
 from hermes_cli.config import get_hermes_home, get_config_path, read_raw_config
 from hermes_constants import OPENROUTER_BASE_URL
 from utils import atomic_replace, atomic_yaml_write, is_truthy_value
+from agent.i18n import t as _t
 
 logger = logging.getLogger(__name__)
 
@@ -1466,9 +1467,7 @@ def resolve_provider(
         pass  # boto3 not installed — skip Bedrock auto-detection
 
     raise AuthError(
-        "No inference provider configured. Run 'hermes model' to choose a "
-        "provider and model, or set an API key (OPENROUTER_API_KEY, "
-        "OPENAI_API_KEY, etc.) in ~/.hermes/.env.",
+        _t("setup.model.no_provider_warning"),
         code="no_provider_configured",
     )
 

@@ -1,350 +1,1361 @@
-# Hermes 静态消息目录 -- 中文（简体）
-# See locales/en.yaml for the source of truth; keep keys in sync.
-
-approval:
-  dangerous_header: "⚠️  危险命令： {description}"
-  choose_long:     "      [o]仅此一次  |  [s]本次会话  |  [a]永久允许  |  [d]拒绝"
-  choose_short:    "      [o]仅此一次  |  [s]本次会话  |  [d]拒绝"
-  prompt_long:     "      选择 [o/s/a/D]: "
-  prompt_short:    "      选择 [o/s/D]: "
-  timeout:         "      ⏱ 超时 — 已拒绝命令"
-  allowed_once:    "      ✓ 本次允许"
-  allowed_session: "      ✓ 本次会话内允许"
-  allowed_always:  "      ✓ 已加入永久允许列表"
-  denied:          "      ✗ 已拒绝"
-  cancelled:       "      ✗ 已取消"
-  blocklist_message: "此命令位于无条件拦截列表中，无法被批准。"
-
+方案 A (推荐): 保留所有语言文件,只修改 zh.yaml 和 en.yaml
+恢复被删除的语言文件
+只保留您对 zh.yaml 和 en.yaml 的修改
+这样既保留了中文汉化,又不影响其他语言approval:
+  dangerous_header: ⚠️  危险命令： {description}
+  choose_long: '      [o]仅此一次  |  [s]本次会话  |  [a]永久允许  |  [d]拒绝'
+  choose_short: '      [o]仅此一次  |  [s]本次会话  |  [d]拒绝'
+  prompt_long: '      选择 [o/s/a/D]: '
+  prompt_short: '      选择 [o/s/D]: '
+  timeout: '      ⏱ 超时 — 已拒绝命令'
+  allowed_once: '      ✓ 本次允许'
+  allowed_session: '      ✓ 本次会话内允许'
+  allowed_always: '      ✓ 已加入永久允许列表'
+  denied: '      ✗ 已拒绝'
+  cancelled: '      ✗ 已取消'
+  blocklist_message: 此命令位于无条件拦截列表中，无法被批准。
 gateway:
-  approval_expired: "⚠️ 批准已过期（代理不再等待）。请让代理重试。"
-  draining:         "⏳ 正在等待 {count} 个活跃代理结束后重启..."
-  goal_cleared:     "✓ 目标已清除。"
-  no_active_goal:   "当前没有活跃的目标。"
-  config_read_failed: "⚠️ 无法读取 config.yaml：{error}"
-  config_save_failed: "⚠️ 无法保存配置：{error}"
-
+  approval_expired: ⚠️ 批准已过期（代理不再等待）。请让代理重试。
+  draining: ⏳ 正在等待 {count} 个活跃代理结束后重启...
+  goal_cleared: ✓ 目标已清除。
+  no_active_goal: 当前没有活跃的目标。
+  config_read_failed: ⚠️ 无法读取 config.yaml：{error}
+  config_save_failed: ⚠️ 无法保存配置：{error}
   model:
-    error_prefix:           "错误：{error}"
-    switched:               "已切换模型为 `{model}`"
-    provider_label:         "提供方：{provider}"
-    context_label:          "上下文：{tokens} tokens"
-    max_output_label:       "最大输出：{tokens} tokens"
-    cost_label:             "费用：{cost}"
-    capabilities_label:     "能力：{capabilities}"
-    prompt_caching_enabled: "提示词缓存：已启用"
-    warning_prefix:         "警告：{warning}"
-    saved_global:           "已保存到 config.yaml（`--global`）"
-    session_only_hint:      "_（仅本次会话有效 — 添加 `--global` 可永久保存）_"
-    current_label:          "当前：`{model}`（{provider}）"
-    current_tag:            "（当前）"
-    more_models_suffix:     "（还有 {count} 个）"
-    usage_switch_model:     "`/model <name>` — 切换模型"
-    usage_switch_provider:  "`/model <name> --provider <slug>` — 切换提供方"
-    usage_persist:          "`/model <name> --global` — 永久保存"
-
+    error_prefix: 错误：{error}
+    switched: 已切换模型为 `{model}`
+    provider_label: 提供方：{provider}
+    context_label: 上下文：{tokens} tokens
+    max_output_label: 最大输出：{tokens} tokens
+    cost_label: 费用：{cost}
+    capabilities_label: 能力：{capabilities}
+    prompt_caching_enabled: 提示词缓存：已启用
+    warning_prefix: 警告：{warning}
+    saved_global: 已保存到 config.yaml（`--global`）
+    session_only_hint: _（仅本次会话有效 — 添加 `--global` 可永久保存）_
+    current_label: 当前：`{model}`（{provider}）
+    current_tag: （当前）
+    more_models_suffix: （还有 {count} 个）
+    usage_switch_model: '`/model <name>` — 切换模型'
+    usage_switch_provider: '`/model <name> --provider <slug>` — 切换提供方'
+    usage_persist: '`/model <name> --global` — 永久保存'
   agents:
-    header:                "🤖 **活跃代理与任务**"
-    active_agents:         "**活跃代理：** {count}"
-    this_chat:             " · 当前聊天"
-    more:                  "... 还有 {count} 个"
-    running_processes:     "**运行中的后台进程：** {count}"
-    async_jobs:            "**网关异步任务：** {count}"
-    none:                  "没有活跃的代理或运行中的任务。"
-    state_starting:        "启动中"
-    state_running:         "运行中"
-
+    header: 🤖 **活跃代理与任务**
+    active_agents: '**活跃代理：** {count}'
+    this_chat: ' · 当前聊天'
+    more: '... 还有 {count} 个'
+    running_processes: '**运行中的后台进程：** {count}'
+    async_jobs: '**网关异步任务：** {count}'
+    none: 没有活跃的代理或运行中的任务。
+    state_starting: 启动中
+    state_running: 运行中
   approve:
-    no_pending:            "没有待批准的命令。"
-    once_singular:         "✅ 命令已批准。代理正在恢复…"
-    once_plural:           "✅ 命令已批准（{count} 条命令）。代理正在恢复…"
-    session_singular:      "✅ 命令已批准（本次会话内允许该模式）。代理正在恢复…"
-    session_plural:        "✅ 命令已批准（本次会话内允许该模式）（{count} 条命令）。代理正在恢复…"
-    always_singular:       "✅ 命令已批准（永久允许该模式）。代理正在恢复…"
-    always_plural:         "✅ 命令已批准（永久允许该模式）（{count} 条命令）。代理正在恢复…"
-
+    no_pending: 没有待批准的命令。
+    once_singular: ✅ 命令已批准。代理正在恢复…
+    once_plural: ✅ 命令已批准（{count} 条命令）。代理正在恢复…
+    session_singular: ✅ 命令已批准（本次会话内允许该模式）。代理正在恢复…
+    session_plural: ✅ 命令已批准（本次会话内允许该模式）（{count} 条命令）。代理正在恢复…
+    always_singular: ✅ 命令已批准（永久允许该模式）。代理正在恢复…
+    always_plural: ✅ 命令已批准（永久允许该模式）（{count} 条命令）。代理正在恢复…
   background:
-    usage:                 "用法：/background <提示>\n示例：/background 总结今天 HN 上热门的故事\n\n在独立会话中运行该提示。你可以继续聊天 — 结果完成后将在此显示。"
-    started:               "🔄 后台任务已启动：「{preview}」\n任务 ID：{task_id}\n你可以继续聊天 — 完成后结果将在此显示。"
+    usage: '用法：/background <提示>
 
+      示例：/background 总结今天 HN 上热门的故事
+
+
+      在独立会话中运行该提示。你可以继续聊天 — 结果完成后将在此显示。'
+    started: '🔄 后台任务已启动：「{preview}」
+
+      任务 ID：{task_id}
+
+      你可以继续聊天 — 完成后结果将在此显示。'
   branch:
-    db_unavailable:        "会话数据库不可用。"
-    no_conversation:       "没有可分支的对话 — 请先发送一条消息。"
-    create_failed:         "创建分支失败：{error}"
-    switch_failed:         "分支已创建，但无法切换到它。"
-    branched_one:          "⑂ 已分支到 **{title}**（已复制 {count} 条消息）\n原始：`{parent}`\n分支：`{new}`\n使用 `/resume` 切换回原始会话。"
-    branched_many:         "⑂ 已分支到 **{title}**（已复制 {count} 条消息）\n原始：`{parent}`\n分支：`{new}`\n使用 `/resume` 切换回原始会话。"
+    db_unavailable: 会话数据库不可用。
+    no_conversation: 没有可分支的对话 — 请先发送一条消息。
+    create_failed: 创建分支失败：{error}
+    switch_failed: 分支已创建，但无法切换到它。
+    branched_one: '⑂ 已分支到 **{title}**（已复制 {count} 条消息）
 
+      原始：`{parent}`
+
+      分支：`{new}`
+
+      使用 `/resume` 切换回原始会话。'
+    branched_many: '⑂ 已分支到 **{title}**（已复制 {count} 条消息）
+
+      原始：`{parent}`
+
+      分支：`{new}`
+
+      使用 `/resume` 切换回原始会话。'
   commands:
-    usage:                 "用法：`/commands [page]`"
-    skill_header:          "⚡ **技能命令**："
-    default_desc:          "技能命令"
-    none:                  "没有可用的命令。"
-    header:                "📚 **命令**（共 {total} 个，第 {page}/{total_pages} 页）"
-    nav_prev:              "`/commands {page}` ← 上一页"
-    nav_next:              "下一页 → `/commands {page}`"
-    out_of_range:          "_（请求的第 {requested} 页超出范围，显示第 {page} 页。）_"
-
+    usage: 用法：`/commands [page]`
+    skill_header: ⚡ **技能命令**：
+    default_desc: 技能命令
+    none: 没有可用的命令。
+    header: 📚 **命令**（共 {total} 个，第 {page}/{total_pages} 页）
+    nav_prev: '`/commands {page}` ← 上一页'
+    nav_next: 下一页 → `/commands {page}`
+    out_of_range: _（请求的第 {requested} 页超出范围，显示第 {page} 页。）_
   compress:
-    not_enough:            "对话内容不足，无法压缩（至少需要 4 条消息）。"
-    no_provider:           "未配置提供方 — 无法压缩。"
-    nothing_to_do:         "暂无可压缩内容（对话记录仍全部为受保护上下文）。"
-    focus_line:            "聚焦：\"{topic}\""
-    summary_failed:        "⚠️ 摘要生成失败（{error}）。{count} 条历史消息已被移除并替换为占位符；之前的上下文已无法恢复。建议检查 auxiliary.compression 模型配置。"
-    aux_failed:            "ℹ️ 配置的压缩模型 `{model}` 失败（{error}）。已使用主模型恢复 — 上下文完好 — 但您可能想检查 config.yaml 中的 `auxiliary.compression.model`。"
-    failed:                "压缩失败：{error}"
-
+    not_enough: 对话内容不足，无法压缩（至少需要 4 条消息）。
+    no_provider: 未配置提供方 — 无法压缩。
+    nothing_to_do: 暂无可压缩内容（对话记录仍全部为受保护上下文）。
+    focus_line: 聚焦："{topic}"
+    summary_failed: ⚠️ 摘要生成失败（{error}）。{count} 条历史消息已被移除并替换为占位符；之前的上下文已无法恢复。建议检查 auxiliary.compression
+      模型配置。
+    aux_failed: ℹ️ 配置的压缩模型 `{model}` 失败（{error}）。已使用主模型恢复 — 上下文完好 — 但您可能想检查 config.yaml
+      中的 `auxiliary.compression.model`。
+    failed: 压缩失败：{error}
   debug:
-    upload_failed:         "✗ 无法上传调试报告：{error}"
-    header:                "**调试报告已上传：**"
-    auto_delete:           "⏱ 粘贴内容将在 6 小时后自动删除。"
-    full_logs_hint:        "如需上传完整日志，请在 CLI 中使用 `hermes debug share`。"
-    share_hint:            "请将这些链接分享给 Hermes 团队以获得支持。"
-
+    upload_failed: ✗ 无法上传调试报告：{error}
+    header: '**调试报告已上传：**'
+    auto_delete: ⏱ 粘贴内容将在 6 小时后自动删除。
+    full_logs_hint: 如需上传完整日志，请在 CLI 中使用 `hermes debug share`。
+    share_hint: 请将这些链接分享给 Hermes 团队以获得支持。
   deny:
-    stale:                 "❌ 命令已拒绝（批准已过期）。"
-    no_pending:            "没有待拒绝的命令。"
-    denied_singular:       "❌ 命令已拒绝。"
-    denied_plural:         "❌ 命令已拒绝（{count} 条命令）。"
-
+    stale: ❌ 命令已拒绝（批准已过期）。
+    no_pending: 没有待拒绝的命令。
+    denied_singular: ❌ 命令已拒绝。
+    denied_plural: ❌ 命令已拒绝（{count} 条命令）。
   fast:
-    not_supported:         "⚡ /fast 仅适用于支持优先处理（Priority Processing）的 OpenAI 模型。"
-    status:                "⚡ 优先处理\n\n当前模式：`{mode}`\n\n_用法：_ `/fast <normal|fast|status>`"
-    unknown_arg:           "⚠️ 未知参数：`{arg}`\n\n**有效选项：** normal、fast、status"
-    saved:                 "⚡ ✓ 优先处理：**{label}**（已保存到配置）\n_（下一条消息生效）_"
-    session_only:          "⚡ ✓ 优先处理：**{label}**（仅本次会话）"
-    label_fast:            "FAST"
-    label_normal:          "NORMAL"
-    status_fast:           "fast"
-    status_normal:         "normal"
+    not_supported: ⚡ /fast 仅适用于支持优先处理（Priority Processing）的 OpenAI 模型。
+    status: '⚡ 优先处理
 
+
+      当前模式：`{mode}`
+
+
+      _用法：_ `/fast <normal|fast|status>`'
+    unknown_arg: '⚠️ 未知参数：`{arg}`
+
+
+      **有效选项：** normal、fast、status'
+    saved: '⚡ ✓ 优先处理：**{label}**（已保存到配置）
+
+      _（下一条消息生效）_'
+    session_only: ⚡ ✓ 优先处理：**{label}**（仅本次会话）
+    label_fast: FAST
+    label_normal: NORMAL
+    status_fast: fast
+    status_normal: normal
   footer:
-    status:                "📎 运行时页脚：**{state}**\n字段：`{fields}`\n平台：`{platform}`"
-    usage:                 "用法：`/footer [on|off|status]`"
-    saved:                 "📎 运行时页脚：**{state}**{example}\n_（已全局保存 — 下一条消息生效）_"
-    example_line:          "\n示例：`{preview}`"
-    state_on:              "ON"
-    state_off:             "OFF"
+    status: '📎 运行时页脚：**{state}**
 
+      字段：`{fields}`
+
+      平台：`{platform}`'
+    usage: 用法：`/footer [on|off|status]`
+    saved: '📎 运行时页脚：**{state}**{example}
+
+      _（已全局保存 — 下一条消息生效）_'
+    example_line: '
+
+      示例：`{preview}`'
+    state_on: 'ON'
+    state_off: 'OFF'
   goal:
-    unavailable:           "此会话不支持目标功能。"
-    no_goal_set:           "未设置目标。"
-    paused:                "⏸ 目标已暂停：{goal}"
-    no_resume:             "没有可恢复的目标。"
-    resumed:               "▶ 目标已恢复：{goal}\n发送任意消息继续，或等待 — 我会在下一轮继续推进。"
-    invalid:               "无效目标：{error}"
-    set:                   "⊙ 目标已设置（{budget} 轮预算）：{goal}\n我将持续工作直到目标完成、你暂停/清除它，或预算耗尽。\n控制命令：/goal status · /goal pause · /goal resume · /goal clear"
+    unavailable: 此会话不支持目标功能。
+    no_goal_set: 未设置目标。
+    paused: ⏸ 目标已暂停：{goal}
+    no_resume: 没有可恢复的目标。
+    resumed: '▶ 目标已恢复：{goal}
 
+      发送任意消息继续，或等待 — 我会在下一轮继续推进。'
+    invalid: 无效目标：{error}
+    set: '⊙ 目标已设置（{budget} 轮预算）：{goal}
+
+      我将持续工作直到目标完成、你暂停/清除它，或预算耗尽。
+
+      控制命令：/goal status · /goal pause · /goal resume · /goal clear'
   help:
-    header:                "📖 **Hermes 命令**\n"
-    skill_header:          "\n⚡ **技能命令**（{count} 个活跃）："
-    more_use_commands:     "\n... 还有 {count} 个。使用 `/commands` 查看完整分页列表。"
+    header: '📖 **Hermes 命令**
 
+      '
+    skill_header: '
+
+      ⚡ **技能命令**（{count} 个活跃）：'
+    more_use_commands: '
+
+      ... 还有 {count} 个。使用 `/commands` 查看完整分页列表。'
   insights:
-    invalid_days:          "无效的 --days 值：{value}"
-    error:                 "生成洞察时出错：{error}"
-
+    invalid_days: 无效的 --days 值：{value}
+    error: 生成洞察时出错：{error}
   kanban:
-    error_prefix:          "⚠ kanban 错误：{error}"
-    subscribed_suffix:     "（已订阅 — 当 {task_id} 完成或被阻塞时将通知您）"
-    truncated_suffix:      "…（已截断；如需完整输出请在终端运行 `hermes kanban …`）"
-    no_output:             "（无输出）"
-
+    error_prefix: ⚠ kanban 错误：{error}
+    subscribed_suffix: （已订阅 — 当 {task_id} 完成或被阻塞时将通知您）
+    truncated_suffix: …（已截断；如需完整输出请在终端运行 `hermes kanban …`）
+    no_output: （无输出）
   personality:
-    none_configured:       "`{path}/config.yaml` 中未配置人格设定"
-    header:                "🎭 **可用人格**\n"
-    none_option:           "• `none` — （不应用人格覆盖）"
-    item:                  "• `{name}` — {preview}"
-    usage:                 "\n用法：`/personality <name>`"
-    save_failed:           "⚠️ 保存人格变更失败：{error}"
-    cleared:               "🎭 已清除人格 — 使用基础代理行为。\n_（在下一条消息时生效）_"
-    set_to:                "🎭 人格已设置为 **{name}**\n_（在下一条消息时生效）_"
-    unknown:               "未知人格：`{name}`\n\n可用：{available}"
+    none_configured: '`{path}/config.yaml` 中未配置人格设定'
+    header: '🎭 **可用人格**
 
+      '
+    none_option: • `none` — （不应用人格覆盖）
+    item: • `{name}` — {preview}
+    usage: '
+
+      用法：`/personality <name>`'
+    save_failed: ⚠️ 保存人格变更失败：{error}
+    cleared: '🎭 已清除人格 — 使用基础代理行为。
+
+      _（在下一条消息时生效）_'
+    set_to: '🎭 人格已设置为 **{name}**
+
+      _（在下一条消息时生效）_'
+    unknown: '未知人格：`{name}`
+
+
+      可用：{available}'
   profile:
-    header:                "👤 **配置文件：** `{profile}`"
-    home:                  "📂 **主目录：** `{home}`"
-
+    header: 👤 **配置文件：** `{profile}`
+    home: 📂 **主目录：** `{home}`
   reasoning:
-    level_default:             "medium（默认）"
-    level_disabled:            "none（已禁用）"
-    scope_session:             "会话覆盖"
-    scope_global:              "全局配置"
-    status:                    "🧠 **推理设置**\n\n**强度：** `{level}`\n**作用域：** {scope}\n**显示：** {display}\n\n_用法：_ `/reasoning <none|minimal|low|medium|high|xhigh|reset|show|hide> [--global]`"
-    display_on:                "开 ✓"
-    display_off:               "关"
-    display_set_on:            "🧠 ✓ 推理显示：**开启**\n在 **{platform}** 上每次响应前将显示模型的思考过程。"
-    display_set_off:           "🧠 ✓ **{platform}** 上的推理显示：**关闭**"
-    reset_global_unsupported:  "⚠️ 不支持 `/reasoning reset --global`。请使用 `/reasoning <level> --global` 修改全局默认值。"
-    reset_done:                "🧠 ✓ 已清除本会话的推理覆盖；回退到全局配置。"
-    unknown_arg:               "⚠️ 未知参数：`{arg}`\n\n**有效级别：** none, minimal, low, medium, high, xhigh\n**显示：** show, hide\n**持久化：** 添加 `--global` 以跨会话保存"
-    set_global:                "🧠 ✓ 推理强度已设置为 `{effort}`（已保存到配置）\n_（下一条消息生效）_"
-    set_global_save_failed:    "🧠 ✓ 推理强度已设置为 `{effort}`（仅本会话 — 配置保存失败）\n_（下一条消息生效）_"
-    set_session:               "🧠 ✓ 推理强度已设置为 `{effort}`（仅本会话 — 添加 `--global` 以持久化）\n_（下一条消息生效）_"
+    level_default: medium（默认）
+    level_disabled: none（已禁用）
+    scope_session: 会话覆盖
+    scope_global: 全局配置
+    status: '🧠 **推理设置**
 
+
+      **强度：** `{level}`
+
+      **作用域：** {scope}
+
+      **显示：** {display}
+
+
+      _用法：_ `/reasoning <none|minimal|low|medium|high|xhigh|reset|show|hide> [--global]`'
+    display_on: 开 ✓
+    display_off: 关
+    display_set_on: '🧠 ✓ 推理显示：**开启**
+
+      在 **{platform}** 上每次响应前将显示模型的思考过程。'
+    display_set_off: 🧠 ✓ **{platform}** 上的推理显示：**关闭**
+    reset_global_unsupported: ⚠️ 不支持 `/reasoning reset --global`。请使用 `/reasoning <level>
+      --global` 修改全局默认值。
+    reset_done: 🧠 ✓ 已清除本会话的推理覆盖；回退到全局配置。
+    unknown_arg: '⚠️ 未知参数：`{arg}`
+
+
+      **有效级别：** none, minimal, low, medium, high, xhigh
+
+      **显示：** show, hide
+
+      **持久化：** 添加 `--global` 以跨会话保存'
+    set_global: '🧠 ✓ 推理强度已设置为 `{effort}`（已保存到配置）
+
+      _（下一条消息生效）_'
+    set_global_save_failed: '🧠 ✓ 推理强度已设置为 `{effort}`（仅本会话 — 配置保存失败）
+
+      _（下一条消息生效）_'
+    set_session: '🧠 ✓ 推理强度已设置为 `{effort}`（仅本会话 — 添加 `--global` 以持久化）
+
+      _（下一条消息生效）_'
   reload_mcp:
-    cancelled:             "🟡 已取消 /reload-mcp。MCP 工具未更改。"
-    always_followup:       "ℹ️ 后续 `/reload-mcp` 调用将不再确认。可在 `config.yaml` 中将 `approvals.mcp_reload_confirm: true` 重新启用。"
-    confirm_prompt:        "⚠️ **确认 /reload-mcp**\n\n重新加载 MCP 服务器会为本会话重建工具集，并**使提供方提示词缓存失效** — 下一条消息将重新发送完整输入令牌。在长上下文或高推理模型上，这可能开销较大。\n\n请选择：\n• **批准一次** — 立即重新加载\n• **始终批准** — 立即重新加载并永久静默此提示\n• **取消** — 保持 MCP 工具不变\n\n_文本备用：回复 `/approve`、`/always` 或 `/cancel`。_"
-    header:                "🔄 **MCP 服务器已重新加载**\n"
-    reconnected:           "♻️ 已重新连接：{names}"
-    added:                 "➕ 已添加：{names}"
-    removed:               "➖ 已移除：{names}"
-    none_connected:        "没有连接的 MCP 服务器。"
-    tools_available:       "\n🔧 来自 {servers} 个服务器的 {tools} 个工具可用"
-    failed:                "❌ MCP 重新加载失败：{error}"
+    cancelled: 🟡 已取消 /reload-mcp。MCP 工具未更改。
+    always_followup: 'ℹ️ 后续 `/reload-mcp` 调用将不再确认。可在 `config.yaml` 中将 `approvals.mcp_reload_confirm:
+      true` 重新启用。'
+    confirm_prompt: '⚠️ **确认 /reload-mcp**
 
+
+      重新加载 MCP 服务器会为本会话重建工具集，并**使提供方提示词缓存失效** — 下一条消息将重新发送完整输入令牌。在长上下文或高推理模型上，这可能开销较大。
+
+
+      请选择：
+
+      • **批准一次** — 立即重新加载
+
+      • **始终批准** — 立即重新加载并永久静默此提示
+
+      • **取消** — 保持 MCP 工具不变
+
+
+      _文本备用：回复 `/approve`、`/always` 或 `/cancel`。_'
+    header: '🔄 **MCP 服务器已重新加载**
+
+      '
+    reconnected: ♻️ 已重新连接：{names}
+    added: ➕ 已添加：{names}
+    removed: ➖ 已移除：{names}
+    none_connected: 没有连接的 MCP 服务器。
+    tools_available: '
+
+      🔧 来自 {servers} 个服务器的 {tools} 个工具可用'
+    failed: ❌ MCP 重新加载失败：{error}
   reload_skills:
-    header:                "🔄 **技能已重新加载**\n"
-    no_new:                "未检测到新技能。"
-    total:                 "\n📚 {count} 个技能可用"
-    added_header:          "➕ **新增技能：**"
-    removed_header:        "➖ **移除技能：**"
-    item_with_desc:        "    - {name}：{desc}"
-    item_no_desc:          "    - {name}"
-    failed:                "❌ 技能重新加载失败：{error}"
+    header: '🔄 **技能已重新加载**
 
+      '
+    no_new: 未检测到新技能。
+    total: '
+
+      📚 {count} 个技能可用'
+    added_header: ➕ **新增技能：**
+    removed_header: ➖ **移除技能：**
+    item_with_desc: '    - {name}：{desc}'
+    item_no_desc: '    - {name}'
+    failed: ❌ 技能重新加载失败：{error}
   reset:
-    header_default:        "✨ 会话已重置！重新开始。"
-    header_new:            "✨ 新会话已启动！"
-    header_titled:         "✨ 新会话已启动：{title}"
-    title_rejected:        "\n⚠️ 标题被拒绝：{error}"
-    title_error_untitled:  "\n⚠️ {error} — 会话以未命名方式启动。"
-    title_empty_untitled:  "\n⚠️ 清理后标题为空 — 会话以未命名方式启动。"
-    tip:                   "\n✦ 提示：{tip}"
+    header_default: ✨ 会话已重置！重新开始。
+    header_new: ✨ 新会话已启动！
+    header_titled: ✨ 新会话已启动：{title}
+    title_rejected: '
 
+      ⚠️ 标题被拒绝：{error}'
+    title_error_untitled: '
+
+      ⚠️ {error} — 会话以未命名方式启动。'
+    title_empty_untitled: '
+
+      ⚠️ 清理后标题为空 — 会话以未命名方式启动。'
+    tip: '
+
+      ✦ 提示：{tip}'
   restart:
-    in_progress:           "⏳ 网关重启已在进行中……"
-    restarting:            "♻ 正在重启网关。如果 60 秒内没有收到通知，请在控制台运行 `hermes gateway restart` 重启。"
-
+    in_progress: ⏳ 网关重启已在进行中……
+    restarting: ♻ 正在重启网关。如果 60 秒内没有收到通知，请在控制台运行 `hermes gateway restart` 重启。
   resume:
-    db_unavailable:        "会话数据库不可用。"
-    no_named_sessions:     "未找到已命名的会话。\n使用 `/title 我的会话` 为当前会话命名，然后用 `/resume 我的会话` 返回。"
-    list_header:           "📋 **已命名会话**\n"
-    list_item:             "• **{title}**{preview_part}"
-    list_preview_suffix:   " — _{preview}_"
-    list_footer:           "\n用法：`/resume <会话名称>`"
-    list_failed:           "无法列出会话：{error}"
-    not_found:             "未找到匹配 '**{name}**' 的会话。\n使用不带参数的 `/resume` 查看可用会话。"
-    already_on:            "📌 已在会话 **{name}** 上。"
-    switch_failed:         "切换会话失败。"
-    resumed_one:           "↻ 已恢复会话 **{title}**（{count} 条消息）。对话已还原。"
-    resumed_many:          "↻ 已恢复会话 **{title}**（{count} 条消息）。对话已还原。"
-    resumed_no_count:      "↻ 已恢复会话 **{title}**。对话已还原。"
+    db_unavailable: 会话数据库不可用。
+    no_named_sessions: '未找到已命名的会话。
 
+      使用 `/title 我的会话` 为当前会话命名，然后用 `/resume 我的会话` 返回。'
+    list_header: '📋 **已命名会话**
+
+      '
+    list_item: • **{title}**{preview_part}
+    list_preview_suffix: ' — _{preview}_'
+    list_footer: '
+
+      用法：`/resume <会话名称>`'
+    list_failed: 无法列出会话：{error}
+    not_found: '未找到匹配 ''**{name}**'' 的会话。
+
+      使用不带参数的 `/resume` 查看可用会话。'
+    already_on: 📌 已在会话 **{name}** 上。
+    switch_failed: 切换会话失败。
+    resumed_one: ↻ 已恢复会话 **{title}**（{count} 条消息）。对话已还原。
+    resumed_many: ↻ 已恢复会话 **{title}**（{count} 条消息）。对话已还原。
+    resumed_no_count: ↻ 已恢复会话 **{title}**。对话已还原。
   retry:
-    no_previous:           "没有可重试的上一条消息。"
-
+    no_previous: 没有可重试的上一条消息。
   rollback:
-    not_enabled:           "检查点未启用。\n请在 config.yaml 中启用：\n```\ncheckpoints:\n  enabled: true\n```"
-    none_found:            "未找到 {cwd} 的检查点"
-    invalid_number:        "无效的检查点编号。请使用 1-{max}。"
-    restored:              "✅ 已恢复到检查点 {hash}：{reason}\n已自动保存回滚前的快照。"
-    restore_failed:        "❌ {error}"
+    not_enabled: "检查点未启用。\n请在 config.yaml 中启用：\n```\ncheckpoints:\n  enabled: true\n\
+      ```"
+    none_found: 未找到 {cwd} 的检查点
+    invalid_number: 无效的检查点编号。请使用 1-{max}。
+    restored: '✅ 已恢复到检查点 {hash}：{reason}
 
+      已自动保存回滚前的快照。'
+    restore_failed: ❌ {error}
   set_home:
-    save_failed:           "无法保存主频道：{error}"
-    success:               "✅ 主频道已设置为 **{name}**（ID：{chat_id}）。\n定时任务和跨平台消息将发送到此处。"
+    save_failed: 无法保存主频道：{error}
+    success: '✅ 主频道已设置为 **{name}**（ID：{chat_id}）。
 
+      定时任务和跨平台消息将发送到此处。'
   status:
-    header:                "📊 **Hermes 网关状态**"
-    session_id:            "**会话 ID：** `{session_id}`"
-    title:                 "**标题：** {title}"
-    created:               "**创建时间：** {timestamp}"
-    last_activity:         "**最近活动：** {timestamp}"
-    tokens:                "**Token 数：** {tokens}"
-    agent_running:         "**代理运行中：** {state}"
-    state_yes:             "是 ⚡"
-    state_no:              "否"
-    queued:                "**排队的后续：** {count}"
-    platforms:             "**已连接平台：** {platforms}"
-
+    header: 📊 **Hermes 网关状态**
+    session_id: '**会话 ID：** `{session_id}`'
+    title: '**标题：** {title}'
+    created: '**创建时间：** {timestamp}'
+    last_activity: '**最近活动：** {timestamp}'
+    tokens: '**Token 数：** {tokens}'
+    agent_running: '**代理运行中：** {state}'
+    state_yes: 是 ⚡
+    state_no: 否
+    queued: '**排队的后续：** {count}'
+    platforms: '**已连接平台：** {platforms}'
   stop:
-    stopped_pending:       "⚡ 已停止。代理尚未启动 — 你可以继续此会话。"
-    stopped:               "⚡ 已停止。你可以继续此会话。"
-    no_active:             "没有可停止的活跃任务。"
-
+    stopped_pending: ⚡ 已停止。代理尚未启动 — 你可以继续此会话。
+    stopped: ⚡ 已停止。你可以继续此会话。
+    no_active: 没有可停止的活跃任务。
   title:
-    db_unavailable:        "会话数据库不可用。"
-    warn_prefix:           "⚠️ {error}"
-    empty_after_clean:     "⚠️ 清理后标题为空。请使用可打印字符。"
-    set_to:                "✏️ 已设置会话标题：**{title}**"
-    not_found:             "未在数据库中找到该会话。"
-    current_with_title:    "📌 会话：`{session_id}`\n标题：**{title}**"
-    current_no_title:      "📌 会话：`{session_id}`\n尚未设置标题。用法：`/title 我的会话名称`"
+    db_unavailable: 会话数据库不可用。
+    warn_prefix: ⚠️ {error}
+    empty_after_clean: ⚠️ 清理后标题为空。请使用可打印字符。
+    set_to: ✏️ 已设置会话标题：**{title}**
+    not_found: 未在数据库中找到该会话。
+    current_with_title: '📌 会话：`{session_id}`
 
+      标题：**{title}**'
+    current_no_title: '📌 会话：`{session_id}`
+
+      尚未设置标题。用法：`/title 我的会话名称`'
   topic:
-    not_telegram_dm:         "/topic 命令仅在 Telegram 私聊中可用。"
-    no_session_db:           "会话数据库不可用。"
-    unauthorized:            "您无权在此 bot 上使用 /topic。"
-    restore_needs_topic:     "若要恢复会话，请先创建或打开一个 Telegram topic，然后在该 topic 中发送 /topic <session-id>。要创建新 topic，请打开 All Messages 并在其中发送任意消息。"
-    topics_disabled:         "此 bot 尚未启用 Telegram topics。\n\n启用方法：\n1. 打开 @BotFather。\n2. 选择您的 bot。\n3. 打开 Bot Settings → Threads Settings。\n4. 开启 Threaded Mode，并确保允许用户创建新线程。\n\n然后再次发送 /topic。"
-    topics_user_disallowed:  "Telegram topics 已启用，但不允许用户创建 topics。\n\n打开 @BotFather → 选择您的 bot → Bot Settings → Threads Settings，然后关闭 'Disallow users to create new threads'。\n\n然后再次发送 /topic。"
-    enable_failed:           "启用 Telegram topic 模式失败：{error}"
-    bound_status:            "此 topic 已关联到：\n会话：{label}\nID：{session_id}\n\n使用 /new 将此 topic 替换为新会话。\n如需并行工作，请打开 All Messages 并在其中发送消息以创建另一个 topic。"
-    thread_ready:            "Telegram 多会话 topics 已启用。\n\n此 topic 将作为独立的 Hermes 会话使用。使用 /new 替换此 topic 的当前会话。如需并行工作，请打开 All Messages 并在其中发送消息以创建另一个 topic。"
-    untitled_session:        "未命名会话"
+    not_telegram_dm: /topic 命令仅在 Telegram 私聊中可用。
+    no_session_db: 会话数据库不可用。
+    unauthorized: 您无权在此 bot 上使用 /topic。
+    restore_needs_topic: 若要恢复会话，请先创建或打开一个 Telegram topic，然后在该 topic 中发送 /topic <session-id>。要创建新
+      topic，请打开 All Messages 并在其中发送任意消息。
+    topics_disabled: '此 bot 尚未启用 Telegram topics。
 
+
+      启用方法：
+
+      1. 打开 @BotFather。
+
+      2. 选择您的 bot。
+
+      3. 打开 Bot Settings → Threads Settings。
+
+      4. 开启 Threaded Mode，并确保允许用户创建新线程。
+
+
+      然后再次发送 /topic。'
+    topics_user_disallowed: 'Telegram topics 已启用，但不允许用户创建 topics。
+
+
+      打开 @BotFather → 选择您的 bot → Bot Settings → Threads Settings，然后关闭 ''Disallow users
+      to create new threads''。
+
+
+      然后再次发送 /topic。'
+    enable_failed: 启用 Telegram topic 模式失败：{error}
+    bound_status: '此 topic 已关联到：
+
+      会话：{label}
+
+      ID：{session_id}
+
+
+      使用 /new 将此 topic 替换为新会话。
+
+      如需并行工作，请打开 All Messages 并在其中发送消息以创建另一个 topic。'
+    thread_ready: 'Telegram 多会话 topics 已启用。
+
+
+      此 topic 将作为独立的 Hermes 会话使用。使用 /new 替换此 topic 的当前会话。如需并行工作，请打开 All Messages 并在其中发送消息以创建另一个
+      topic。'
+    untitled_session: 未命名会话
   undo:
-    nothing:               "没有可撤销的内容。"
-    removed:               "↩️ 已撤销 {count} 条消息。\n已移除：「{preview}」"
+    nothing: 没有可撤销的内容。
+    removed: '↩️ 已撤销 {count} 条消息。
 
+      已移除：「{preview}」'
   update:
-    platform_not_messaging:  "✗ /update 仅在消息平台可用。请在终端运行 `hermes update`。"
-    not_git_repo:            "✗ 不是 git 仓库 — 无法更新。"
-    hermes_cmd_not_found:    "✗ 无法找到 `hermes` 命令。Hermes 正在运行，但更新命令无法在 PATH 上或通过当前 Python 解释器找到可执行文件。请尝试在终端中手动运行 `hermes update`。"
-    start_failed:            "✗ 启动更新失败：{error}"
-    starting:                "⚕ 正在启动 Hermes 更新…… 进度将在此处显示。"
-
+    platform_not_messaging: ✗ /update 仅在消息平台可用。请在终端运行 `hermes update`。
+    not_git_repo: ✗ 不是 git 仓库 — 无法更新。
+    hermes_cmd_not_found: ✗ 无法找到 `hermes` 命令。Hermes 正在运行，但更新命令无法在 PATH 上或通过当前 Python
+      解释器找到可执行文件。请尝试在终端中手动运行 `hermes update`。
+    start_failed: ✗ 启动更新失败：{error}
+    starting: ⚕ 正在启动 Hermes 更新…… 进度将在此处显示。
   usage:
-    rate_limits:              "⏱️ **速率限制：** {state}"
-    header_session:           "📊 **会话令牌使用情况**"
-    label_model:              "模型：`{model}`"
-    label_input_tokens:       "输入令牌：{count}"
-    label_cache_read:         "缓存读取令牌：{count}"
-    label_cache_write:        "缓存写入令牌：{count}"
-    label_output_tokens:      "输出令牌：{count}"
-    label_total:              "总计：{count}"
-    label_api_calls:          "API 调用次数：{count}"
-    label_cost:               "费用：{prefix}${amount}"
-    label_cost_included:      "费用：已包含"
-    label_context:            "上下文：{used} / {total}（{pct}%）"
-    label_compressions:       "压缩次数：{count}"
-    header_session_info:      "📊 **会话信息**"
-    label_messages:           "消息数：{count}"
-    label_estimated_context:  "估计上下文：~{count} 个令牌"
-    detailed_after_first:     "_（首次代理响应后可查看详细使用情况）_"
-    no_data:                  "此会话暂无使用数据。"
-
+    rate_limits: ⏱️ **速率限制：** {state}
+    header_session: 📊 **会话令牌使用情况**
+    label_model: 模型：`{model}`
+    label_input_tokens: 输入令牌：{count}
+    label_cache_read: 缓存读取令牌：{count}
+    label_cache_write: 缓存写入令牌：{count}
+    label_output_tokens: 输出令牌：{count}
+    label_total: 总计：{count}
+    label_api_calls: API 调用次数：{count}
+    label_cost: 费用：{prefix}${amount}
+    label_cost_included: 费用：已包含
+    label_context: 上下文：{used} / {total}（{pct}%）
+    label_compressions: 压缩次数：{count}
+    header_session_info: 📊 **会话信息**
+    label_messages: 消息数：{count}
+    label_estimated_context: 估计上下文：~{count} 个令牌
+    detailed_after_first: _（首次代理响应后可查看详细使用情况）_
+    no_data: 此会话暂无使用数据。
   verbose:
-    not_enabled:           "`/verbose` 命令未在消息平台启用。\n\n请在 `config.yaml` 中启用：\n```yaml\ndisplay:\n  tool_progress_command: true\n```"
-    mode_off:              "⚙️ 工具进度：**OFF** — 不显示任何工具活动。"
-    mode_new:              "⚙️ 工具进度：**NEW** — 工具变化时显示（预览长度：`display.tool_preview_length`，默认 40）。"
-    mode_all:              "⚙️ 工具进度：**ALL** — 显示每次工具调用（预览长度：`display.tool_preview_length`，默认 40）。"
-    mode_verbose:          "⚙️ 工具进度：**VERBOSE** — 显示每次工具调用及完整参数。"
-    saved_suffix:          "_（已为 **{platform}** 保存 — 下一条消息生效）_"
-    save_failed:           "_（无法保存到配置：{error}）_"
-
+    not_enabled: "`/verbose` 命令未在消息平台启用。\n\n请在 `config.yaml` 中启用：\n```yaml\ndisplay:\n\
+      \  tool_progress_command: true\n```"
+    mode_off: ⚙️ 工具进度：**OFF** — 不显示任何工具活动。
+    mode_new: ⚙️ 工具进度：**NEW** — 工具变化时显示（预览长度：`display.tool_preview_length`，默认 40）。
+    mode_all: ⚙️ 工具进度：**ALL** — 显示每次工具调用（预览长度：`display.tool_preview_length`，默认 40）。
+    mode_verbose: ⚙️ 工具进度：**VERBOSE** — 显示每次工具调用及完整参数。
+    saved_suffix: _（已为 **{platform}** 保存 — 下一条消息生效）_
+    save_failed: _（无法保存到配置：{error}）_
   voice:
-    enabled_voice_only:    "语音模式已启用。\n当你发送语音消息时，我会用语音回复。\n使用 /voice tts 让所有消息都收到语音回复。"
-    disabled_text:         "语音模式已禁用。仅文本回复。"
-    tts_enabled:           "自动 TTS 已启用。\n所有回复都将包含一条语音消息。"
-    status_mode:           "语音模式：{label}"
-    status_channel:        "语音频道：#{channel}"
-    status_participants:   "参与人数：{count}"
-    status_member:         "  - {name}{status}"
-    speaking:              "（正在说话）"
-    enabled_short:         "语音模式已启用。"
-    disabled_short:        "语音模式已禁用。"
-    label_off:             "关闭（仅文本）"
-    label_voice_only:      "开启（仅对语音消息进行语音回复）"
-    label_all:             "TTS（对所有消息进行语音回复）"
+    enabled_voice_only: '语音模式已启用。
 
+      当你发送语音消息时，我会用语音回复。
+
+      使用 /voice tts 让所有消息都收到语音回复。'
+    disabled_text: 语音模式已禁用。仅文本回复。
+    tts_enabled: '自动 TTS 已启用。
+
+      所有回复都将包含一条语音消息。'
+    status_mode: 语音模式：{label}
+    status_channel: 语音频道：#{channel}
+    status_participants: 参与人数：{count}
+    status_member: '  - {name}{status}'
+    speaking: （正在说话）
+    enabled_short: 语音模式已启用。
+    disabled_short: 语音模式已禁用。
+    label_off: 关闭（仅文本）
+    label_voice_only: 开启（仅对语音消息进行语音回复）
+    label_all: TTS（对所有消息进行语音回复）
   yolo:
-    disabled:                   "⚠️ 本会话 YOLO 模式 **已关闭** — 危险命令将需要批准。"
-    enabled:                    "⚡ 本会话 YOLO 模式 **已开启** — 所有命令自动批准。请谨慎使用。"
-
+    disabled: ⚠️ 本会话 YOLO 模式 **已关闭** — 危险命令将需要批准。
+    enabled: ⚡ 本会话 YOLO 模式 **已开启** — 所有命令自动批准。请谨慎使用。
   shared:
-    session_db_unavailable:      "会话数据库不可用。"
-    session_db_unavailable_prefix: "会话数据库不可用"
-    session_not_found:           "数据库中未找到该会话。"
-    warn_passthrough:            "⚠️ {error}"
+    session_db_unavailable: 会话数据库不可用。
+    session_db_unavailable_prefix: 会话数据库不可用
+    session_not_found: 数据库中未找到该会话。
+    warn_passthrough: ⚠️ {error}
+setup:
+  wizard_title: Hermes Agent 设置向导
+  welcome_message: 让我们配置您的 Hermes Agent 安装。
+  exit_hint: 随时按 Ctrl+C 退出。
+  quick_setup: 快速设置 — 提供商、模型和消息平台（推荐）
+  full_setup: 完整设置 — 配置所有内容
+  how_to_setup: 您希望如何设置 Hermes？
+  reconfigure: 重新配置
+  already_configured: 您已经配置了 Hermes。
+  wizard_info: 运行完整向导 — 每个提示都会显示当前值。
+  keep_or_change: 按回车键保留，或输入新值进行更改。
+  section_jump_tip: 提示：使用 'hermes setup model|terminal|gateway|tools|agent' 直接跳转到某个部分
+  quick_fill_tip: 或使用 --quick 仅填写缺失项。
+  first_time: 首次设置
+  no_existing_config: 未找到现有配置 — 运行首次设置。
+  config_location: 配置位置
+  config_file: 配置文件
+  secrets_file: 密钥文件
+  data_folder: 数据文件夹
+  install_dir: 安装目录
+  edit_hint: 您可以直接编辑这些文件，或使用 'hermes config edit'
+  migration_imported: 设置已从 OpenClaw 导入。
+  migration_review: 下面的每个部分将显示导入的内容 — 按回车键保留，
+  migration_reconfigure: 或在需要时选择重新配置。
+  section_model_provider: 模型与提供商
+  section_terminal_backend: 终端后端
+  section_agent_settings: Agent 设置
+  section_messaging_platforms: 消息平台
+  section_tools: 工具
+  backup_info: 之前的配置已备份到：
+  restore_hint: 如果设置更改了您自定义的值，请使用以下命令恢复：
+  non_interactive_title: Hermes 设置 — 非交互模式
+  non_interactive_reason: 交互式向导无法在此处使用。
+  configure_hint: 使用环境变量或配置命令来配置 Hermes：
+  env_hint: 或在环境中设置 OPENROUTER_API_KEY / OPENAI_API_KEY。
+  interactive_hint: 在交互式终端中运行 'hermes setup' 以使用完整向导。
+  reconfigure_prompt: 重新配置 {label}？
+  press_enter_to_keep: 按回车键保留当前值
+  gateway:
+    description: 连接到消息平台，随时随地与 Hermes 聊天。
+    toggle_hint: 使用空格键切换，回车键确认。
+    select_platforms: 选择要配置的平台：
+    no_platforms_selected: 未选择任何平台。稍后运行 'hermes setup gateway' 进行配置。
+    platforms_configured: 消息平台已配置！
+    missing_home_channel: 以下平台未设置 home channel：{platforms}
+    home_channel_info: 没有 home channel，定时任务和跨平台消息无法发送到这些平台。
+    set_home_hint: 稍后在聊天中使用 /set-home 设置，或：
+    restart_gateway_prompt: 重启网关以应用更改？
+    start_gateway_prompt: 启动网关服务？
+    install_service_prompt: 将网关安装为 {service} 服务？（后台运行，开机自启）
+    start_service_prompt: 立即启动服务？
+    install_failed: 安装失败：{error}
+    install_manual_hint: 您可以手动尝试：hermes gateway install
+    install_later_hint: 您可以稍后安装：hermes gateway install
+    install_system_hint: 或作为开机服务安装：sudo hermes gateway install --system
+    run_foreground_hint: 或前台运行：hermes gateway
+    container_start_hint: 启动网关以使您的机器人上线：
+    container_run_hint: 'hermes gateway run          # 作为容器主进程运行'
+    container_restart_hint: 如需自动重启，使用 Docker 重启策略：
+    container_docker_hint: docker run --restart unless-stopped ...
+    container_manual_restart: 'docker restart <container>  # 手动重启'
+    native_start_hint: 启动网关以使您的机器人上线：
+    native_run_hint: 'hermes gateway              # 前台运行'
+    restart_failed: 重启失败：{error}
+    start_failed: 启动失败：{error}
+    systemd_unreachable: 重启失败 — 用户 systemd 不可访问：
+    system_scope_remind: 系统级服务需要 root 权限
+  tools:
+    title: Hermes 工具配置
+    description: 为每个平台启用或禁用工具。
+    api_key_info: 需要 API Key 的工具将在启用时进行配置。
+    guide_link: 指南：https://hermes-agent.nousresearch.com/docs/user-guide/features/tools
+    tool_summary: ⚕ 工具摘要
+    none_enabled: （未启用）
+    configuring_tools: 正在配置 {count} 个工具：
+    skip_hint: 您可以跳过任何现在不需要的工具。
+    saved_config: 已保存 {platform} 工具配置
+    nous_defaults: ✓ {label}：使用您的 Nous 订阅默认值
+    select_option: 选择一个选项：
+    configure_all: 配置所有平台（全局）
+    reconfigure_tool: 重新配置现有工具的提供商或 API Key
+    configure_mcp: 配置 MCP 服务器工具
+    done: 完成
+    no_changes: 无更改
+    to: 对于 {platform}
+    saved_all_platforms: 已保存所有平台的配置
+    config_saved_to: 工具配置已保存到 {path}
+    changes_effect: 更改将在下次 'hermes' 或网关重启时生效。
+    discovering_mcp: 正在从 MCP 服务器发现工具...
+    connecting_servers: 正在连接到 {count} 个服务器：{servers}
+  model:
+    title: 模型与提供商
+    choose_provider: 选择您的 AI 提供商：
+    select_provider: 选择提供商
+    openrouter: OpenRouter（推荐）
+    openai: OpenAI
+    anthropic: Anthropic (Claude)
+    custom: 自定义
+    api_key_prompt: 请输入 {provider} API Key
+    base_url_prompt: API base URL [{example}]：
+    model_select: 选择默认模型
+    model_prompt: 输入模型名称
+    provider_configured: 提供商已配置
+    api_key_saved: API Key 已保存
+    guide_link: 指南：{_DOCS_BASE}/integrations/providers
+    inference_provider: 推理提供商
+    connect_info: 选择如何连接到您的主聊天模型。
+    provider_setup_skipped: 提供商设置已跳过。
+    setup_error: 提供商设置遇到错误：{error}
+    try_again_later: 您可以稍后使用以下命令重试：hermes model
+    fallback_rotation: 同提供商故障转移与轮换
+    fallback_description: Hermes 可以为一个提供商保留多个凭据，并在凭据耗尽或受速率限制时在它们之间轮换。
+    fallback_benefit: 这可以保留您的主要提供商，同时减少配额问题造成的中断。
+    current_credentials: '{provider} 的当前池化凭据：{count}'
+    credential_detail: ({manual} 手动，{auto} 从环境/共享认证自动检测)
+    add_credential_prompt: 为同提供商故障转移添加另一个凭据？
+    pool_updated: 提供商池现在有 {count} 个凭据。
+    rotation_strategy: 选择同提供商轮换策略：
+    strategy_fill_first: 优先填充/粘性 — 持续使用第一个健康的凭据直到耗尽
+    strategy_round_robin: 轮询 — 每次选择后轮换到下一个健康的凭据
+    strategy_random: 随机 — 每次随机选择一个健康的凭据
+    strategy_saved: 已保存 {provider} 轮换策略：{strategy}
+    vision_setup: 视觉与图像分析（可选）
+    vision_info: 视觉使用单独的多模态后端。{provider}
+    vision_no_backend: 目前没有提供 Hermes 可以自动用于视觉的后端，
+    vision_choose: 所以现在选择一个后端，或者跳过并稍后配置。
+    vision_configure: 配置视觉：
+    vision_openrouter: OpenRouter — 使用 Gemini（openrouter.ai/keys 上的免费层）
+    vision_openai_compatible: OpenAI 兼容端点 — Base URL、API Key 和视觉模型
+    vision_skip: 暂时跳过
+    vision_openrouter_key: OpenRouter API Key
+    vision_openrouter_saved: OpenRouter Key 已保存 — 视觉将使用 Gemini
+    vision_skipped: 已跳过 — 视觉将不可用
+    vision_base_url: Base URL（留空使用 OpenAI）
+    vision_api_key: API Key
+    vision_openai_key: OpenAI API Key
+    vision_model_select: 选择视觉模型：
+    vision_model_default: 使用默认值（gpt-4o-mini）
+    vision_model_prompt: 视觉模型（留空 = 使用主模型/自定义默认值）
+    vision_configured: 视觉已配置为 {base_url}{model_info}
+    vision_later_hint: 已跳过 — 稍后使用 'hermes setup' 添加或配置 AUXILIARY_VISION_* 设置
+    no_provider_warning: 警告：未配置推理提供商。运行 'hermes model' 选择提供商和模型，或在 ~/.hermes/.env
+      中设置 API key（OPENROUTER_API_KEY、OPENAI_API_KEY 等）。回退到自动提供商检测。
+    current_model_label: 当前模型：{model}
+    active_provider_label: 活跃提供商：{provider}
+    custom_endpoint_title: 自定义 OpenAI 兼容端点配置：
+    current_url_label: '  当前 URL：{url}'
+    current_key_label: '  当前 key：{key}'
+    base_url_example: 例如 https://api.example.com/v1
+    api_key_prompt_custom: API key [{placeholder}]：
+    api_key_optional: 可选
+    api_key_preview: '{prefix}...'
+    cancelled: 已取消。
+    no_url_provided: 未提供 URL。已取消。
+    invalid_url: 无效的 URL：{url}（必须以 http:// 或 https:// 开头）
+    hint_add_v1: '  提示：您是否想在末尾添加 /v1？'
+    hint_local_servers: '  大多数本地模型服务器（Ollama、vLLM、llama.cpp）都需要它。'
+    hint_example_url: '  例如 {url}/v1'
+    add_v1_prompt: '  添加 /v1？[Y/n]：'
+    updated_url: '  更新后的 URL：{url}'
+    verified_endpoint: 通过 {url} 验证端点成功（可见 {count} 个模型）
+    detected_model: '  检测到的模型：{model}'
+    use_model_confirm: '  使用此模型？[Y/n]：'
+    model_name_prompt: 模型名称（例如 gpt-4、llama-3-70b）：
+    available_models_title: '  可用模型：'
+    select_model_prompt: '  选择模型 [1-{count}] 或输入名称：'
+    context_length_prompt: 上下文长度（tokens）[留空自动检测]：
+    display_name_prompt: 显示名称 [{default}]：
+    default_model_set: 默认模型设置为：{model}（通过 {url}）
+    no_change: 未更改。
+    warning_endpoint_fallback: 警告：端点验证在 {url}/models 生效，而不是您输入的确切 URL。改为保存有效的 base
+      URL。
+    warning_cannot_verify: 警告：无法通过 {url} 验证此端点。Hermes 仍会保存它。
+    warning_suggest_v1: '  如果此服务器期望路径中包含 /v1，请尝试 base URL：{url}'
+    warning_suggest_no_v1: '  如果 /v1 不应在 base URL 中，请尝试：{url}'
+    invalid_context_length: 无效的上下文长度：{value} — 将自动检测。
+    auto_provider_name: 自定义端点 ({host})
+    tts_needs_espeak: NeuTTS 需要 espeak-ng 进行音素化。
+    tts_install_espeak_mac: 安装方法：brew install espeak-ng
+    tts_install_espeak_win: 安装方法：choco install espeak-ng
+    tts_install_espeak_linux: 安装方法：sudo apt install espeak-ng
+    tts_install_espeak_prompt: 现在安装 espeak-ng？
+    tts_espeak_installed: espeak-ng 已安装
+    tts_install_failed: 无法自动安装 espeak-ng：{error}
+    tts_manual_install: 请手动安装它并重新运行设置。
+    tts_espeak_required: NeuTTS 需要 espeak-ng。在使用 NeuTTS 之前请手动安装它。
+    tts_installing_neutts: 正在安装 neutts Python 包...
+    tts_model_download: 这将在首次使用时下载 TTS 模型（约 300MB）。
+  launch_chat_prompt: 现在启动 hermes 聊天？
+  setup_complete: 设置完成！您已准备就绪。
+  configure_all_hint: 配置所有设置：    hermes setup
+  connect_messaging_hint: 连接 Telegram/Discord：  hermes setup gateway
+  connect_messaging_title: 连接消息平台？（Telegram、Discord 等。）
+  setup_messaging_now: 现在设置消息平台（推荐）
+  skip_messaging_later: 跳过 — 稍后使用 'hermes setup gateway' 设置
+  quick_setup_title: 快速设置 — 仅缺失项
+  everything_configured: 所有内容已配置！无需操作。
+  reconfigure_hint_1: 运行 'hermes setup' 并选择 '完整设置' 重新配置，
+  reconfigure_hint_2: 或从菜单中选择特定部分。
+  required_settings_missing: '{count} 个必需设置缺失：'
+  tool_api_keys_title: 工具 API Key
+  which_tools_prompt: 您想配置哪些工具？
+  messaging_platforms_title: 消息平台
+  messaging_info_1: 将 Hermes 连接到消息应用，随时随地聊天。
+  messaging_info_2: 您可以稍后使用 'hermes setup gateway' 配置这些。
+  which_platforms_prompt: 您想设置哪些平台？
+  saved_short: ✓ 已保存
+  skipped_short: 已跳过
+  adding_config_defaults: 正在添加 {count} 个新配置选项（使用默认值）...
+  added_config_field: 已添加 {key} = {default}
+  platform_not_configured: 未配置
+  platform_configured: 已配置
+  platform_partially_configured: 部分配置
+  platform_enabled_not_paired: 已启用，未配对
+  platform_configured_paired: 已配置 + 已配对
+  platform_plugin_disabled: 插件已禁用
+  weixin_setup_title: 💬 微信 / WeChat 设置
+  weixin_step_1: 1. Hermes 将在此终端中打开腾讯 iLink QR 登录。
+  weixin_step_2: 2. 使用微信扫描并确认 QR 码。
+  weixin_step_3: 3. Hermes 将返回的 account_id/token 存储在 ~/.hermes/.env 中。
+  weixin_step_4: 4. 此适配器支持原生文本、图片、视频和文档发送。
+  weixin_already_configured: 微信已配置。
+  weixin_reconfigure_prompt: 重新配置微信？
+  weixin_import_failed: 微信适配器导入失败：{error}
+  weixin_install_deps_hint: 请先安装网关依赖项，然后重试。
+  weixin_missing_deps: 缺少依赖项：微信需要 aiohttp 和 cryptography。
+  weixin_install_retry_hint: 安装它们，然后重新运行 `hermes gateway setup`。
+  weixin_start_qr_prompt: 现在开始 QR 登录？
+  weixin_cancelled: 已取消。
+  weixin_setup_cancelled: 微信设置已取消。
+  weixin_qr_login_failed: QR 登录失败：{error}
+  weixin_qr_incomplete: QR 登录未完成。
+  weixin_dm_auth_prompt: 如何授权私信？
+  weixin_dm_pairing_option: 使用私信配对审批（推荐）
+  weixin_dm_open_option: 允许所有私信
+  weixin_dm_allowlist_option: 仅允许列出的用户 ID
+  weixin_dm_disabled_option: 禁用私信
+  weixin_dm_pairing_enabled: 私信配对已启用。
+  weixin_dm_pairing_info: 未知私信用户可以请求访问，您可以使用 `hermes pairing approve` 批准他们。
+  weixin_dm_open_warning: 微信已启用开放私信访问。
+  weixin_allowlist_prompt: 允许的微信用户 ID（逗号分隔）
+  weixin_allowlist_saved: 微信白名单已保存。
+  weixin_dm_disabled: 私信已禁用。
+  weixin_note_title: 注意：
+  weixin_note_content_1: QR 登录连接的是 iLink 机器人身份（例如 ...@im.bot），而不是
+  weixin_note_content_2: 可编程的个人微信账户。普通微信群通常无法
+  weixin_note_content_3: 邀请 @im.bot 身份，并且 iLink 不会向大多数机器人账户传递普通群事件。
+  weixin_note_content_4: 以下设置仅在 iLink 实际
+  weixin_note_content_5: 为您的账户类型传递群事件时生效 — 否则无论选择如何，私信都是唯一
+  weixin_note_content_6: 可用的渠道。
+  weixin_group_policy_prompt: 如何处理群聊？
+  weixin_group_disabled_option: 禁用群聊（推荐）
+  weixin_group_open_option: 允许所有群聊
+  weixin_group_allowlist_option: 仅允许列出的群聊 ID
+  weixin_group_disabled: 群聊已禁用。
+  weixin_group_open_warning: 所有群聊已启用（仅在 iLink 传递群事件时生效）。
+  weixin_group_allowlist_prompt: 允许的群聊 ID（逗号分隔，不是成员用户 ID）
+  weixin_group_allowlist_saved: 群聊白名单已保存（仅在 iLink 传递群事件时生效）。
+  weixin_home_channel_prompt: 使用您的微信用户 ID（{user_id}）作为 home channel？
+  weixin_home_channel_set: Home channel 设置为 {user_id}
+  weixin_configured: 微信已配置！
+  qqbot_setup_title: 🐧 QQ Bot 设置
+  qqbot_already_configured: QQ Bot 已配置。
+  qqbot_reconfigure_prompt: 重新配置 QQ Bot？
+  qqbot_method_title: 您想如何设置 QQ Bot？
+  qqbot_method_qr: 扫描二维码自动添加机器人（推荐）
+  qqbot_method_manual: 手动输入现有的 App ID 和 App Secret
+  qqbot_qr_cancelled: QQ Bot 设置已取消。
+  qqbot_qr_incomplete: QR 设置未完成。继续使用手动输入。
+  qqbot_register_info_1: 前往 https://q.qq.com 注册 QQ Bot 应用。
+  qqbot_register_info_2: 从应用页面记录您的 App ID 和 App Secret。
+  qqbot_app_id_prompt: App ID
+  qqbot_skip_no_app_id: 已跳过 — QQ Bot 需要 App ID 才能工作。
+  qqbot_app_secret_prompt: App Secret
+  qqbot_skip_no_secret: 已跳过 — QQ Bot 需要 App Secret 才能工作。
+  qqbot_access_title: 如何授权直接消息？
+  qqbot_access_pairing: 使用 DM 配对审批（推荐）
+  qqbot_access_all: 允许所有直接消息
+  qqbot_access_allowlist: 仅允许列出的用户 OpenID
+  qqbot_add_self_prompt: 将您自己（{user_openid}）添加到允许列表？
+  qqbot_allowlist_set: 允许列表设置为 {user_openid}
+  qqbot_dm_pairing_enabled: DM 配对已启用。
+  qqbot_dm_pairing_info: 未知用户可以请求访问；使用 `hermes pairing approve` 批准。
+  qqbot_open_dm_warning: QQ Bot 已启用开放 DM 访问。
+  qqbot_allowlist_prompt: 允许的用户 OpenID（逗号分隔）
+  qqbot_allowlist_saved: 允许列表已保存。
+  qqbot_home_channel_prompt: 使用您的 QQ 用户 ID（{user_openid}）作为主频道？
+  qqbot_home_channel_set: 主频道设置为 {user_openid}
+  qqbot_home_channel_manual_prompt: 主频道 OpenID（用于 cron/通知，或留空）
+  qqbot_home_channel_manual_set: 主频道设置为 {home_channel}
+  qqbot_configured: 🐧 QQ Bot 已配置！
+  qqbot_app_id_display: App ID：{app_id}
+  standard_setup_title: '{emoji} {label} 设置'
+  standard_already_configured: '{label} 已配置。'
+  standard_reconfigure_prompt: 重新配置 {label}？
+  standard_allowlist_info_1: 网关默认拒绝所有用户以确保安全。
+  standard_allowlist_info_2: 输入用户 ID 以创建允许列表，或留空
+  standard_allowlist_info_3: 接下来将询问您关于开放访问的设置。
+  standard_access_title: 如何处理未经授权的用户？
+  standard_access_open: 启用开放访问（任何人都可以给机器人发消息）
+  standard_access_pairing: 使用 DM 配对（未知用户请求访问，您使用 'hermes pairing approve' 批准）
+  standard_access_skip: 暂时跳过（机器人将拒绝所有用户直到配置完成）
+  standard_open_access_warning: 已启用开放访问 — 任何人都可以使用您的机器人！
+  standard_pairing_success: DM 配对模式 — 用户将收到一个代码来请求访问。
+  standard_pairing_info: 批准方式：hermes pairing approve <平台> <代码>
+  standard_skip_configure_later: 已跳过 — 稍后使用 'hermes gateway setup' 配置
+  standard_saved: 已保存 {var_name}
+  standard_skipped_no_token: 已跳过 — {label} 需要此项才能工作。
+  standard_skipped_later: 已跳过（可以稍后配置）
+  standard_home_channel_prompt: 使用您的用户 ID（{user_id}）作为主频道？
+  standard_home_channel_set: 主频道设置为 {user_id}
+  standard_configured: '{emoji} {label} 已配置！'
+  telegram_already_configured: Telegram：已配置
+  telegram_reconfigure_prompt: 重新配置 Telegram？
+  telegram_no_allowlist_warning: ⚠️  Telegram 没有用户允许列表 - 任何人都可以使用您的机器人！
+  telegram_add_users_prompt: 现在添加允许的用户？
+  telegram_find_id_info: 要查找您的 Telegram 用户 ID：给 @userinfobot 发消息
+  telegram_allowed_users_prompt: 允许的用户 ID（逗号分隔）
+  telegram_allowlist_configured: Telegram 允许列表已配置
+  telegram_create_bot_info: 通过 Telegram 上的 @BotFather 创建机器人
+  telegram_token_prompt: Telegram 机器人令牌
+  telegram_invalid_token: 无效的令牌格式。期望：<数字ID>:<字母数字哈希>（例如：123456789:ABCdefGHI-jklMNOpqrSTUvwxYZ）
+  telegram_token_saved: Telegram 令牌已保存
+  telegram_security_title: 🔒 安全：限制谁可以使用您的机器人
+  telegram_find_id_step_1: 1. 在 Telegram 上给 @userinfobot 发消息
+  telegram_find_id_step_2: 2. 它会回复您的数字 ID（例如：123456789）
+  telegram_allowed_users_full_prompt: 允许的用户 ID（逗号分隔，留空表示开放访问）
+  telegram_allowlist_full_configured: Telegram 允许列表已配置 - 只有列出的用户可以使用机器人
+  telegram_no_allowlist_open_warning: ⚠️  未设置允许列表 - 任何找到您机器的人都可以使用它！
+  telegram_home_channel_title: 📬 主频道：Hermes 在此传递 cron 作业结果、
+  telegram_home_channel_info_1: 跨平台消息和通知。
+  telegram_home_channel_info_2: 对于 Telegram DM，这是您的用户 ID（与上面相同）。
+  telegram_use_as_home_prompt: 使用您的用户 ID（{user_id}）作为主频道？
+  telegram_home_set: Telegram 主频道设置为 {channel_id}
+  telegram_manual_home_prompt: 主频道 ID（或留空稍后在 Telegram 中使用 /set-home 设置）
+  telegram_set_home_later_info: 您也可以在 Telegram 聊天中输入 /set-home 来设置。
+  telegram_home_empty_prompt: 主频道 ID（留空稍后设置）
+  discord_already_configured: Discord：已配置
+  discord_reconfigure_prompt: 重新配置 Discord？
+  discord_no_allowlist_warning: ⚠️  Discord 没有用户允许列表 - 任何人都可以使用您的机器人！
+  discord_add_users_prompt: 现在添加允许的用户？
+  discord_find_id_info: 要查找您的 Discord 用户 ID：
+  discord_find_id_step_1: 1. 在 Discord 设置中启用开发者模式
+  discord_find_id_step_2: 2. 右键点击您的名字 → 复制 ID
+  discord_allowed_users_prompt: 允许的用户 ID（逗号分隔）
+  discord_allowlist_configured: Discord 允许列表已配置
+  discord_create_app_info: 在 https://discord.com/developers/applications 创建应用
+  discord_bot_token_prompt: Discord 机器人令牌
+  discord_token_saved: Discord 令牌已保存
+  discord_security_title: 🔒 安全：限制谁可以使用您的机器人
+  discord_allowed_users_full_prompt: 允许的用户 ID（逗号分隔，留空表示开放访问）
+  discord_allowlist_full_configured: Discord 允许列表已配置 - 只有列出的用户可以使用机器人
+  discord_no_allowlist_open_warning: ⚠️  未设置允许列表 - 任何找到您机器的人都可以使用它！
+  discord_home_channel_title: 📬 主频道：Hermes 在此传递 cron 作业结果、
+  discord_home_channel_info: 对于 Discord DM，这是您的用户 ID（与上面相同）。
+  discord_use_as_home_prompt: 使用您的用户 ID（{user_id}）作为主频道？
+  discord_home_set: Discord 主频道设置为 {channel_id}
+  discord_manual_home_prompt: 主频道 ID（或留空稍后设置）
+  discord_home_empty_prompt: 主频道 ID（留空稍后设置）
+  slack_already_configured: Slack：已配置
+  slack_reconfigure_prompt: 重新配置 Slack？
+  slack_no_allowlist_warning: ⚠️  Slack 没有用户允许列表 - 任何人都可以使用您的机器人！
+  slack_add_users_prompt: 现在添加允许的用户？
+  slack_find_id_info: 要查找您的 Slack 用户 ID：
+  slack_find_id_step_1: 1. 点击 Slack 中的个人资料图片
+  slack_find_id_step_2: 2. 点击 '复制成员 ID'
+  slack_allowed_users_prompt: 允许的用户 ID（逗号分隔）
+  slack_allowlist_configured: Slack 允许列表已配置
+  slack_create_app_info: 在 https://api.slack.com/apps 创建 Slack 应用
+  slack_bot_token_prompt: Slack 机器人令牌（以 xoxb- 开头）
+  slack_token_saved: Slack 令牌已保存
+  slack_security_title: 🔒 安全：限制谁可以使用您的机器人
+  slack_allowed_users_full_prompt: 允许的用户 ID（逗号分隔，留空表示开放访问）
+  slack_allowlist_full_configured: Slack 允许列表已配置 - 只有列出的用户可以使用机器人
+  slack_no_allowlist_open_warning: ⚠️  未设置允许列表 - 任何找到您机器的人都可以使用它！
+  slack_home_channel_title: 📬 主频道：Hermes 在此传递 cron 作业结果、
+  slack_home_channel_info: 对于 Slack DM，这是您的用户 ID（与上面相同）。
+  slack_use_as_home_prompt: 使用您的用户 ID（{user_id}）作为主频道？
+  slack_home_set: Slack 主频道设置为 {channel_id}
+  slack_manual_home_prompt: 主频道 ID（或留空稍后设置）
+  slack_home_empty_prompt: 主频道 ID（留空稍后设置）
+  whatsapp_setup_title: ⚕ WhatsApp 设置
+  whatsapp_mode_question: 您将如何使用 WhatsApp 与 Hermes？
+  whatsapp_mode_bot: 1. 独立的机器人号码（推荐）
+  whatsapp_mode_bot_desc_1: 人们直接给机器人的号码发消息 — 最清晰的体验。
+  whatsapp_mode_bot_desc_2: 需要在设备上安装 WhatsApp 的第二个电话号码。
+  whatsapp_mode_self: 2. 个人号码（自我聊天）
+  whatsapp_mode_self_desc_1: 您给自己发消息来与代理对话。
+  whatsapp_mode_self_desc_2: 设置快速，但用户体验不太直观。
+  whatsapp_choose_mode_prompt: 选择 [1/2]：
+  whatsapp_setup_cancelled: 设置已取消。
+  whatsapp_mode_bot_selected: ✓ 模式：独立的机器人号码
+  whatsapp_second_number_title: 为机器人获取第二个号码：
+  whatsapp_second_number_tip_1: 最简单：在您的手机上安装 WhatsApp Business（免费应用）
+  whatsapp_second_number_tip_2: 使用第二个号码：
+  whatsapp_second_number_option_1: • 双卡双待：使用您的第二个 SIM 卡槽
+  whatsapp_second_number_option_2: • Google Voice：免费的美国号码（voice.google）
+  whatsapp_second_number_option_3: • 预付费 SIM 卡：$3-10，验证一次
+  whatsapp_second_number_note_1: WhatsApp Business 与您的个人
+  whatsapp_second_number_note_2: WhatsApp 并行运行 — 不需要第二部手机。
+  whatsapp_mode_self_selected: ✓ 模式：个人号码（自我聊天）
+  whatsapp_mode_display: ✓ 模式：{mode_label}
+  whatsapp_already_enabled: ✓ WhatsApp 已启用
+  whatsapp_enabled: ✓ WhatsApp 已启用
+  whatsapp_allowed_users_display: ✓ 允许的用户：{users}
+  whatsapp_update_users_prompt: 更新允许的用户？[y/N]
+  whatsapp_bot_users_prompt: 可以给机器人发消息的电话号码（逗号分隔）：
+  whatsapp_self_users_prompt: 您的电话号码（例如 15551234567）：
+  whatsapp_users_updated: ✓ 已更新为：{phone}
+  whatsapp_who_allowed_bot: 谁应该被允许给机器人发消息？
+  whatsapp_users_prompt_all: 电话号码（逗号分隔，或 * 表示任何人）：
+  whatsapp_users_set: ✓ 允许的用户设置为：{phone}
+  whatsapp_no_allowlist_warning: ⚠ 未设置允许列表 — 代理将响应所有 incoming 消息
+  whatsapp_bridge_not_found: ✗ 桥接脚本未找到：{path}
+  whatsapp_install_deps: → 正在安装 WhatsApp 桥接依赖项（这可能需要几分钟）...
+  whatsapp_npm_not_found: ✗ PATH 中未找到 npm — 请先安装 Node.js
+  whatsapp_install_cancelled: ✗ 安装已取消
+  whatsapp_install_failed: ✗ npm install 失败：
+  whatsapp_deps_installed: ✓ 依赖项已安装
+  whatsapp_deps_already_installed: ✓ 桥接依赖项已安装
+  whatsapp_session_found: ✓ 找到现有的 WhatsApp 会话
+  whatsapp_repair_prompt: 重新配对？这将清除现有会话。[y/N]
+  whatsapp_session_cleared: ✓ 会话已清除
+  whatsapp_configured_paired: ✓ WhatsApp 已配置并配对！
+  whatsapp_start_gateway_hint: 启动网关：hermes gateway
+  whatsapp_scan_title_bot: "\U0001F4F1 在拥有机器人号码的手机上\n   打开 WhatsApp（或 WhatsApp Business），然后扫描："
+  whatsapp_scan_title_self: 📱 在您的手机上打开 WhatsApp，然后扫描：
+  whatsapp_scan_instructions: 设置 → 已连接的设备 → 连接设备
+  whatsapp_paired_success: ✓ WhatsApp 配对成功！
+  whatsapp_next_steps_bot_1: 1. 启动网关：hermes gateway
+  whatsapp_next_steps_bot_2: 2. 给机器人的 WhatsApp 号码发送消息
+  whatsapp_next_steps_bot_3: 3. 代理将自动回复
+  whatsapp_next_steps_self_1: 1. 启动网关：hermes gateway
+  whatsapp_next_steps_self_2: 2. 打开 WhatsApp → 给自己发消息
+  whatsapp_next_steps_self_3: 3. 输入消息 — 代理将回复
+  whatsapp_tip_prefix: 提示：代理回复以 '⚕ Hermes Agent' 为前缀
+  whatsapp_tip_self_chat: 这样您可以将它们与自己的消息区分开来。
+  whatsapp_install_service_hint: 或者安装为服务：hermes gateway install
+  whatsapp_pairing_incomplete: ⚠ 配对可能未完成。运行 'hermes whatsapp' 重试。
+  email_setup_instruction_1: 1. 为您的 Hermes 代理使用专用的电子邮件帐户
+  email_setup_instruction_2: 2. 对于 Gmail：启用两步验证，然后在以下位置创建应用密码
+  email_setup_instruction_3: '   https://myaccount.google.com/apppasswords'
+  email_setup_instruction_4: 3. 对于其他提供商：使用您的电子邮件密码或应用专用密码
+  email_setup_instruction_5: 4. 必须在您的电子邮件帐户上启用 IMAP
+  tool_availability_title: 工具可用性摘要
+  tool_categories_available: '{available}/{total} 个工具类别可用：'
+  tools_disabled_warning_1: 某些工具已禁用。运行 'hermes setup tools' 配置它们，
+  tools_disabled_warning_2: 或直接编辑 {hermes_home}/.env 添加缺失的 API key。
+  setup_complete_banner: ✓ 设置完成！
+  files_location_title: 📁 您的所有文件都在 {hermes_home}/：
+  settings_label: 设置：
+  api_keys_label: API Key：
+  data_label: 数据：
+  edit_config_title: 📝 要编辑您的配置：
+  cmd_hermes_setup: hermes setup
+  cmd_hermes_setup_desc: 重新运行完整向导
+  cmd_hermes_setup_model: hermes setup model
+  cmd_hermes_setup_model_desc: 更改模型/提供商
+  cmd_hermes_setup_terminal: hermes setup terminal
+  cmd_hermes_setup_terminal_desc: 更改终端后端
+  cmd_hermes_setup_gateway: hermes setup gateway
+  cmd_hermes_setup_gateway_desc: 配置消息平台
+  cmd_hermes_setup_tools: hermes setup tools
+  cmd_hermes_setup_tools_desc: 配置工具提供商
+  cmd_hermes_config: hermes config
+  cmd_hermes_config_desc: 查看当前设置
+  cmd_hermes_config_edit: hermes config edit
+  cmd_hermes_config_edit_desc: 在编辑器中打开配置
+  cmd_hermes_config_set: hermes config set <key> <value>
+  cmd_hermes_config_set_desc: 设置特定值
+  edit_files_directly: 或直接编辑文件：
+  ready_to_go_title: 🚀 准备就绪！
+  cmd_hermes: hermes
+  cmd_hermes_desc: 开始聊天
+  cmd_hermes_gateway: hermes gateway
+  cmd_hermes_gateway_desc: 启动消息网关
+  cmd_hermes_doctor: hermes doctor
+  cmd_hermes_doctor_desc: 检查问题
+  terminal:
+    title: 终端后端
+    description: 选择 Hermes 执行命令的环境。
+    affects_info: 这会影响工具执行、文件访问和隔离。
+    guide_link: 指南：{_DOCS_BASE}/developer-guide/environments
+    select_backend: 选择终端后端：
+    backend_local: 本地 - 直接在此机器上运行（默认）
+    backend_docker: Docker - 具有可配置资源的隔离容器
+    backend_modal: Modal - 无服务器云沙盒
+    backend_ssh: SSH - 在远程机器上运行
+    backend_daytona: Daytona - 持久化云开发环境
+    backend_vercel: Vercel Sandbox - 具有快照文件系统持久性的云微VM
+    backend_singularity: Singularity/Apptainer - HPC 友好容器
+    keep_current: 保留当前设置 ({backend})
+    keeping_current: 保留当前后端：{backend}
+    backend_set: 终端后端设置为：{backend}
+    local_title: 终端后端：本地
+    local_info: 命令直接在此机器上运行。
+    gateway_cwd: 网关工作目录：
+    gateway_cwd_info: 用于 Telegram/Discord/cron 会话。
+    cli_tui_info: CLI/TUI 始终使用您的启动目录。
+    cwd_prompt: 网关工作目录
+    sudo_support: 启用 sudo 支持？（存储密码用于 apt install 等）
+    sudo_configured: Sudo 密码：已配置
+    sudo_saved: Sudo 密码已保存
+    sudo_prompt: Sudo 密码
+    docker_title: 终端后端：Docker
+    docker_not_found: 未在 PATH 中找到 Docker！
+    docker_install_hint: 安装 Docker：https://docs.docker.com/get-docker/
+    docker_found: 找到 Docker：{path}
+    docker_image_prompt: Docker 镜像
+    singularity_title: 终端后端：Singularity/Apptainer
+    singularity_not_found: 未在 PATH 中找到 Singularity/Apptainer！
+    singularity_install_hint: 安装：https://apptainer.org/docs/admin/main/installation.html
+    singularity_found: 找到：{path}
+    container_image_prompt: 容器镜像
+    modal_title: 终端后端：Modal
+    modal_info: 无服务器云沙盒。每个会话都有自己的容器。
+    managed_modal: 使用我的 Nous 订阅
+    own_modal: 使用我自己的 Modal 账户
+    modal_billing: 选择 Modal 执行的计费方式：
+    managed_modal_info: Modal 执行将使用托管的 Nous 网关并计入您的订阅。
+    direct_modal_credentials: 直接 Modal 凭据仍然配置，但此后端固定为托管模式。
+    direct_modal_info: 需要 Modal 账户：https://modal.com
+    installing_modal: 正在安装 modal SDK...
+    modal_installed: modal SDK 已安装
+    modal_install_failed: 安装失败 — 手动运行：pip install modal
+    modal_auth: Modal 认证：
+    modal_token_info: 获取您的令牌：https://modal.com/settings
+    modal_token_configured: Modal 令牌：已配置
+    update_modal_credentials: 更新 Modal 凭据？
+    modal_token_id_prompt: Modal Token ID
+    modal_token_secret_prompt: Modal Token Secret
+    daytona_title: 终端后端：Daytona
+    daytona_info: 持久化云开发环境。
+    daytona_persistence: 每个会话都有专用的沙盒，具有文件系统持久性。
+    daytona_signup: 注册：https://daytona.io
+    installing_daytona: 正在安装 daytona SDK...
+    daytona_installed: daytona SDK 已安装
+    daytona_install_failed: 安装失败 — 手动运行：pip install daytona
+    daytona_api_key_configured: Daytona API Key：已配置
+    update_api_key: 更新 API Key？
+    daytona_api_key_prompt: Daytona API Key
+    daytona_updated: 已更新
+    daytona_configured: 已配置
+    sandbox_image_prompt: 沙盒镜像
+    vercel_title: 终端后端：Vercel Sandbox
+    vercel_info: 具有快照支持的文件系统持久性的云微VM沙盒。
+    vercel_sdk_hint: 需要可选 SDK：pip install 'hermes-agent[vercel]'
+    installing_vercel: 正在安装 vercel SDK...
+    vercel_installed: vercel SDK 已安装
+    vercel_install_failed: 安装失败 — 手动运行：pip install 'hermes-agent[vercel]'
+    ssh_title: 终端后端：SSH
+    ssh_info: 通过 SSH 在远程机器上运行命令。
+    ssh_host_prompt: SSH 主机（主机名或 IP）
+    ssh_user_prompt: SSH 用户
+    ssh_port_prompt: SSH 端口
+    ssh_key_prompt: SSH 私钥路径
+    test_ssh_connection: 测试 SSH 连接？
+    testing_connection: 正在测试连接...
+    ssh_success: SSH 连接成功！
+    ssh_failed: SSH 连接失败：{error}
+    ssh_check_hint: 检查您的 SSH 密钥和主机设置。
+  agent:
+    title: Agent 设置
+    guide_link: 指南：{_DOCS_BASE}/user-guide/configuration
+    max_iterations_title: 最大迭代次数
+    max_iterations_info: 每次对话的最大工具调用迭代次数。
+    max_iterations_cost: 越高 = 越复杂的任务，但消耗更多 token。
+    max_iterations_hint: 按回车键保留 {current}。大多数任务使用 90，开放探索使用 150+。
+    max_iterations_prompt: 最大迭代次数
+    max_iterations_set: 最大迭代次数设置为 {value}
+    invalid_number: 无效数字，保留当前值
+    tool_progress_title: 工具进度显示
+    tool_progress_info: 控制显示多少工具活动（CLI 和消息）。
+    tool_progress_off: off     — 静默，只显示最终响应
+    tool_progress_new: new     — 仅在工具更改时显示工具名称（减少噪音）
+    tool_progress_all: all     — 显示每个工具调用及简短预览
+    tool_progress_verbose: verbose — 完整参数、结果和调试日志
+    tool_progress_prompt: 工具进度模式
+    tool_progress_set: 工具进度设置为：{mode}
+    unknown_mode: 未知模式 '{mode}'，保留 '{current}'
+    compression_title: 上下文压缩
+    compression_info: 当上下文过长时自动总结旧消息。
+    compression_threshold_info: 更高的阈值 = 稍后压缩（使用更多上下文）。更低 = 更早压缩。
+    compression_threshold_prompt: 压缩阈值（0.5-0.95）
+    compression_set: 上下文压缩阈值设置为 {value}
+    reset_title: 会话重置策略
+    reset_info_1: 消息会话（Telegram、Discord 等）会随时间累积上下文。
+    reset_info_2: 每条消息都会添加到对话历史中，这意味着 API 成本不断增长。
+    reset_info_3: 为了管理这一点，会话可以在一段时间不活动后自动重置
+    reset_info_4: 或在每天的固定时间重置。当发生重置时，agent 会先将重要内容
+    reset_info_5: 保存到其持久化记忆中 —— 但对话上下文会被清除。
+    reset_manual_hint: 您也可以随时在聊天中输入 /reset 手动重置。
+    reset_mode_both: 不活动 + 每日重置（推荐 -  whichever comes first）
+    reset_mode_idle: 仅不活动（N 分钟无消息后重置）
+    reset_mode_daily: 仅每日（每天固定小时重置）
+    reset_mode_none: 从不自助重置（上下文持续到 /reset 或上下文压缩）
+    reset_keep_current: 保留当前设置
+    reset_mode_prompt: 会话重置模式：
+    reset_idle_prompt: 不活动超时（分钟）
+    reset_hour_prompt: 每日重置小时（0-23，本地时间）
+    reset_both_success: 会话在 {idle} 分钟不活动或每天 {hour}:00 重置
+    reset_idle_success: 会话在 {idle} 分钟不活动后重置
+    reset_daily_success: 会话每天 {hour}:00 重置
+    reset_none_info: 会话将从不自助重置。上下文仅由压缩管理。
+    reset_none_warning: 长对话的成本会不断增长。需要时使用 /reset 手动重置。
+cli:
+  description: Hermes Agent - 具有工具调用能力的 AI 助手
+  subcommand_help: 要运行的命令
+  chat_help: 与代理进行交互式聊天
+  chat_description: 启动与 Hermes Agent 的交互式聊天会话
+  model_help: 选择默认模型和提供商
+  fallback_help: 管理回退提供商（当主模型失败时尝试）
+  gateway_help: 消息网关管理
+  setup_help: 交互式设置向导
+  whatsapp_help: 设置 WhatsApp 集成
+  slack_help: Slack 集成助手（清单生成等）
+  login_help: 向推理提供商进行身份验证
+  logout_help: 清除推理提供商的身份验证
+  auth_help: 管理池化提供商凭据
+  status_help: 显示所有组件的状态
+  cron_help: Cron 作业管理
+  webhook_help: 管理动态 webhook 订阅
+  kanban_help: 多配置文件协作看板（任务、链接、评论）
+  hooks_help: 检查和管理 shell 脚本钩子
+  doctor_help: 检查配置和依赖项
+  dump_help: 转储设置摘要以支持/调试
+  debug_help: 调试工具 — 上传日志和系统信息以支持
+  backup_help: 将 Hermes 主目录备份到 zip 文件
+  checkpoints_help: 检查 / 修剪 / 清除 ~/.hermes/checkpoints/
+  import_help: 从 zip 文件恢复 Hermes 备份
+  config_help: 查看和编辑配置
+  pairing_help: 管理 DM 配对代码以进行用户授权
+  skills_help: 搜索、安装、配置和管理技能
+  plugins_help: 管理插件 — 安装、更新、删除、列表
+  curator_help: 后台技能维护（curator）— 状态、运行、暂停、固定
+  memory_help: 配置外部记忆提供商
+  tools_help: 配置每个平台启用的工具
+  tools_option_summary: 打印每个平台启用工具的摘要并退出
+  tools_sub_list_help: 显示所有工具及其启用/禁用状态
+  tools_sub_disable_help: 禁用工具集或 MCP 工具
+  tools_sub_enable_help: 启用工具集或 MCP 工具
+  tools_sub_list_platform_help: '要显示的平台（默认：cli）'
+  tools_sub_disable_names_help: 工具集名称或 MCP 工具
+  tools_sub_disable_platform_help: '应用到的平台（默认：cli）'
+  tools_sub_enable_names_help: 工具集名称或 MCP 工具
+  tools_sub_enable_platform_help: '应用到的平台（默认：cli）'
+  computer_use_help: 管理 Computer Use (cua-driver) 后端（macOS）
+  mcp_help: 管理 MCP 服务器并将 Hermes 作为 MCP 服务器运行
+  sessions_help: 管理会话历史（列表、重命名、导出、修剪、删除）
+  insights_help: 显示使用洞察和分析
+  claw_help: OpenClaw 迁移工具
+  version_help: 显示版本信息
+  update_help: 将 Hermes Agent 更新到最新版本
+  uninstall_help: 卸载 Hermes Agent
+  acp_help: 将 Hermes Agent 作为 ACP（代理客户端协议）服务器运行
+  profile_help: 管理配置文件 — 多个隔离的 Hermes 实例
+  completion_help: 打印 shell 完成脚本（bash、zsh 或 fish）
+  dashboard_help: 启动 Web UI 仪表板
+  logs_help: 查看和过滤 Hermes 日志文件
+  option_version: 显示版本并退出
+  option_oneshot: 单次模式：发送单个提示并仅将最终响应文本打印到 stdout。无横幅、无旋转器、无工具预览、无 session_id 行。正常加载工具、记忆、规则和
+    CWD 中的 AGENTS.md；批准自动绕过。适用于脚本/管道。
+  option_model: 此次调用的模型覆盖（例如 anthropic/claude-sonnet-4.6）。适用于 -z/--oneshot 和 --tui。也可通过
+    HERMES_INFERENCE_MODEL 环境变量设置。
+  option_provider: 此次调用的提供商覆盖（例如 openrouter、anthropic）。适用于 -z/--oneshot 和 --tui。也可通过
+    HERMES_INFERENCE_PROVIDER 环境变量设置。
+  option_toolsets: 为此调用启用的逗号分隔的工具集。适用于 -z/--oneshot 和 --tui。
+  option_resume: 按 ID 或标题恢复以前的会话
+  option_continue: 按名称恢复会话，如果未给出名称则恢复最近的会话
+  option_worktree: 在隔离的 git 工作树中运行（用于并行代理）
+  option_accept_hooks: '自动批准 config.yaml 中声明的任何未见过的 shell 钩子，无需 TTY 提示。等同于 HERMES_ACCEPT_HOOKS=1
+    或 config.yaml 中的 hooks_auto_accept: true。用于无法提示的 CI/无头运行。'
+  option_skills: 为会话预加载一个或多个技能（重复标志或逗号分隔）
+  option_yolo: 绕过所有危险命令批准提示（风险自负）
+  option_pass_session_id: 在代理的系统提示中包含会话 ID
+  option_ignore_user_config: 忽略 ~/.hermes/config.yaml 并回退到内置默认值（.env 中的凭据仍然加载）
+  option_ignore_rules: 跳过自动注入 AGENTS.md、SOUL.md、.cursorrules、记忆和预加载技能
+  option_tui: 启动现代 TUI 而不是经典 REPL
+  option_dev: 使用 --tui：通过 tsx 运行 TypeScript 源（跳过 dist 构建）
+  option_help: 显示此帮助消息并退出
+  chat_option_query: 单次查询（非交互模式）
+  chat_option_image: 可选的本地图片路径，附加到单次查询
+  chat_option_model: '要使用的模型（例如 anthropic/claude-sonnet-4）'
+  chat_option_toolsets: 逗号分隔的工具集
+  chat_option_provider: '推理提供商（默认：auto）。内置或 config.yaml 中 `providers:` 定义的用户自定义名称。'
+  chat_option_verbose: 详细输出
+  chat_option_quiet: '程序化使用的安静模式：抑制横幅、旋转器和工具预览。仅输出最终响应和会话信息。'
+  chat_option_resume: 按 ID 恢复以前的会话（退出时显示）
+  chat_option_worktree: 在隔离的 git 工作树中运行（用于同一仓库上的并行代理）
+  chat_option_accept_hooks: '自动批准 config.yaml 中声明的任何未见过的 shell 钩子，无需 TTY 提示（另见 HERMES_ACCEPT_HOOKS 环境变量和 config.yaml 中的 hooks_auto_accept:）。'
+  chat_option_checkpoints: 在破坏性文件操作之前启用文件系统检查点（使用 /rollback 恢复）
+  chat_option_max_turns: '每次对话回合的最大工具调用迭代次数（默认：90，或 config 中的 agent.max_turns）'
+  chat_option_ignore_user_config: '忽略 ~/.hermes/config.yaml 并回退到内置默认值（.env 中的凭据仍然加载）。适用于隔离的 CI 运行、重现和第三方集成。'
+  chat_option_ignore_rules: '跳过自动注入 AGENTS.md、SOUL.md、.cursorrules、记忆和预加载技能。与 --ignore-user-config 结合使用以实现完全隔离的运行。'
+  chat_option_source: '会话源标签用于过滤（默认：cli）。对于不应出现在用户会话列表中的第三方集成，使用 ''tool''。'
+  model_description: 交互式选择您的推理提供商和默认模型
+  model_option_portal_url: 'Nous 登录的门户基础 URL（默认：生产门户）'
+  model_option_inference_url: 'Nous 登录的推理 API 基础 URL（默认：生产推理 API）'
+  model_option_client_id: '用于 Nous 登录的 OAuth 客户端 ID（默认：hermes-cli）'
+  model_option_scope: 为 Nous 登录请求的 OAuth 范围
+  model_option_no_browser: 在 Nous 登录期间不尝试自动打开浏览器
+  model_option_timeout: 'Nous 登录的 HTTP 请求超时时间（秒）（默认：15）'
+  model_option_ca_bundle: 用于 Nous TLS 验证的 CA 捆绑 PEM 文件路径
+  model_option_insecure: 禁用 Nous 登录的 TLS 验证（仅用于测试）
+  fallback_description: '管理回退提供商链。当主模型因速率限制、过载或连接错误而失败时，按顺序尝试回退提供商。'
+  fallback_sub_list_help: 显示当前的回退链（无子命令时的默认行为）
+  fallback_sub_add_help: 选择提供商 + 模型（与 `hermes model` 相同的选择器）并追加到链中
+  fallback_sub_remove_help: 选择要删除的条目
+  fallback_sub_clear_help: 删除所有回退条目
+  gateway_description: 管理消息网关（Telegram、Discord、WhatsApp）
+  gateway_option_accept_hooks: '自动批准未见过的 shell 钩子，无需 TTY 提示（等同于 HERMES_ACCEPT_HOOKS=1 / hooks_auto_accept: true）。'
+  gateway_sub_run_help: 在前台运行网关（推荐用于 WSL、Docker、Termux）
+  gateway_sub_start_help: 启动已安装的 systemd/launchd 后台服务
+  gateway_sub_stop_help: 停止网关服务
+  gateway_sub_restart_help: 重启网关服务
+  gateway_sub_status_help: 显示网关状态
+  gateway_sub_install_help: 将网关安装为 systemd/launchd 后台服务
+  gateway_sub_uninstall_help: 卸载网关服务
+  gateway_sub_list_help: 列出所有配置文件及其网关状态
+  gateway_sub_setup_help: 配置消息平台
+  gateway_sub_migrate_legacy_help: 从更名前的安装中删除旧的 hermes.service 单元
+  setup_description: '使用交互式向导配置 Hermes Agent。运行特定部分：hermes setup model|tts|terminal|gateway|tools|agent'
+  setup_option_non_interactive: 非交互模式（使用默认值/环境变量）
+  setup_option_reset: 将配置重置为默认值
+  setup_option_reconfigure: '（在现有安装上为默认值。）重新运行完整向导，显示当前值作为默认值。保留以向后兼容 — 现在单独的 ''hermes setup'' 即可执行此操作。'
+  setup_option_quick: '在现有安装上：仅提示缺失或未设置的项目，而不是运行完整的重新配置向导。'
+  setup_option_section: 运行特定的设置部分，而不是完整向导
+  whatsapp_description: 配置 WhatsApp 并通过二维码配对
+  slack_description: Slack 集成助手。
+  login_description: 为 Hermes CLI 运行 OAuth 设备授权流程
+  logout_description: 删除存储的凭据并重置提供商配置
+  status_description: 显示 Hermes Agent 组件的状态
+  webhook_description: 创建、列出和删除事件驱动代理激活的 webhook 订阅
+  doctor_description: 诊断 Hermes Agent 设置问题
+  dump_description: 输出您的 Hermes 设置的紧凑纯文本摘要
+  debug_description: Hermes Agent 的调试工具。使用 'hermes debug share' 上传日志和系统信息以获取支持。
+  backup_description: 创建整个 Hermes 配置、会话和数据的 zip 存档，以便安全保存或迁移。
+  checkpoints_description: 管理文件系统检查点存储 — 跟踪代理运行期间文件更改的影子 git 仓库。
+  import_description: 将之前创建的 Hermes 备份提取到您的主目录中，以恢复或迁移您的设置。
+  config_description: 管理 Hermes Agent 配置
+  pairing_description: 通过配对代码批准或撤销用户访问权限
+  skills_description: 从 skills.sh、知名代理技能端点、GitHub、ClawHub 和其他注册表中搜索、安装、检查、审计、配置和管理技能。
+  plugins_description: 从 Git 仓库安装插件，更新、删除或列出它们。
+  sessions_description: 查看和管理 SQLite 会话存储
+  insights_description: 分析会话历史以显示令牌使用量、成本、工具模式和活动趋势
+  claw_description: 将设置、记忆、技能和 API 密钥从 OpenClaw 迁移到 Hermes
+  claw_migrate_description: 从 OpenClaw 安装导入设置、记忆、技能和 API 密钥。
+  claw_cleanup_description: 扫描并归档剩余的 OpenClaw 目录以防止状态碎片化
+  update_description: 从 git 拉取最新更改并重新安装依赖项
+  uninstall_description: 从系统中删除 Hermes Agent。可以保留配置/数据以便重新安装。
+  acp_description: 以 ACP 模式启动 Hermes Agent 以进行编辑器集成（VS Code、Zed、JetBrains）
+  dashboard_description: 启动 Hermes Agent Web 仪表板以管理配置、API 密钥和会话
+  logs_description: 查看、跟踪和过滤 agent.log / errors.log / gateway.log
+  profile_description: 管理多个隔离的 Hermes 实例，具有独立的配置、会话和凭据
+  cron_description: 管理定时任务
+  cron_sub_list_help: 列出定时任务
+  cron_sub_create_help: 创建定时任务
+  cron_sub_edit_help: 编辑现有的定时任务
+  cron_sub_pause_help: 暂停定时任务
+  cron_sub_resume_help: 恢复已暂停的任务
+  cron_sub_run_help: 在下一次调度器 tick 时运行任务
+  cron_sub_remove_help: 删除定时任务
+  cron_sub_status_help: 检查 cron 调度器是否正在运行
+  cron_sub_tick_help: 运行到期的任务并退出
+  auth_description: 管理池化提供商凭据
+  auth_sub_add_help: 添加池化凭据
+  auth_sub_list_help: 列出池化凭据
+  auth_sub_remove_help: 删除池化凭据
+  auth_sub_reset_help: 重置凭据以强制重新认证
+  auth_sub_status_help: 显示凭据状态
+  auth_sub_logout_help: 清除存储的凭据
+  auth_sub_spotify_help: 使用 Spotify 进行语音/音乐功能认证
+  login_option_provider: '要认证的提供商（默认：nous）'
+  login_option_portal_url: '门户基础 URL（默认：生产门户）'
+  login_option_inference_url: '推理 API 基础 URL（默认：生产推理 API）'
+  login_option_client_id: '要使用的 OAuth 客户端 ID（默认：hermes-cli）'
+  login_option_scope: 要请求的 OAuth 范围
+  login_option_no_browser: 不尝试自动打开浏览器
+  login_option_timeout: 'HTTP 请求超时时间（秒）（默认：15）'
+  login_option_ca_bundle: 用于 TLS 验证的 CA 捆绑 PEM 文件路径
+  login_option_insecure: 禁用 TLS 验证（仅用于测试）
+  logout_option_provider: '要注销的提供商（默认：活动提供商）'
+  config_sub_show_help: 显示当前配置
+  config_sub_edit_help: 在编辑器中打开配置文件
+  config_sub_set_help: 设置配置值
+  config_sub_path_help: 打印配置文件路径
+  config_sub_env_path_help: 打印 .env 文件路径
+  config_sub_check_help: 检查缺失/过时的配置
+  config_sub_migrate_help: 使用新选项更新配置
+  sessions_sub_list_help: 列出最近的会话
+  sessions_sub_export_help: 将会话导出为 JSON
+  sessions_sub_delete_help: 按 ID 或名称删除会话
+  sessions_sub_prune_help: 删除旧会话
+  sessions_sub_stats_help: 显示会话存储统计信息
+  sessions_sub_rename_help: 重命名会话
+  sessions_sub_browse_help: 交互式浏览和管理会话
+  profile_sub_list_help: 列出所有配置文件
+  profile_sub_use_help: 设置粘性默认配置文件
+  profile_sub_create_help: 创建新配置文件
+  profile_sub_delete_help: 删除配置文件
+  profile_sub_show_help: 显示配置文件详细信息
+  profile_sub_alias_help: 管理配置文件别名
+  profile_sub_rename_help: 重命名配置文件
+  profile_sub_export_help: 导出配置文件为 zip
+  profile_sub_import_help: 从 zip 导入配置文件
+  profile_sub_install_help: 从 git 仓库安装配置文件
+  profile_sub_update_help: 从 git 仓库更新配置文件
+  profile_sub_info_help: 显示配置文件信息
+  skills_sub_browse_help: 浏览所有可用技能（分页）
+  skills_sub_search_help: 搜索技能注册表
+  skills_sub_install_help: 安装技能
+  skills_sub_inspect_help: 预览技能而不安装
+  skills_sub_list_help: 列出已安装的技能
+  skills_sub_check_help: 检查已安装的 hub 技能是否有更新
+  skills_sub_update_help: 更新已安装的 hub 技能
+  skills_sub_audit_help: 重新扫描已安装的 hub 技能
+  skills_sub_uninstall_help: 删除 hub 安装的技能
+  skills_sub_reset_help: 重置捆绑的技能 — 清除用户修改跟踪以便更新再次生效
+  skills_sub_publish_help: 将技能发布到注册表
+  skills_sub_snapshot_help: 导出/导入技能配置
+  skills_sub_tap_help: 管理技能来源
+  skills_sub_config_help: 交互式技能配置 — 启用/禁用单个技能
+  plugins_sub_install_help: 从 Git URL 或 owner/repo 安装插件
+  plugins_sub_update_help: 拉取已安装插件的最新更改
+  plugins_sub_remove_help: 删除已安装的插件
+  plugins_sub_list_help: 列出已安装的插件
+  plugins_sub_enable_help: 启用已禁用的插件
+  plugins_sub_disable_help: 禁用插件而不删除它
+  epilogue_examples_title: 示例：
+  epilogue_for_more_help: 有关命令的更多帮助：
+  epilogue_example_hermes: '    hermes                        启动交互式聊天'
+  epilogue_example_chat_q: '    hermes chat -q "Hello"        单次查询模式'
+  epilogue_example_c: '    hermes -c                     恢复最近的会话'
+  epilogue_example_c_name: '    hermes -c "my project"        按名称恢复会话（谱系中最新的）'
+  epilogue_example_resume: '    hermes --resume <session_id>  按 ID 恢复特定会话'
+  epilogue_example_setup: '    hermes setup                  运行设置向导'
+  epilogue_example_logout: '    hermes logout                 清除存储的身份验证'
+  epilogue_example_auth_add: '    hermes auth add <provider>    添加池化凭据'
+  epilogue_example_auth_list: '    hermes auth list              列出池化凭据'
+  epilogue_example_auth_remove: '    hermes auth remove <p> <t>    按索引、ID 或标签删除池化凭据'
+  epilogue_example_auth_reset: '    hermes auth reset <provider>  清除提供商的耗尽状态'
+  epilogue_example_model: '    hermes model                  选择默认模型'
+  epilogue_example_fallback: '    hermes fallback [list]        显示回退提供商链'
+  epilogue_example_fallback_add: '    hermes fallback add           添加回退提供商（与 `hermes model` 相同的选择器）'
+  epilogue_example_fallback_remove: '    hermes fallback remove        从链中删除回退提供商'
+  epilogue_example_config: '    hermes config                 查看配置'
+  epilogue_example_config_edit: '    hermes config edit            在编辑器中打开配置'
+  epilogue_example_config_set: '    hermes config set model gpt-4 设置配置值'
+  epilogue_example_gateway: '    hermes gateway                运行消息网关'
+  epilogue_example_skills: '    hermes -s hermes-agent-dev,github-auth'
+  epilogue_example_worktree: '    hermes -w                     在隔离的 git 工作树中启动'
+  epilogue_example_gateway_install: '    hermes gateway install        安装网关后台服务'
+  epilogue_example_sessions_list: '    hermes sessions list          列出过去的会话'
+  epilogue_example_sessions_browse: '    hermes sessions browse        交互式会话选择器'
+  epilogue_example_sessions_rename: '    hermes sessions rename ID T   重命名/设置会话标题'
+  epilogue_example_logs: '    hermes logs                   查看 agent.log（最后 50 行）'
+  epilogue_example_logs_f: '    hermes logs -f                实时跟踪 agent.log'
+  epilogue_example_logs_errors: '    hermes logs errors            查看 errors.log'
+  epilogue_example_logs_since: '    hermes logs --since 1h        最后一小时的行'
+  epilogue_example_debug_share: '    hermes debug share             上传调试报告以支持'
+  epilogue_example_update: '    hermes update                 更新到最新版本'
+  epilogue_example_dashboard: '    hermes dashboard              启动 Web UI 仪表板（端口 9119）'
+  epilogue_example_dashboard_stop: '    hermes dashboard --stop       停止运行的仪表板进程'
+  epilogue_example_dashboard_status: '    hermes dashboard --status     列出运行的仪表板进程'
