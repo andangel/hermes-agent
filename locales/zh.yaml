@@ -1,7 +1,6 @@
-方案 A (推荐): 保留所有语言文件,只修改 zh.yaml 和 en.yaml
-恢复被删除的语言文件
-只保留您对 zh.yaml 和 en.yaml 的修改
-这样既保留了中文汉化,又不影响其他语言approval:
+# Chinese (Simplified) localization for Hermes
+# This file contains translations for Simplified Chinese (zh-CN)
+approval:
   dangerous_header: ⚠️  危险命令： {description}
   choose_long: '      [o]仅此一次  |  [s]本次会话  |  [a]永久允许  |  [d]拒绝'
   choose_short: '      [o]仅此一次  |  [s]本次会话  |  [d]拒绝'
